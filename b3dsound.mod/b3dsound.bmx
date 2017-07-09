@@ -27,7 +27,7 @@ about: You must stop all sounds associated with an entity before freeing it.
 Call EntityStop3DSound() before freeing an entity if there is a chance it could be playing a sound. 
 Failure to stop sounds associated with a non-existent entity can cause your program to crash.
 End Rem
-Module Openb3dMods.B3dsound
+Module Openb3dSrc.B3dsound
 
 ModuleInfo "Version: 1.2"
 ModuleInfo "Author: Logan Chittenden"
