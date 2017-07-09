@@ -1,2 +1,2 @@
-# openb3dmods
- Blitzmax modules for Openb3d
+# openb3dsrc
+ Blitzmax source collection for Openb3d
