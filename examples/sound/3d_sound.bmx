@@ -3,7 +3,7 @@
 SuperStrict
 
 Framework Openb3d.B3dglgraphics
-Import Openb3dSrc.B3dsound
+Import Openb3dmax.B3dsound
 ?Not Win32
 Import Brl.FreeAudioAudio
 ?Win32
@@ -14,49 +14,47 @@ Import Brl.OggLoader
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
-
 Global Camera:TCamera = CreateCamera()
 PositionEntity(camera, 0, 0, -20)
 
 Global Light:TLight = CreateLight(1)
 RotateEntity(Light, 90, 0, 0)
 
-Global SampleSound:TSound = LoadSound("../media/sample.wav")
 ' Normal sound flags still apply, see Audio docs for more info
+Global SampleSound:TSound = LoadSound("../media/sample.wav")
 
+' This can be any kind of entity for the purposes of emitting sound
 Global TheBox:TMesh = CreateCube()
-' This can be any kind of 3d Object For the purposes of emiting sound (pivot, entity, mesh, camera, light, etc.)
+EntityColor TheBox,50,100,200
 
+' Initializes the 3D sound system. Sets camera as the listen point with sound heard up to 300 units away.
+' To enable doppler effect, set the ExaggerateDopplerScale value. For example, Init3DSound(Camera, 300, 25).
+' Doppler effect is relative to movement speed so if your game moves faster than 1 unit per cycle then a
+' lower doppler exaggerate will be needed. A higher value will make the doppler effect more pronounced.
 Init3DSound(Camera, 300)
-' Initializes the 3D sound system. Sets the Camera as the listen point with sound heard up to 300 units away.
 
-' To enable doppler effect, add the dopple exaggerate value after the the maximum distance value.
-' Example: Init3DSound(Camera, 300, 25)
-' Doppler effect is relative to movement speed so if your game moves faster than 1 unit per cycle
-' then a lower Doppler exaggerate value will be needed. A higher value will make the doppler effect more
-' pronounced. Experiment to find the best results in your movement system.
 
 While Not KeyHit(KEY_ESCAPE)
 
-	' move camera
+	' Move camera
 	MoveEntity camera,0,0,KeyDown(KEY_UP)-KeyDown(KEY_DOWN)
 	TurnEntity camera,0,KeyDown(KEY_LEFT)-KeyDown(KEY_RIGHT),0
 	
-	' make TheBox play the loaded SampleSound
+	' Make TheBox play the loaded SampleSound
 	If KeyHit(KEY_SPACE)
 		Start3DSound(SampleSound, TheBox)
 	EndIf
 	
 	UpdateWorld
 	
-	Update3DSounds() ' Updates the positional information and sound channels for all playing 3D Sounds
+	Update3DSounds() ' Update the positional information and sound channels for all playing 3D sounds
 	
 	RenderWorld
 		
-	Text 0,20,"Arrow Keys Move and Turn"
-	Text 0,40,"Space plays sound from box"
-	Text 0,60,"Escape to Exit"
+	Text 0,20,"Arrow keys: move and turn"
+	Text 0,40,"Space: play sound from box, Memory: "+GCMemAlloced()
 	
-	Flip()
-		
+	Flip
+	GCCollect
 Wend
+End
