@@ -1,23 +1,4 @@
-' Copyright (c) 2007 Logan Chittenden
-'
-' This software is provided 'as-is', without any express or implied
-' warranty. In no event will the authors be held liable for any damages
-' arising from the use of this software.
-'
-' Permission is granted to anyone to use this software for any purpose,
-' including commercial applications, and to alter it and redistribute it
-' freely, subject to the following restrictions:
-'
-'    1. The origin of this software must not be misrepresented; you must not
-'    claim that you wrote the original software. If you use this software
-'    in a product, an acknowledgment in the product documentation would be
-'    appreciated but is not required.
-'
-'    2. Altered source versions must be plainly marked as such, and must not be
-'    misrepresented as being the original software.
-'
-'    3. This notice may not be removed or altered from any source
-'    distribution.
+' b3dsound.bmx
 
 SuperStrict
 
@@ -32,12 +13,12 @@ directly modified. For example, setting VolumeBump = UPDATE_DISABLED will stop V
 End Rem
 Module Openb3dmax.B3dsound
 
-ModuleInfo "Version: 1.25"
-ModuleInfo "License: zlib/libpng"
-ModuleInfo "Copyright: 2007 Logan Chittenden"
+ModuleInfo "Version: 1.3"
+ModuleInfo "License: zlib"
+ModuleInfo "Copyright: 2016-2017 Mark Mcvittie"
 ModuleInfo "Authors: Logan Chittenden, Mark Mcvittie"
 
-ModuleInfo "History: 1.25 Release"
+ModuleInfo "History: 1.3 Release"
 ModuleInfo "History: Init3DSound HearingPoint fix, updated documentation"
 ModuleInfo "History: 1.2 Release"
 ModuleInfo "History: Added Stop3DSound, EntityStop3DSound, Pause3DSound, EntityPause3DSound,"
