@@ -18,6 +18,8 @@ PositionEntity cube,-1.5,0,3
 Local tex1:TTexture=LoadTexture("../media/crate.bmp")
 EntityTexture cube,tex1
 
+SetMeshLoader 2 ' 1 for streams (default), 2 for library
+
 Local cube2:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleEntity cube2,0.05,0.05,0.05
 RotateEntity cube2,0,180,0

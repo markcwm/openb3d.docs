@@ -25,7 +25,7 @@ SetMeshLoader 1 ' 1 for streams (default), 2 for library
 SetTextureLoader 1
 
 ' load anim mesh
-Local loader%=3
+Local loader%=1
 Select loader
 	Case 1 ' load stream mesh
 		oldtime=MilliSecs()
@@ -41,7 +41,7 @@ Select loader
 		
 	Case 3 ' load zip mesh
 		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("zip::../media/RomanBath.zip//RomanBath.b3d")
+		mesh=LoadAnimMesh("zip::../media/test.zip//test.b3d")
 		
 		debug="zip time="+(MilliSecs()-oldtime)
 		

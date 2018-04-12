@@ -39,6 +39,9 @@ For Local r:Int=0 To 6
 	Next
 Next
 
+SetTextureLoader 2 ' 1 for streams (default), 2 for library
+SetMeshLoader 2
+
 Local cube:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleMesh cube,0.15,0.15,0.15
 PositionEntity cube,0,8,40

@@ -50,6 +50,9 @@ Local anim_ent:TMesh=LoadAnimMesh("../media/zombie.b3d",pivot)
 PositionEntity anim_ent,0,0,12
 TurnEntity anim_ent,0,-90,0
 
+SetTextureLoader 2 ' 1 for streams (default), 2 for library
+SetMeshLoader 2
+
 Local cube:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleMesh cube,0.15,0.15,0.15
 PositionEntity cube,0,3,0
