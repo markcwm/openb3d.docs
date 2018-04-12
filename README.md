@@ -1,7 +1,7 @@
 OpenB3DMax.Help
 ===============
 
-OpenB3DMax source help with media included
+OpenB3D BlitzMax wrapper source help with media included
 
 ## Credits
 
