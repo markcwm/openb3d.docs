@@ -3,7 +3,7 @@ OpenB3DMax.Help
 
 OpenB3D BlitzMax wrapper source help with media included
 
-#Credits
+## Credits
 
 The OpenB3D library is based on source from iMiniB3D with other core parts from Warner Engine and MiniB3D Extended.
 
@@ -16,6 +16,6 @@ Blitz3D by Mark Sibly
 bOGL 2 by Alex Gilding
 bOGL by Andres Pajo
 
-#License
+## License
 
 The source is licensed with the zlib license.
