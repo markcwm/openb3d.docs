@@ -3,7 +3,7 @@
 
 Strict
 
-Framework Openb3d.B3dglgraphics
+Framework Openb3dmax.B3dglgraphics
 
 Local width%=DesktopWidth(),height%=DesktopHeight(),depth%=0,Mode%=2
 
@@ -19,7 +19,7 @@ SetTextureLoader 1
 
 ' load anim mesh
 Local ent:TMesh=Null
-Local loader%=3
+Local loader%=1
 Select loader
 	Case 1 ' load stream mesh
 		ent=LoadAnimMesh("../media/zombie.b3d")

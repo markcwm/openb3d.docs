@@ -2,7 +2,7 @@
 
 Strict
 
-Framework Openb3d.B3dglgraphics
+Framework Openb3dmax.B3dglgraphics
 
 Local width%=DesktopWidth(),height%=DesktopHeight(),depth%=0,hertz%=60
 

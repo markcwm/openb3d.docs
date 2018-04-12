@@ -2,7 +2,7 @@
 
 SuperStrict
 
-Framework Openb3d.B3dglgraphics
+Framework Openb3dmax.B3dglgraphics
 
 Import Brl.FreeTypeFont
 Import Brl.Audio ' Note: button 1 plays a sound

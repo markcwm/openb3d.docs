@@ -2,8 +2,8 @@
 
 SuperStrict
 
-Framework Openb3d.B3dglgraphics
-Import Openb3d.B3dsound
+Framework Openb3dmax.B3dglgraphics
+Import Openb3dmax.B3dsound
 
 ?Not Win32
 Import Brl.FreeAudioAudio
