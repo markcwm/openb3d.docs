@@ -14,12 +14,9 @@ PositionEntity cam,0,10,-15
 
 Local light:TLight=CreateLight()
 
-SetMeshLoader 1 ' 1 for streams (default), 2 for library
-SetTextureLoader 1
-
 ' load anim mesh
 Local ent:TMesh=Null
-Local loader%=1
+Local loader%=3
 Select loader
 	Case 1 ' load stream mesh
 		ent=LoadAnimMesh("../media/zombie.b3d")

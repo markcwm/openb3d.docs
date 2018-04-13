@@ -19,7 +19,7 @@ PositionEntity cube,-2,0,5
 Local cube2:TMesh=CreateCube()
 PositionEntity cube2,2,0,5
 
-SetTextureLoader 1 ' 1 for streams (default), 2 for library
+'SetTextureLoader 2 ' 1 for streams (default), 2 for library
 
 Local tex:TTexture=LoadTexture("../media/b3dlogo.jpg")
 EntityTexture cube2,tex

@@ -36,8 +36,7 @@ EntityFX sky,1
 Local sky_tex:TTexture=LoadTexture("../media/sky.bmp")
 EntityTexture sky,sky_tex
 
-SetTextureLoader 2 ' 1 for streams (default), 2 for library
-SetMeshLoader 2
+SetMeshLoader 2 ' 1 for streams (default), 2 for library
 
 ' ground
 Local ground:TMesh=LoadMesh("../media/grid.b3d")

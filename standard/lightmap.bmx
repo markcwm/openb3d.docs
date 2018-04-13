@@ -21,9 +21,6 @@ Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-SetMeshLoader 1 ' 1 for streams (default), 2 for library
-SetTextureLoader 1
-
 ' load anim mesh
 Local loader%=1
 Select loader

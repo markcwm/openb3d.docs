@@ -19,9 +19,6 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-SetMeshLoader 1 ' 1 for streams (default), 2 for library
-SetTextureLoader 1
-
 Local loader:Int=5 ' 0 to 5
 Select loader
 

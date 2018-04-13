@@ -28,9 +28,6 @@ EntityFX sky,1
 Local sky_tex:TTexture=LoadTexture("../media/sky.bmp")
 EntityTexture sky,sky_tex
 
-SetTextureLoader 2 ' 1 for streams (default), 2 for library
-
-' ground
 Local ground:TMesh=LoadMesh("../media/grid.b3d")
 ScaleEntity ground,1000,1,1000
 EntityColor ground,168,133,55
@@ -60,8 +57,6 @@ PositionEntity(teapot,0,6,10)
 
 Local cubetex:TTexture=CreateTexture(256,256,1+2+128)
 Local lighttype%=1, alpha#=0.7
-
-
 
 ' non lit/ambient specular cubemap
 Local shader:TShader=LoadShader("","../glsl/cubemap.vert.glsl","../glsl/cubemap.frag.glsl")
