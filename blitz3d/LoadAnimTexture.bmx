@@ -19,26 +19,30 @@ PositionEntity cube,-2,0,5
 Local cube2:TMesh=CreateCube()
 PositionEntity cube2,2,0,5
 
-'SetTextureLoader 2 ' 1 for streams (default), 2 for library
+SetTextureLoader 2 ' 1 for streams (default), 2 for library
 
-Local tex:TTexture=LoadTexture("../media/b3dlogo.jpg")
+Local tex:TTexture=LoadAnimTexture("../media/boomstrip.bmp",49,64,64,0,39 )
 EntityTexture cube2,tex
+
+SetTextureLoader 1
 
 ' Load anim texture
 Local oldtime%=MilliSecs()
 Local anim_tex:TTexture=LoadAnimTexture( "incbin::../media/boomstrip.bmp",49,64,64,0,39 )
 Local debug$="incbin time="+(MilliSecs()-oldtime)
 
-Local frame%
+Local frame%,frame2%
 Local pitch#,yaw#,roll#
 
 While Not KeyDown(KEY_ESCAPE)
 
 	' Cycle through anim frame values. 100 represents Delay, 39 represents no. of  anim frames
 	frame=MilliSecs()/100 Mod 39
+	frame2=MilliSecs()/75 Mod 39
 	
 	' Texture cube with anim texture frame
 	EntityTexture cube,anim_tex,frame
+	EntityTexture cube2,anim_tex,frame2
 	
 	pitch#=0
 	yaw#=0
