@@ -43,8 +43,6 @@ For Local t%=0 To 359 Step 36
 Next
 FreeEntity t_sphere
 
-SetMeshLoader 2 ' 1 for streams (default), 2 for library
-
 Local cube:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleMesh cube,0.15,0.15,0.15
 PositionEntity cube,0,8,0

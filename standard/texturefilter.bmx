@@ -21,10 +21,8 @@ EntityTexture cube,tex1
 'SetMeshLoader 2 ' 1 for streams (default), 2 for library
 
 Local cube2:TMesh=LoadAnimMesh("../media/wcrate1.3ds")
-Local surf:TSurface=GetSurface(TMesh(GetChild(cube2,1)),1)
-
+Local surf:TSurface=GetSurface(TMesh(GetChild(cube2,1)),1) ' first surface of first child
 ScaleEntity cube2,0.06,0.06,0.06
-'cube2.ScaleAnimMesh 0.06,0.06,0.06
 RotateEntity cube2,0,180,0
 PositionEntity cube2,1.5,-1.2,4
 'Local tex2:TTexture=LoadTexture("../media/WCRATE.JPG")
