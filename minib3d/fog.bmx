@@ -77,7 +77,7 @@ While Not KeyDown(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps
-	Text 0,40,"WSAD: move camera, M: Max2d mode = "+max2dmode+", F: fog mode = "+fogmode
+	Text 0,40,"WASD: move camera, M: Max2d mode = "+max2dmode+", F: fog mode = "+fogmode
 	
 	If max2dmode
 		BeginMax2D()

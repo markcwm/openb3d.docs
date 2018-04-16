@@ -48,7 +48,7 @@ While Not KeyHit(KEY_ESCAPE)
 	UpdateWorld
 	RenderWorld
 	
-	Text 0,20,"WSAD: move camera"
+	Text 0,20,"WASD: move camera"
 	
 	Flip
 	

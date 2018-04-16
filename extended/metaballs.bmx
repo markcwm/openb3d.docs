@@ -47,7 +47,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	RenderWorld
 	
-	Text 0,20,"Arrows: turn camera, WSAD: move camera"
+	Text 0,20,"Arrows: turn camera, WASD: move camera"
 	Text 0,40,"Space: wireframe = "+w+", Camera z = "+EntityZ(camera)
 	
 	Flip

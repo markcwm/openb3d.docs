@@ -82,7 +82,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	RenderWorld
 	
-	Text 0,20,"WSAD: move camera, Arrows: turn spheres, M: Max2d mode = "+max2dmode+", F: fog mode = "+fogmode
+	Text 0,20,"WASD: move camera, Arrows: turn spheres, M: Max2d mode = "+max2dmode+", F: fog mode = "+fogmode
 	Text 0,40,"density="+density
 	
 	If max2dmode

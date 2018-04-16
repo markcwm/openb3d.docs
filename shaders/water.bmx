@@ -254,7 +254,7 @@ While Not KeyDown(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"WSAD and Arrows: move camera, Space: wireframe"
+	Text 0,40,"WASD/Arrows: move camera, Space: wireframe"
 	Text 0,60,"B: blending = "+blendmode+", P: pixel light = "+pixellight+", M: stencil mode = "+stmode
 	Text 0,80,"Y/H: waveWidth = "+waveWidth+", U/J: waveHeight = "+waveHeight+", I/K: waveLength = "+waveLength
 	

@@ -59,7 +59,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	Text 0,20,"FPS: "+fps
 	Text 0,40,"+/-: animate, F: free entity"
-	Text 0,60,"Arrows: turn camera, WSAD: move camera"
+	Text 0,60,"Arrows: turn camera, WASD: move camera"
 	
 	Flip
 	

@@ -207,7 +207,7 @@ While Not KeyDown(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"WSAD: move camera, B: bumpmap mode = "+bumpmode+", L: light mode = "+lightmode
+	Text 0,40,"WASD: move camera, B: bumpmap mode = "+bumpmode+", L: light mode = "+lightmode
 	Text 0,60,"M: Max2d mode, P: debug light parameters"
 	
 	If debuglight

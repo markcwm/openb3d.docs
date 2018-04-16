@@ -68,7 +68,7 @@ While Not KeyDown(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps
-	Text 0,40,"L: switch off green light, WSAD: move camera"
+	Text 0,40,"L: switch off green light, WASD: move camera"
 
 	Flip
 

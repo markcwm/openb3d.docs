@@ -142,7 +142,7 @@ While Not KeyHit(KEY_ESCAPE)
 	BeginMax2D()
 	SetColor 0,0,0
 	DrawText "FPS: "+fps,0,20
-	DrawText "WSAD & Arrows: move camera, Space: postprocess = "+postprocess,0,40
+	DrawText "WASD/Arrows: move camera, Space: postprocess = "+postprocess,0,40
 	DrawText "E/R: Exposure="+exposure+", G/H: GlareSize="+GlareSize+", O/P: Power="+Power,0,60
 	EndMax2D()
 	

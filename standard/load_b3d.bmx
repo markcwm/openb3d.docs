@@ -19,7 +19,7 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-Local loader:Int=5 ' 0 to 5
+Local loader:Int=3 ' 0 to 5
 Select loader
 
 	Case 1 ' load stream mesh
@@ -78,11 +78,12 @@ While Not KeyDown( KEY_ESCAPE )
 
 	' control camera
 	MoveEntity camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)
+	TurnEntity camera,KeyDown(KEY_DOWN)-KeyDown(KEY_UP),KeyDown(KEY_LEFT)-KeyDown(KEY_RIGHT),0
 	
-	If KeyDown(KEY_UP) Then TurnEntity mesh,0.5,0,0
-	If KeyDown(KEY_DOWN) Then TurnEntity mesh,-0.5,0,0
-	If KeyDown(KEY_LEFT) Then TurnEntity mesh,0,2.5,0
-	If KeyDown(KEY_RIGHT) Then TurnEntity mesh,0,-2.5,0
+	If KeyDown(KEY_I) Then TurnEntity mesh,0.5,0,0
+	If KeyDown(KEY_K) Then TurnEntity mesh,-0.5,0,0
+	If KeyDown(KEY_J) Then TurnEntity mesh,0,2.5,0
+	If KeyDown(KEY_L) Then TurnEntity mesh,0,-2.5,0
 	
 	' change anim time values
 	If KeyDown(KEY_MINUS) Then anim_time=anim_time-0.1
@@ -108,7 +109,7 @@ While Not KeyDown( KEY_ESCAPE )
 	
 	Text 0,20,"FPS: "+fps+", Debug: "+debug
 	Text 0,40,"+/-: animate, F: free entity"
-	Text 0,60,"Arrows: move camera, WSAD: turn mesh, F: free entity"
+	Text 0,60,"WASD/Arrows: move camera, IJKL: turn mesh, F: free entity"
 	If mesh
 		Text 0,80,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
 		Text 0,100,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)

@@ -87,7 +87,7 @@ While Not KeyHit(KEY_ESCAPE)
 	UpdateWorld ' update particles
 	RenderWorld
 	
-	Text 0,20,"WSAD/Arrows: move camera, NM: rotate emitter"
+	Text 0,20,"WASD/Arrows: move camera, NM: rotate emitter"
 	
 	Flip
 Wend
