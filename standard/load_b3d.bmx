@@ -19,7 +19,9 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-Local loader:Int=3 ' 0 to 5
+LOG_B3D=1 ' log B3D data
+
+Local loader:Int=5 ' 0 to 5
 Select loader
 
 	Case 1 ' load stream mesh
@@ -80,10 +82,10 @@ While Not KeyDown( KEY_ESCAPE )
 	MoveEntity camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)
 	TurnEntity camera,KeyDown(KEY_DOWN)-KeyDown(KEY_UP),KeyDown(KEY_LEFT)-KeyDown(KEY_RIGHT),0
 	
-	If KeyDown(KEY_I) Then TurnEntity mesh,0.5,0,0
-	If KeyDown(KEY_K) Then TurnEntity mesh,-0.5,0,0
-	If KeyDown(KEY_J) Then TurnEntity mesh,0,2.5,0
-	If KeyDown(KEY_L) Then TurnEntity mesh,0,-2.5,0
+	If KeyDown(KEY_I) And mesh Then TurnEntity mesh,0.5,0,0
+	If KeyDown(KEY_K) And mesh Then TurnEntity mesh,-0.5,0,0
+	If KeyDown(KEY_J) And mesh Then TurnEntity mesh,0,2.5,0
+	If KeyDown(KEY_L) And mesh Then TurnEntity mesh,0,-2.5,0
 	
 	' change anim time values
 	If KeyDown(KEY_MINUS) Then anim_time=anim_time-0.1
@@ -92,7 +94,7 @@ While Not KeyDown( KEY_ESCAPE )
 	If mesh Then SetAnimTime(mesh,anim_time)
 	
 	If KeyHit(KEY_F) And mesh
-		FreeEntity(mesh) 
+		FreeEntity mesh
 		mesh=Null
 	EndIf
 	
@@ -107,7 +109,7 @@ While Not KeyDown( KEY_ESCAPE )
 		renders=0
 	EndIf
 	
-	Text 0,20,"FPS: "+fps+", Debug: "+debug
+	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()+", Debug: "+debug
 	Text 0,40,"+/-: animate, F: free entity"
 	Text 0,60,"WASD/Arrows: move camera, IJKL: turn mesh, F: free entity"
 	If mesh
@@ -116,5 +118,11 @@ While Not KeyDown( KEY_ESCAPE )
 	EndIf
 	
 	Flip
+	GCCollect
 Wend
+
+FreeEntity mesh
+GCCollect
+DebugLog " Memory at end="+GCMemAlloced()
+
 End

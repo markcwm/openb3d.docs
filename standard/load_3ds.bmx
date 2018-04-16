@@ -19,6 +19,7 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
+'LOG_3DS=1 ' log 3DS data
 'LoaderMatrix "3ds", 1,0,0, 0,1,0, 0,0,1 ' standard coords
 
 Local loader:Int=5 ' set 0 to 6
@@ -103,7 +104,7 @@ While Not KeyDown( KEY_ESCAPE )
 	If KeyDown(KEY_L) And mesh Then TurnEntity mesh,0,-2.5,0
 	
 	If KeyHit(KEY_F) And mesh
-		FreeEntity(mesh) 
+		FreeEntity mesh
 		mesh=Null
 	EndIf
 	
@@ -117,13 +118,19 @@ While Not KeyDown( KEY_ESCAPE )
 		renders=0
 	EndIf
 	
-	Text 0,20,"FPS: "+fps+", Debug: "+debug
+	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()+", Debug: "+debug
 	Text 0,40,"WASD/Arrows: move camera, IJKL: turn mesh, F: free entity"
-	If mesh ' todo fix random crash here?
-		'Text 0,60,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
-		'Text 0,80,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)
+	If mesh
+		Text 0,60,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
+		Text 0,80,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)
 	EndIf
 	
 	Flip
+	GCCollect
 Wend
+
+FreeEntity mesh
+GCCollect
+DebugLog " Memory at end="+GCMemAlloced()
+
 End

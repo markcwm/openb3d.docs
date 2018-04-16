@@ -92,7 +92,7 @@ Wend
 
 TParticleFunc.Free(pe) ' free particles
 GCCollect
-DebugLog "Memory at end: "+GCMemAlloced()
+DebugLog " Memory at end="+GCMemAlloced()
 
 End
 

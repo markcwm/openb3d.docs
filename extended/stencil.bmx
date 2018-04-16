@@ -166,6 +166,6 @@ Wend
 
 FreeStencil stencil
 GCCollect
-DebugLog "Memory at end: "+GCMemAlloced()
+DebugLog " Memory at end="+GCMemAlloced()
 
 End

@@ -267,7 +267,7 @@ FreeStencil stencil
 FreeShader shader
 FreeShader shader2
 GCCollect
-DebugLog "Memory at end: "+GCMemAlloced()
+DebugLog " Memory at end="+GCMemAlloced()
 
 End
 
