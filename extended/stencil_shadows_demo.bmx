@@ -262,7 +262,7 @@ While Not KeyHit(KEY_ESCAPE) And Not AppTerminate()
 	
 	If max2dmode
 		BeginMax2D()
-		DrawText "Testing Max2d",0,120
+		GLDrawText "Testing Max2d",0,120
 		EndMax2D()
 	EndIf
 	

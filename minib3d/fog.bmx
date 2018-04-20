@@ -81,7 +81,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	If max2dmode
 		BeginMax2D()
-		DrawText "Testing Max2d",0,60
+		GLDrawText "Testing Max2d",0,60
 		EndMax2D()
 	EndIf
 	

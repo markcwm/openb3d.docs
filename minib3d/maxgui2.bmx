@@ -233,7 +233,7 @@ Function RenderScene(canvas:TGadget, window:TGadget)
 		SetBlend ALPHABLEND
 		SetColor(0, 255, 0)
 		SetImageFont Font
-		DrawText "Testing Max2d",ClientWidth(window)-200,40
+		GLDrawText "Testing Max2d",ClientWidth(window)-200,40
 		EndMax2D()
 	EndIf
 	

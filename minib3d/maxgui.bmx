@@ -104,7 +104,7 @@ While Not KeyDown(KEY_ESCAPE)
 			Text 20,60,"mouse_y:"+mouse_y
 			
 			BeginMax2D()
-			DrawText "Testing Max2d",ClientWidth(win)-120,0
+			GLDrawText "Testing Max2d",ClientWidth(win)-120,0
 			EndMax2D()
 			
 			Flip
