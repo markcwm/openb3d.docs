@@ -19,12 +19,12 @@ PositionEntity cube,-2,0,5
 Local cube2:TMesh=CreateCube()
 PositionEntity cube2,2,0,5
 
-SetTextureLoader 2 ' 1 for streams (default), 2 for library
+TextureLoader "cpp"
 
 Local tex:TTexture=LoadAnimTexture("../media/boomstrip.bmp",49,64,64,0,39 )
 EntityTexture cube2,tex
 
-SetTextureLoader 1
+TextureLoader "bmx"
 
 ' Load anim texture
 Local oldtime%=MilliSecs()

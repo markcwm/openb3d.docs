@@ -20,7 +20,7 @@ PositionEntity pivot,0,4,0
 Local temp:TMesh=CreateCube()
 Local box:TEntity[], inc%, tex:TTexture
 
-'SetTextureLoader 2 ' 1 for streams (default), 2 for library
+'TextureLoader "cpp"
 
 For Local t%=0 To 359 Step 360/6.9
 	box=box[..inc+1]

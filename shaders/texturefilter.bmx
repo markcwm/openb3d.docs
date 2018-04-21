@@ -16,7 +16,7 @@ TextureFilter "crate",1
 Local cube:TMesh=CreateCube()
 PositionEntity cube,-1.5,0,3
 
-'SetMeshLoader 2 ' 1 for streams (default), 2 for library
+'MeshLoader "cpp"
 
 Local cube2:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleEntity cube2,0.06,0.06,0.06

@@ -18,7 +18,7 @@ PositionEntity cube,-1.5,0,3
 Local tex1:TTexture=LoadTexture("../media/crate.bmp")
 EntityTexture cube,tex1
 
-'SetMeshLoader 2 ' 1 for streams (default), 2 for library
+'MeshLoader "cpp"
 
 Local cube2:TMesh=LoadAnimMesh("../media/wcrate1.3ds")
 Local surf:TSurface=GetSurface(TMesh(GetChild(cube2,1)),1) ' first surface of first child

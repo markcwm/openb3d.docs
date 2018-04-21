@@ -73,8 +73,8 @@ Select loader
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
 	Default ' load library mesh
-		SetTextureLoader 2 ' 1 for streams (default), 2 for library
-		SetMeshLoader 2
+		TextureLoader "cpp"
+		MeshLoader "cpp"
 		
 		oldtime=MilliSecs()
 		mesh=LoadMesh("../media/rallycar1.3ds")
