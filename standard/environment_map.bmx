@@ -11,7 +11,7 @@ Graphics3D DesktopWidth(),DesktopHeight(),0,2
 Local cam:TCamera=CreateCamera()
 PositionEntity cam,0,5,-10
 
-Local light:TLight=CreateLight(2)
+Local light:TLight=CreateLight(1)
 RotateEntity light,45,45,0
 PositionEntity light,0,20,0
 LightRange light,10
@@ -20,21 +20,21 @@ LightRange light,10
 Local old_ms%=MilliSecs()
 Local renders%, fps%
 
-Local skymap$="../media/cubemap_skybox.png"
+Local skymap$="incbin::../media/cubemap_skybox.png"
 Local pix:TPixmap=LoadPixmap(skymap)
-Local framesize%=PixmapHeight(pix)/3
+Local framesize%=PixmapHeight(pix)/3 ' 4 * 3 cross cubemap layout
 
-' Create a skybox from the same cube map image in 4 * 3 cross
-Local skybox:TMesh=LoadCubicSkyBox( skymap,1+16+32,framesize,framesize,1,4,5,6,7,9 )
+' Create skybox from the same cubemap image
+Local skybox:TMesh=LoadCubicSkyBox( skymap,1+16+32,framesize,framesize,4,5,6,7,9,1 ) ' lf-x, fr+z, rt+x, bk-z, dn-y, up+y
 ScaleMesh skybox,250,250,250
 PositionEntity skybox,0,50,0
 EntityFX skybox,1
 
 skymap="../media/envmap_cube.jpg"
 pix=LoadPixmap(skymap)
-framesize=PixmapHeight(pix)/2
+framesize=PixmapHeight(pix)/2 ' 3 * 2 cubemap layout
 
-Local skybox2:TMesh=LoadCubicSkyBox( skymap,1+16+32,framesize,framesize,4,0,5,2,1,3 ) ' bk, up, fr, rt, lf, dn
+Local skybox2:TMesh=LoadCubicSkyBox( skymap,1+16+32,framesize,framesize,0,5,2,1,3,4 ) ' lf-x, fr+z, rt+x, bk-z, dn-y, up+y
 ScaleMesh skybox2,250,250,250
 PositionEntity skybox2,0,50,0
 EntityFX skybox2,1
@@ -44,26 +44,24 @@ HideEntity skybox2
 Local ground:TMesh=CreateCylinder(16,True)
 ScaleEntity ground,125,1,125
 PositionEntity ground,0,-10,0
-'Local ground_tex:TTexture=LoadTexture("../media/sand.bmp")
 Local ground_tex:TTexture=LoadAnimTexture( skymap,1+8,framesize,framesize,3,1 )
-'ScaleTexture ground_tex,0.1,0.1
 EntityTexture ground,ground_tex
 
-skymap="../media/cubemap_skybox.png"
+skymap="incbin::../media/cubemap_skybox.png"
 pix=LoadPixmap(skymap)
-framesize=PixmapHeight(pix)/3
+framesize=PixmapHeight(pix)/3 ' 4 * 3 cross cubemap layout
 
-CubeMapLoader "face",1,2,3,4,5,0 ' left, front, right, back, up, down
-CubeMapLoader "frame",1,4,5,6,7,9
+CubeMapLoader "frame",4,5,6,7,9,1 ' load first frame (up) last - skips blank frames 0, 2, 3, 8, 10, 11
+CubeMapLoader "face",0,1,2,3,4,5 ' lf-x, fr+z, rt+x, bk-z, dn-y, up+y
 
 Local tex:TTexture=LoadAnimTexture(skymap,1+128,framesize,framesize,0,1)
 
 skymap="../media/envmap_cube.jpg"
 pix=LoadPixmap(skymap)
-framesize=PixmapHeight(pix)/2
+framesize=PixmapHeight(pix)/2 ' 3 * 2 cubemap layout
 
-CubeMapLoader "face",0,5,2,1,3,4 ' left, back, right, down, up, front
-CubeMapLoader "frame",0,1,2,3,4,5
+CubeMapLoader "frame",0,1,2,3,4,5 ' load frames in sequence and reorder faces instead
+CubeMapLoader "face",0,5,2,1,3,4 ' lf-x, fr+z, rt+x, bk-z, dn-y, up+y
 
 Local tex2:TTexture=LoadAnimTexture(skymap,1+128,framesize,framesize,0,1)
 
@@ -131,12 +129,9 @@ While Not KeyDown(KEY_ESCAPE)
 		blendmode=Not blendmode
 		If blendmode=0 Then alpha=1.0 Else alpha=0.7
 		EntityAlpha teapot,alpha
-		'EntityAlpha ufo,alpha
-		'EntityAlpha camel,alpha
 		EntityAlpha sphere,alpha
 		EntityAlpha cone,alpha
 		EntityAlpha cylinder,alpha
-		'EntityAlpha oildrum,alpha
 	EndIf
 	
 	If KeyHit(KEY_G)
@@ -196,28 +191,28 @@ While Not KeyDown(KEY_ESCAPE)
 	SetColor 0,0,0
 	GLDrawText "FPS: "+fps+" cubemap_time: "+cubemap_time,0,20
 	GLDrawText "WASD/Arrows: Move camera, J/L: Turn pivot, I/K: Rotate meshes",0,40
-	GLDrawText "B: blendmode = "+blendmode+", G: show ground="+showground,0,60
+	GLDrawText "B: blendmode = "+blendmode+", C; cubemode="+cubemode+", G: show ground="+showground,0,60
 	EndMax2DEx()
 	
 	Flip
 Wend
 End
 	
-' Create a skybox from the same cube map image in 4 * 3 cross
-Function LoadCubicSkyBox:TMesh( file$, flags%, width%, height%, up%, lf%, fr%, rt%, bk%, dn% )
+' Create skybox from the same cubemap image
+Function LoadCubicSkyBox:TMesh( file$, flags%, width%, height%, lf%, fr%, rt%, bk%, dn%, up% )
 
 	Local t:TTexture, b:TBrush, s:TSurface
 	Local m:TMesh=CreateMesh()
 	
 	'top face
-	t=LoadAnimTexture( file$,flags,width,height,up,1 )
+	t=LoadAnimTexture( file$,flags,width,height,up,1 ) ' load single frame of same anim texture
 	b=CreateBrush()
 	BrushTexture b,t
 	s=CreateSurface( m,b )
-	AddVertex s,-1,+1,+1,0,1 ' tl
-	AddVertex s,+1,+1,+1,1,1 ' tr
-	AddVertex s,+1,+1,-1,1,0 ' br
-	AddVertex s,-1,+1,-1,0,0 ' bl
+	AddVertex s,-1,+1,+1,0,1
+	AddVertex s,+1,+1,+1,1,1
+	AddVertex s,+1,+1,-1,1,0
+	AddVertex s,-1,+1,-1,0,0
 	AddTriangle s,0,1,2
 	AddTriangle s,0,2,3
 	FreeBrush b
@@ -240,10 +235,10 @@ Function LoadCubicSkyBox:TMesh( file$, flags%, width%, height%, up%, lf%, fr%, r
 	b=CreateBrush()
 	BrushTexture b,t
 	s=CreateSurface( m,b )
-	AddVertex s,+1,+1,+1,1,0 ' tl
-	AddVertex s,-1,+1,+1,0,0 ' tl
-	AddVertex s,-1,-1,+1,0,1 ' br
-	AddVertex s,+1,-1,+1,1,1 ' bl
+	AddVertex s,+1,+1,+1,1,0 ' ul
+	AddVertex s,-1,+1,+1,0,0 ' ur
+	AddVertex s,-1,-1,+1,0,1 ' dr
+	AddVertex s,+1,-1,+1,1,1 ' dl
 	AddTriangle s,0,1,2
 	AddTriangle s,0,2,3	
 	FreeBrush b
@@ -279,10 +274,10 @@ Function LoadCubicSkyBox:TMesh( file$, flags%, width%, height%, up%, lf%, fr%, r
 	b=CreateBrush()
 	BrushTexture b,t
 	s=CreateSurface( m,b )
-	AddVertex s,-1,-1,-1,0,1 ' bl
-	AddVertex s,+1,-1,-1,1,1 ' br
-	AddVertex s,+1,-1,+1,1,0 ' tr
-	AddVertex s,-1,-1,+1,0,0 ' tl
+	AddVertex s,-1,-1,-1,0,1 ' dl
+	AddVertex s,+1,-1,-1,1,1 ' dr
+	AddVertex s,+1,-1,+1,1,0 ' ur
+	AddVertex s,-1,-1,+1,0,0 ' ul
 	AddTriangle s,0,1,2
 	AddTriangle s,0,2,3
 	FreeBrush b
