@@ -19,7 +19,8 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-LOG_B3D=1 ' log B3D data
+TGlobal.Log_B3D=1 ' debug data
+'MeshLoader "cpp"
 
 Local loader:Int=5 ' 0 to 5
 Select loader

@@ -19,8 +19,9 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-'LOG_3DS=1 ' log 3DS data
-'LoaderMatrix "3ds", 1,0,0, 0,1,0, 0,0,1 ' standard coords
+'LoaderMatrix "3ds", 1,0,0, 0,1,0, 0,0,-1 ' standard coords
+'TGlobal.Log_3DS=1 ' debug data
+'MeshLoader "cpp"
 
 Local loader:Int=5 ' set 0 to 6
 Select loader
