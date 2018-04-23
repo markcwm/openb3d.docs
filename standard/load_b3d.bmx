@@ -19,10 +19,10 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-TGlobal.Log_B3D=1 ' debug data
+'TGlobal.Log_B3D=1 ' debug data
 'MeshLoader "cpp"
 
-Local loader:Int=5 ' 0 to 5
+Local loader:Int=1 ' 0 to 5
 Select loader
 
 	Case 1 ' load stream mesh
@@ -75,6 +75,7 @@ Local old_ms%=MilliSecs()
 Local renders%, fps%
 
 If MeshHeight(mesh)<100 Then PointEntity camera,mesh
+Local count_children%=TEntity.CountAllChildren(mesh)
 
 
 While Not KeyDown( KEY_ESCAPE )
@@ -116,6 +117,7 @@ While Not KeyDown( KEY_ESCAPE )
 	If mesh
 		Text 0,80,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
 		Text 0,100,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)
+		Text 0,120,"Children: "+count_children
 	EndIf
 	
 	Flip

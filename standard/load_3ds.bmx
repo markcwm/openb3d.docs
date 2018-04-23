@@ -23,7 +23,7 @@ Local mesh:TMesh, debug:String, oldtime:Int
 'TGlobal.Log_3DS=1 ' debug data
 'MeshLoader "cpp"
 
-Local loader:Int=5 ' set 0 to 6
+Local loader:Int=1 ' set 0 to 6
 Select loader
 
 	Case 1 ' load rallycar1 mesh
@@ -46,7 +46,8 @@ Select loader
 		mesh=LoadAnimMesh("../media/phineas4.3ds")
 		
 		mesh.RotateAnimMesh(0,-90,-45)
-		mesh.PositionAnimMesh(0,10,0)
+		mesh.PositionAnimMesh(0,44,-6)
+		mesh.ScaleAnimMesh(0.5,0.5,0.5)
 		
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
@@ -91,6 +92,7 @@ Local old_ms%=MilliSecs()
 Local renders%, fps%
 
 If MeshHeight(mesh)<100 Then PointEntity camera,mesh
+Local count_children%=TEntity.CountAllChildren(mesh)
 
 
 While Not KeyDown( KEY_ESCAPE )
@@ -124,6 +126,7 @@ While Not KeyDown( KEY_ESCAPE )
 	If mesh
 		Text 0,60,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
 		Text 0,80,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)
+		Text 0,100,"Children: "+count_children
 	EndIf
 	
 	Flip
