@@ -168,6 +168,6 @@ Function UpdateMax2D()
 	SetBlend SOLIDBLEND
 	SetScale 1,1
 	SetColor 255,255,255
-	GLDrawText "Press space to ignite firework",0,20
+	GLDrawText "Press space to ignite firework",0,40
 	
 End Function

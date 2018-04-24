@@ -1,5 +1,5 @@
 ' textureblend.bmx
-' using BrushGLBlendFunc, TextureGLTexEnv and BrushGLColor, experimental
+' using BrushBlend and TextureBlend
 
 Strict
 
@@ -37,18 +37,21 @@ Local surf:TSurface=GetSurface(cube,1)
 'BrushFX(surf.brush,32)
 'BrushBlend(surf.brush,1)
 
-'TextureBlend(tex1,8) ' interpolate
-'TextureMultitex(tex1,0.75)
-
 Local tex3:TTexture=LoadTexture("../media/alpha_map.png",1)
 EntityTexture cube2,tex3
 'EntityFX(cube2,32)
 
-Local efx%=0,eblend%=2,etexenv%=2,multitexfactor#=0.5,scalefactor#=0
+Local efx%=0,eblend%=2,etexenv%=2,multitexfactor#=0.5,ealpha#=1
+BrushBlend surf.brush,eblend
+TextureBlend tex1,etexenv
+TextureBlend tex2,etexenv
 
 
 While Not KeyDown(KEY_ESCAPE)
 
+	' control camera
+	TurnEntity camera,KeyDown(KEY_DOWN)-KeyDown(KEY_UP),KeyDown(KEY_LEFT)-KeyDown(KEY_RIGHT),0
+	
 	' turn cubes
 	If KeyDown(KEY_LEFT)
 		TurnEntity cube,0,-0.5,0.1
@@ -59,8 +62,8 @@ While Not KeyDown(KEY_ESCAPE)
 		TurnEntity cube2,0,-0.5,0.1
 	EndIf
 	
-	' alpha blending, alpha / nothing
-	If KeyHit(KEY_A)
+	' FX blending, alpha / nothing
+	If KeyHit(KEY_F)
 		efx=Not efx
 		If efx
 			BrushFX(surf.brush,32) ; EntityFX(cube2,32)
@@ -72,136 +75,118 @@ While Not KeyDown(KEY_ESCAPE)
 	' blend function, 1-3
 	If KeyHit(KEY_B)
 		eblend:+1
-		If eblend>3 Then eblend=1
-		If eblend=1 ' 1: alpha
-			surf.brush.BrushGLBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA)
-		ElseIf eblend=2 ' 2: multiply (default)
-			surf.brush.BrushGLBlendFunc(GL_DST_COLOR,GL_ZERO)
-		ElseIf eblend=3 ' 3: add
-			surf.brush.BrushGLBlendFunc(GL_SRC_ALPHA,GL_ONE)
+		If eblend>3 Then eblend=0
+		If eblend=0 ' 0=alpha
+			BrushBlend surf.brush,eblend
+		ElseIf eblend=1 ' 1=alpha
+			BrushBlend surf.brush,eblend
+		ElseIf eblend=2 ' 2=multiply (default)
+			BrushBlend surf.brush,eblend
+		ElseIf eblend=3 ' 3=add
+			BrushBlend surf.brush,eblend
 		EndIf
+	EndIf
+	
+	' Alpha blending
+	If KeyHit(KEY_A)
+		ealpha:-0.1
+		If ealpha<0 Then ealpha=1
+		EntityAlpha cube,ealpha
+		EntityAlpha cube2,ealpha
 	EndIf
 	
 	If KeyDown(KEY_LSHIFT) ' LShift + 0-8 key to blend texture 2 or 0-8 key to blend texture 1
 	
 		If KeyHit(KEY_0) ' 0: do not blend
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=0 ' clear TexEnv arrays, once only
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+			etexenv=0
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_1) ' 1: blend
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=1
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+			etexenv=1
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_2) ' 2: multiply (default)
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=2
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+			etexenv=2
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_3) ' 3: add
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=3
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD)
+			etexenv=3
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_4) ' 4: dot3
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=4
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT)
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_DOT3_RGB_EXT)
+			etexenv=4
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_5) ' 5: multiply2 (scale of 2 or 4)
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=5
-			scalefactor:+1
-			If scalefactor>16 Then scalefactor=0
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE)
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_MODULATE)
-			tex2.TextureGLTexEnvf(GL_TEXTURE_ENV,GL_RGB_SCALE,scalefactor) ' float
+			etexenv=5
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_6) ' 6: blend (invert)
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=6
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND)
+			etexenv=6
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_7) ' 7: subtract
-			tex2.TextureGLTexEnvf(0, 0, 0) ; etexenv=7
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE)
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_SUBTRACT)
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS)
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE)
+			etexenv=7
+			TextureBlend tex2,etexenv
 		EndIf
 		If KeyHit(KEY_8) ' 8: interpolate
-			tex2.TextureGLTexEnvi(0, 0, 0) ; etexenv=8
+			etexenv=8
 			multitexfactor:-0.1
 			If multitexfactor<0.05 Then multitexfactor=1
-			tex2.TextureGLTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, multitexfactor) ' float
-			tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE)
-    		tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE)
-    		tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE)
-    		tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR)
-    		tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PREVIOUS)
-    		tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR)
-    		tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_CONSTANT)
-    		tex2.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_ALPHA)
+			TextureBlend tex2,etexenv
+			TextureMultitex tex2,multitexfactor
 		EndIf
 	
 	Else
 	
 		If KeyHit(KEY_0) ' 0: do not blend
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=0 ' clear TexEnv arrays, once only
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+			etexenv=0
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_1) ' 1: blend
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=1
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+			etexenv=1
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_2) ' 2: multiply (default)
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=2
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE)
+			etexenv=2
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_3) ' 3: add
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=3
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD)
+			etexenv=3
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_4) ' 4: dot3
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=4
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT)
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_DOT3_RGB_EXT)
+			etexenv=4
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_5) ' 5: multiply2 (scale of 2 or 4)
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=5
-			scalefactor:+1
-			If scalefactor>16 Then scalefactor=0
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE)
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_MODULATE)
-			tex1.TextureGLTexEnvf(GL_TEXTURE_ENV,GL_RGB_SCALE,scalefactor) ' float
+			etexenv=5
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_6) ' 6: blend (invert)
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=6
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND)
+			etexenv=6
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_7) ' 7: subtract
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=7
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE)
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_SUBTRACT)
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS)
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE)
+			etexenv=7
+			TextureBlend tex1,etexenv
 		EndIf
 		If KeyHit(KEY_8) ' 8: interpolate
-			tex1.TextureGLTexEnvi(0, 0, 0) ; etexenv=8
+			etexenv=8
 			multitexfactor:-0.1
 			If multitexfactor<0.05 Then multitexfactor=1
-			tex1.TextureGLTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, multitexfactor) ' float
-			tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE)
-    		tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_INTERPOLATE)
-    		tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE)
-    		tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR)
-    		tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PREVIOUS)
-    		tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR)
-    		tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_CONSTANT)
-    		tex1.TextureGLTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_ALPHA)
+			TextureMultitex tex1,multitexfactor
+			TextureBlend tex1,etexenv
 		EndIf
 		
 	EndIf
 	
 	RenderWorld
 	
-	Text 0,20,"A: EntityFX blend = "+efx+", B: BlendFunc = "+eblend+", LShift and/or 0-8 key: TexEnv="+etexenv
-	Text 0,40,"8 key: Interpolate multitexfactor="+multitexfactor+", 5 key: Multiply2 scalefactor="+scalefactor
+	Text 0,20,"Arrows: turn camera, F: EntityFX blend = "+efx+", B: Brush blend = "+eblend+", A: EntityAlpha alpha="+ealpha
+	Text 0,40,"LShift and/or 0-8 key: Texture blend="+etexenv+", 8 key: Interpolate multitexfactor="+multitexfactor
+	Text 0,60,"Brush blend: 0=alpha, 1=alpha (default), 2=multiply, 3=add"
+	Text 0,80,"Texture blend: 0=none, 1=blend, 2=multiply, 3=add, 4=dot3, 5=multiply2, 6=invert, 7=subtract, 8=interpolate"
 	
 	Flip
 	
