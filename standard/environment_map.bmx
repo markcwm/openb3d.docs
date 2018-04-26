@@ -65,7 +65,7 @@ TextureLoader "faces",0,5,2,1,3,4 ' set cubemap faces, lf-x, fr+z, rt+x, bk-z, d
 
 Local tex2:TTexture=LoadAnimTexture(skymap,1+128,framesize,framesize,0,1)
 
-Local cubemap_time%=Abs(MilliSecs()-old_ms)
+Local cubemap_time%=Abs(MilliSecs() - old_ms)
 
 Local pivot:TPivot=CreatePivot()
 
@@ -178,7 +178,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	' calculate fps
 	renders=renders+1
-	If MilliSecs()-old_ms>=1000
+	If Abs(MilliSecs() - old_ms) >= 1000
 		old_ms=MilliSecs()
 		fps=renders
 		renders=0

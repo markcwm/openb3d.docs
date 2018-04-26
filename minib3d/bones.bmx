@@ -93,7 +93,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	' calculate fps
 	renders=renders+1
-	If MilliSecs()-old_ms>=1000
+	If Abs(MilliSecs() - old_ms) >= 1000
 		old_ms=MilliSecs()
 		fps=renders
 		renders=0
