@@ -11,15 +11,17 @@ Graphics3D width,height,depth,Mode
 
 Local cam:TCamera=CreateCamera()
 PositionEntity cam,0,10,-60
+CameraClsColor cam,100,150,200
 
 Local light:TLight=CreateLight()
 
-MeshLoader "cpp"
+'MeshLoader "cpp"
+TGlobal.Log_MD2=1
 
 Local ent:TMesh=LoadAnimMesh("../media/tris.md2")
 RotateEntity ent,-90,180,0
 
-Local tex:TTexture=LoadTexture("../media/skin.jpg")
+Local tex:TTexture=LoadTexture("../media/skin4.jpg")
 EntityTexture ent,tex
 
 Local anim_time#=0.0
