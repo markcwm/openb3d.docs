@@ -16,10 +16,13 @@ Graphics3D width,height,depth,Mode
 
 Local cam:TCamera=CreateCamera()
 PositionEntity cam,0,10,-15
+CameraClsColor cam,100,150,200
 
 Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
+
+TGlobal.Log_B3D=1
 
 ' load anim mesh
 Local loader%=1

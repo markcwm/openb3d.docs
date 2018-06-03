@@ -1,5 +1,5 @@
 ' load_b3d.bmx
-' loads meshes with multiple surfaces
+' multiple meshes (single surfaces), boned/skeletal animation
 
 Strict
 
@@ -13,18 +13,18 @@ Graphics3D DesktopWidth(),DesktopHeight()
 
 Local camera:TCamera=CreateCamera()
 PositionEntity camera,0,35,-35
+CameraClsColor camera,100,150,200
 
 Local light:TLight=CreateLight()
 RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-'TGlobal.Log_B3D=1 ' debug data
-'MeshLoader "cpp"
+TGlobal.Log_B3D=1 ' debug
+'LoaderMatrix "b3d",-1,0,0, 0,1,0, 0,0,-1
 
 Local loader:Int=1 ' 0 to 5
 Select loader
-
 	Case 1 ' load stream mesh
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/zombie.b3d")
@@ -68,6 +68,11 @@ Select loader
 		debug="lib time="+(MilliSecs()-oldtime)
 EndSelect
 
+Local marker_ent:TMesh=CreateSphere(8)
+EntityColor marker_ent,255,255,0
+ScaleEntity marker_ent,0.25,0.25,0.25
+EntityOrder marker_ent,-1
+
 Local anim_time#=0.0
 
 ' used by fps code
@@ -76,6 +81,8 @@ Local renders%, fps%
 
 If MeshHeight(mesh)<100 Then PointEntity camera,mesh
 Local count_children%=TEntity.CountAllChildren(mesh)
+
+'Animate mesh,1,0.1,0,0
 
 
 While Not KeyDown( KEY_ESCAPE )
@@ -123,9 +130,5 @@ While Not KeyDown( KEY_ESCAPE )
 	Flip
 	GCCollect
 Wend
-
-FreeEntity mesh
-GCCollect
-DebugLog " Memory at end="+GCMemAlloced()
 
 End

@@ -147,11 +147,11 @@ While Not KeyDown(KEY_ESCAPE)
 	Text 20,80,"cube.brush.tex[0].blend="+cube.brush.tex[0].blend[0]+" mesh.surf.brush.tex[0].blend="+brush2.tex[0].blend[0]
 	Text 20,100,"cube.brush.tex[1].blend="+cube.brush.tex[1].blend[0]+" mesh.surf.brush.tex[1].blend="+brush2.tex[1].blend[0]
 	
-	BeginMax2D()
+	BeginMax2DEx()
 	SetBlend ALPHABLEND
 	SetColor 0,255,0
 	GLDrawText "Testing Max2d",20,DesktopHeight()-40
-	EndMax2D()
+	EndMax2DEx()
 	
 	Flip
 	

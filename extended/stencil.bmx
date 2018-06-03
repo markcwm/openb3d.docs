@@ -165,7 +165,5 @@ While Not KeyDown(KEY_ESCAPE)
 Wend
 
 FreeStencil stencil
-GCCollect
-DebugLog " Memory at end="+GCMemAlloced()
 
 End

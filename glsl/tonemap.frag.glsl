@@ -1,5 +1,5 @@
 // Uncharted 2 Tonemap by RonTek
-// www.blitzcoder.org
+// https://www.blitzcoder.org/forum/topic.php?id=13
 
 uniform sampler2D texture0;
 

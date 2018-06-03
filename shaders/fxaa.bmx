@@ -1,5 +1,5 @@
-' tonemap.bmx
-' postprocess effect - render framebuffer to texture for Uncharted 2-style tonemapping
+' fxaa.bmx
+' postprocess effect - render framebuffer to texture for Fast approximate anti-aliasing
 
 Strict
 
@@ -74,17 +74,14 @@ EntityParent screensprite,camera
 PositionEntity camera,0,7,0 ' move camera now sprite is parented to it
 MoveEntity camera,0,0,-25
 
-Local shader:TShader=LoadShader("","../glsl/default.vert.glsl", "../glsl/tonemap.frag.glsl")
+Local shader:TShader=LoadShader("","../glsl/default.vert.glsl", "../glsl/fxaa.frag.glsl")
 ShaderTexture(shader,colortex,"texture0",0) ' Our render texture
-Local bias#=1.0, maxwhite#=1.0
-UseFloat(shader,"ExposureBias", bias)
-UseFloat(shader,"MaxWhite", maxwhite)
+SetFloat(shader,"rt_w", width)
+SetFloat(shader,"rt_h", height)
 ShadeEntity(screensprite, shader)
 
 Global postprocess%=1
-Local time#=0, framerate#=60.0, animspeed#=10
-Local timer:TTimer=CreateTimer(framerate)
-UseFloat(shader,"time",time) ' Time used to scroll the distortion map
+Local framerate#=60.0, animspeed#=10
 
 ' fps code
 Local old_ms%=MilliSecs()
@@ -93,21 +90,13 @@ Local renders%, fps%
 
 While Not KeyHit(KEY_ESCAPE)
 	
-	time=Float((TimerTicks(timer) / framerate) * animspeed)
-	
 	If KeyDown(KEY_MINUS) Then anim_time#=anim_time#-0.1
 	If KeyDown(KEY_EQUALS) Then anim_time#=anim_time#+0.1
-	
-	If KeyHit(KEY_B) Then bias#=bias#+0.1
-	If KeyHit(KEY_V) Then bias#=bias#-0.1
-	
-	If KeyHit(KEY_M) Then maxwhite#=maxwhite#+0.1
-	If KeyHit(KEY_N) Then maxwhite#=maxwhite#-0.1
 	
 	anim_time:+0.5
 	If anim_time>20 Then anim_time=2
 	SetAnimTime(anim_ent,anim_time)
-	TurnEntity pivot,0,1,0
+	'TurnEntity pivot,0,1,0
 	
 	If KeyHit(KEY_SPACE) Then postprocess=Not postprocess
 	
@@ -131,12 +120,12 @@ While Not KeyHit(KEY_ESCAPE)
 		renders=0
 	EndIf
 	
-	Text 0,20,"FPS: "+fps
-	Text 0,40,"B/V: exposure bias = "+bias+", M/N: Max white = "+maxwhite
-	Text 0,60,"Arrows: move camera, Space: postprocess = "+postprocess
-	Text 0,80,"anim_time="+anim_time
+	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
+	Text 0,40,"Arrows: move camera, Space: postprocess = "+postprocess
+	Text 0,60,"anim_time="+anim_time
 	
 	Flip
+	GCCollect
 Wend
 End
 

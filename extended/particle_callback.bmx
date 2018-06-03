@@ -108,12 +108,8 @@ While Not KeyHit(KEY_ESCAPE)
 	
 Wend
 
-' free particles
 FreeEntity sprite
 TParticle.FreeParticles(pe)
-
-GCCollect
-DebugLog " Memory at end="+GCMemAlloced()
 
 End
 

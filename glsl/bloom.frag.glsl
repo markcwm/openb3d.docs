@@ -1,10 +1,11 @@
-// Bloom (Fake HDR) Effect by RonTek
-// www.blitzcoder.org
+// Bloom (Fake HDR) by RonTek
+// https://www.blitzcoder.org/forum/topic.php?id=19
 
 uniform sampler2D texture0;
 
 // HDR Setting
 uniform float exposure; // default 20.0
+
 // Bloom Settings
 uniform float GlareSize; // 0.002 is good
 uniform float Power; // 0.25 is good

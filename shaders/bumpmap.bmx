@@ -231,8 +231,6 @@ Wend
 FreeShader shader
 FreeShader shader2
 FreeShader shader3
-GCCollect
-DebugLog " Memory at end="+GCMemAlloced()
 
 End
 

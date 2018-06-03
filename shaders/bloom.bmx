@@ -1,5 +1,5 @@
 ' bloom.bmx
-' postprocess effect - render framebuffer to texture for bloom (fake HDR) effect
+' postprocess effect - render framebuffer to texture for bloom (fake HDR)
 
 Strict
 
@@ -75,7 +75,7 @@ TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer error
 Global screensprite:TSprite=CreateSprite()
 EntityOrder screensprite,-1
 ScaleSprite screensprite,1.0,Float( GraphicsHeight() ) / GraphicsWidth() ' 0.75
-MoveEntity screensprite,0,0,0.99 ' set z to 0.99 - instead of clamping uvs
+MoveEntity screensprite,0,0,1.0 ' set z to 0.99 - instead of clamping uvs
 EntityParent screensprite,camera
 
 PositionEntity camera,0,7,0 ' move camera now sprite is parented to it
@@ -140,14 +140,17 @@ While Not KeyHit(KEY_ESCAPE)
 	EndIf
 	
 	BeginMax2D()
+	SetBlend ALPHABLEND
 	SetColor 0,0,0
-	GLDrawText "FPS: "+fps,0,20
+	GLDrawText "FPS: "+fps+", Memory: "+GCMemAlloced(),0,20
 	GLDrawText "WASD/Arrows: move camera, Space: postprocess = "+postprocess,0,40
 	GLDrawText "E/R: Exposure="+exposure+", G/H: GlareSize="+GlareSize+", O/P: Power="+Power,0,60
 	EndMax2D()
 	
 	Flip
+	GCCollect
 Wend
+
 End
 
 

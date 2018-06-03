@@ -1,5 +1,5 @@
 ' load_md2.bmx
-' vertex interpolated animations
+' mesh with single surface, vertex-interpolated animation
 
 Strict
 
@@ -15,20 +15,49 @@ CameraClsColor cam,100,150,200
 
 Local light:TLight=CreateLight()
 
-'MeshLoader "cpp"
-TGlobal.Log_MD2=1
+Local mesh:TMesh, debug:String, oldtime:Int
 
-Local ent:TMesh=LoadAnimMesh("../media/tris.md2")
-RotateEntity ent,-90,180,0
+TGlobal.Log_MD2=1 ' debug
+'LoaderMatrix "md2",1,0,0, 0,1,0, 0,0,1
 
-Local tex:TTexture=LoadTexture("../media/skin4.jpg")
-EntityTexture ent,tex
+Local loader:Int=1 ' set 0 to 1
+Select loader
+	Case 1 ' load mesh
+		oldtime=MilliSecs()
+		mesh=LoadAnimMesh("../media/tris.md2")
+		'RotateEntity ent,-90,180,0
+		
+		Local tex:TTexture=LoadTexture("../media/skin4.jpg")
+		EntityTexture mesh,tex
+		
+		debug="md2 time="+(MilliSecs()-oldtime)
+		
+	Default ' load library mesh
+		TextureLoader "cpp"
+		MeshLoader "cpp"
+		
+		oldtime=MilliSecs()
+		mesh=LoadAnimMesh("../media/tris.md2")
+		RotateEntity mesh,-90,180,0
+		
+		Local tex:TTexture=LoadTexture("../media/skin4.jpg")
+		EntityTexture mesh,tex
+		
+		debug="lib time="+(MilliSecs()-oldtime)
+EndSelect
+
+Local marker_ent:TMesh=CreateSphere(8)
+EntityColor marker_ent,255,255,0
+ScaleEntity marker_ent,0.25,0.25,0.25
+EntityOrder marker_ent,-1
 
 Local anim_time#=0.0
 
 ' used by fps code
 Local old_ms%=MilliSecs()
 Local renders%=0, fps%=0
+
+'Animate mesh,1,0.1,0,0
 
 
 While Not KeyDown(KEY_ESCAPE)
@@ -41,11 +70,11 @@ While Not KeyDown(KEY_ESCAPE)
 	If KeyDown(KEY_MINUS) Then anim_time=anim_time-0.1
 	If KeyDown(KEY_EQUALS) Then anim_time=anim_time+0.1
 	
-	If ent Then SetAnimTime(ent,anim_time)
+	If mesh Then SetAnimTime(mesh,anim_time)
 	
-	If KeyHit(KEY_F) And ent
-		FreeEntity(ent) 
-		ent=Null
+	If KeyHit(KEY_F) And mesh
+		FreeEntity(mesh) 
+		mesh=Null
 	EndIf
 	
 	UpdateWorld
@@ -59,11 +88,12 @@ While Not KeyDown(KEY_ESCAPE)
 		renders=0
 	EndIf
 	
-	Text 0,20,"FPS: "+fps
+	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()+", Debug: "+debug
 	Text 0,40,"+/-: animate, F: free entity"
 	Text 0,60,"Arrows: turn camera, WASD: move camera"
 	
 	Flip
-	
+	GCCollect
 Wend
+
 End

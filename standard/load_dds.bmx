@@ -8,6 +8,7 @@ Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
 Local camera:TCamera=CreateCamera()
 PositionEntity camera,0,2,-7
+CameraClsColor camera,100,150,200
 
 Local light:TLight=CreateLight()
 TurnEntity light,45,45,0
