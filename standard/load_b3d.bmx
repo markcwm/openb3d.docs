@@ -21,7 +21,6 @@ RotateEntity light,45,45,0
 Local mesh:TMesh, debug:String, oldtime:Int
 
 TGlobal.Log_B3D=1 ' debug
-'LoaderMatrix "b3d",-1,0,0, 0,1,0, 0,0,-1
 
 Local loader:Int=1 ' 0 to 5
 Select loader
