@@ -23,6 +23,9 @@ Local light:TLight=CreateLight()
 Local mesh:TMesh, debug:String, oldtime:Int
 
 TGlobal.Log_B3D=1
+TGlobal.Log_Texture=1
+'TextureLoader "cpp"
+'MeshLoader "cpp"
 
 ' load anim mesh
 Local loader%=1
