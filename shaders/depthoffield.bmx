@@ -1,5 +1,5 @@
 ' depthoffield.bmx
-' postprocess effect - render framebuffer and depthbuffer to shader textures for depth of field
+' postprocess effect - render framebuffer and depthbuffer to textures for depth of field
 
 Strict
 

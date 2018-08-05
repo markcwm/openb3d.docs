@@ -1,5 +1,5 @@
 ' ssao.bmx
-' postprocess effect - Screen Space Ambient Occlusion
+' postprocess effect - render framebuffer and depthbuffer to textures for Screen Space Ambient Occlusion
 
 Strict
 
