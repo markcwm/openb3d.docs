@@ -34,8 +34,6 @@ Local size:Int=256, vsize:Float=30, maxheight:Float=10
 Local terrain:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
 ScaleEntity terrain,1,(1*maxheight)/vsize,1 ' set height
 terrain.UpdateNormals() ' correct lighting
-
-terrain.UpdateNormals()
 PositionEntity terrain,-size/2,-10,size/2
 
 ' Texture terrain
@@ -107,10 +105,14 @@ While Not KeyHit(KEY_ESCAPE)
 	If KeyHit(KEY_SPACE) Then postprocess=Not postprocess
 	
 	' control camera
-	If KeyDown( KEY_RIGHT )=True Then TurnEntity camera,0,-1,0
-	If KeyDown( KEY_LEFT )=True Then TurnEntity camera,0,1,0
-	If KeyDown( KEY_DOWN )=True Then MoveEntity camera,0,0,-0.25
-	If KeyDown( KEY_UP )=True Then MoveEntity camera,0,0,0.25
+	If KeyDown(KEY_RIGHT)=True Then MoveEntity camera,0.25,0,0
+	If KeyDown(KEY_LEFT)=True Then MoveEntity camera,-0.25,0,0
+	If KeyDown(KEY_DOWN)=True Then MoveEntity camera,0,0,-0.25
+	If KeyDown(KEY_UP)=True Then MoveEntity camera,0,0,0.25
+	If KeyDown(KEY_W)=True Then TurnEntity camera,-1,0,0
+	If KeyDown(KEY_S)=True Then TurnEntity camera,1,0,0
+	If KeyDown(KEY_A)=True Then TurnEntity camera,0,1,0
+	If KeyDown(KEY_D)=True Then TurnEntity camera,0,-1,0
 	
 	PositionEntity postfx_cam,EntityX(camera),EntityY(camera),EntityZ(camera)
 	RotateEntity postfx_cam,EntityPitch(camera),EntityYaw(camera),EntityRoll(camera)
@@ -126,11 +128,12 @@ While Not KeyHit(KEY_ESCAPE)
 		renders=0
 	EndIf
 	
-	Text 0,20,"FPS: "+fps
+	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
 	Text 0,40,"Arrows: move camera, Space: postprocess = "+postprocess
 	Text 0,60,"anim_time="+anim_time
 	
 	Flip
+	GCCollect
 Wend
 End
 

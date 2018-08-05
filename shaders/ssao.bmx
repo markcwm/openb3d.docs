@@ -1,9 +1,9 @@
-' tonemap.bmx
-' postprocess effect - render framebuffer to texture for Uncharted 2-style tonemapping
+' ssao.bmx
+' postprocess effect - Screen Space Ambient Occlusion
 
 Strict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3dMax.B3dglgraphics
 Import Brl.Random
 ?Not bmxng
 Import Brl.Timer
@@ -11,9 +11,10 @@ Import Brl.Timer
 Import Brl.TimerDefault
 ?
 
-Local width%=DesktopWidth(),height%=DesktopHeight()
+'Local width%=DesktopWidth(),height%=DesktopHeight()
+Local width%=800,height%=600
 
-Graphics3D width,height
+Graphics3D width,height,0,2
 
 SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
@@ -50,16 +51,30 @@ TurnEntity anim_ent,0,-90,0
 
 Local cube:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleMesh cube,0.15,0.15,0.15
-PositionEntity cube,0,0.5,0
+PositionEntity cube,0,3,0
 Local cube_tex:TTexture=LoadTexture("../media/crate.bmp",1)
 EntityTexture cube,cube_tex
 TurnEntity cube,0,45,0
 
+' Add 4 more
+Local c1:TEntity = CopyEntity(cube)
+PositionEntity c1,5,0,5
+Local c2:TEntity = CopyEntity(cube)
+PositionEntity c2,-5,0,-5
+Local c3:TEntity = CopyEntity(cube)
+PositionEntity c3,5,0,-5
+Local c4:TEntity = CopyEntity(cube)
+PositionEntity c4,-5,0,5
+
 Global colortex:TTexture=CreateTexture(width,height,1+256)
 ScaleTexture colortex,1.0,-1.0
 
+Global depthtex:TTexture=CreateTexture(width,height,1+256)
+ScaleTexture depthtex,1.0,-1.0
+
 ' in GL 2.0 render textures need attached before other textures (EntityTexture)
 CameraToTex colortex,camera
+DepthBufferToTex depthtex,camera
 TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
 
 ' screen sprite - by BlitzSupport
@@ -69,38 +84,47 @@ ScaleSprite screensprite,1.0,Float( GraphicsHeight() ) / GraphicsWidth() ' 0.75
 MoveEntity screensprite,0,0,1.0 ' set z to 0.99 - instead of clamping uvs
 EntityParent screensprite,camera
 
+Global screensprite2:TSprite=CreateSprite()
+ScaleSprite screensprite2,1.0,Float( GraphicsHeight() ) / GraphicsWidth() ' 0.75
+EntityOrder screensprite2,-1
+EntityParent screensprite2,camera
+MoveEntity screensprite2,0,0,1.0 ' set z to 1.0
+EntityTexture screensprite2,depthtex
+
 PositionEntity camera,0,7,0 ' move camera now sprite is parented to it
 MoveEntity camera,0,0,-25
 
-Local shader:TShader=LoadShader("","../glsl/default.vert.glsl", "../glsl/tonemap.frag.glsl")
-ShaderTexture(shader,colortex,"texture0",0) ' Our render texture
-Local bias#=1.0, maxwhite#=1.0
-UseFloat(shader,"ExposureBias", bias)
-UseFloat(shader,"MaxWhite", maxwhite)
+Local shader:TShader=LoadShader("","../glsl/default.vert.glsl", "../glsl/ssao.frag.glsl")
+
+Local toggle:Int = 0
+
+ShaderTexture(shader,colortex,"colortex",0) ' Our render texture
+ShaderTexture(shader,depthtex,"depthtex",1) ' 1 is depth texture
+SetFloat(shader,"width", width)
+SetFloat(shader,"height", height)
+SetFloat(shader,"near", 1.0)
+SetFloat(shader,"far", 1000.0)
+SetInteger(shader,"samples", 5)
+SetInteger(shader,"rings", 3)
+UseInteger(shader,"onlyAO", toggle)
 ShadeEntity(screensprite, shader)
 
 Global postprocess%=1
-Local time#=0, framerate#=60.0, animspeed#=10
-Local timer:TTimer=CreateTimer(framerate)
-UseFloat(shader,"time",time) ' Time used to scroll the distortion map
 
 ' fps code
 Local old_ms%=MilliSecs()
 Local renders%, fps%
 
+Local update% = 1
 
 While Not KeyHit(KEY_ESCAPE)
+
+	If KeyHit(KEY_TAB) Then toggle = Not toggle
 	
-	time=Float((TimerTicks(timer) / framerate) * animspeed)
+	'time=Float((TimerTicks(timer) / framerate) * animspeed)
 	
 	If KeyDown(KEY_MINUS) Then anim_time#=anim_time#-0.1
 	If KeyDown(KEY_EQUALS) Then anim_time#=anim_time#+0.1
-	
-	If KeyHit(KEY_B) Then bias#=bias#+0.1
-	If KeyHit(KEY_V) Then bias#=bias#-0.1
-	
-	If KeyHit(KEY_M) Then maxwhite#=maxwhite#+0.1
-	If KeyHit(KEY_N) Then maxwhite#=maxwhite#-0.1
 	
 	anim_time:+0.5
 	If anim_time>20 Then anim_time=2
@@ -121,22 +145,32 @@ While Not KeyHit(KEY_ESCAPE)
 	
 	PositionEntity postfx_cam,EntityX(camera),EntityY(camera),EntityZ(camera)
 	RotateEntity postfx_cam,EntityPitch(camera),EntityYaw(camera),EntityRoll(camera)
-		
+	
+	If KeyHit(KEY_Q) Then update=Not update
+	
 	UpdateWorld
+	
+	While update = 0
+		If KeyHit(KEY_TAB) Then toggle = Not toggle
+		If KeyHit(KEY_SPACE) Then postprocess=Not postprocess
+		If KeyHit(KEY_Q) Then update=Not update
+	Wend
+	
 	Update1Pass()
 	
 	' calculate fps
 	renders=renders+1
-	If Abs(MilliSecs() - old_ms) >= 1000
+	If MilliSecs()-old_ms>=1000
 		old_ms=MilliSecs()
 		fps=renders
 		renders=0
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"B/V: exposure bias = "+bias+", M/N: Max white = "+maxwhite
-	Text 0,60,"Arrows: move camera, Space: postprocess = "+postprocess
-	Text 0,80,"anim_time="+anim_time
+	Text 0,40,"Space: postprocess = "+postprocess
+	Text 0,60,"Tab: Toggle SSAO only = "+toggle
+	Text 0,80,"Q: Pause"
+	Text 0,100,"anim_time="+anim_time
 	
 	Flip
 	GCCollect
@@ -149,18 +183,23 @@ Function Update1Pass()
 	If postprocess=0
 		HideEntity postfx_cam
 		ShowEntity camera
+		HideEntity screensprite2
 		HideEntity screensprite
 		
 		RenderWorld
 	ElseIf postprocess=1
-		ShowEntity postfx_cam
 		HideEntity camera
+		ShowEntity postfx_cam
+		HideEntity screensprite2
 		HideEntity screensprite
 		
 		CameraToTex colortex,postfx_cam
 		
 		HideEntity postfx_cam
 		ShowEntity camera
+		
+		DepthBufferToTex depthtex,camera
+		
 		ShowEntity screensprite
 		
 		RenderWorld
