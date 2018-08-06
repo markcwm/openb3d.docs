@@ -110,14 +110,14 @@ While Not KeyHit(KEY_ESCAPE)
 	If KeyHit(KEY_SPACE) Then postprocess=Not postprocess
 	
 	' control camera
-	If KeyDown(KEY_RIGHT)=True Then MoveEntity camera,0.25,0,0
-	If KeyDown(KEY_LEFT)=True Then MoveEntity camera,-0.25,0,0
-	If KeyDown(KEY_DOWN)=True Then MoveEntity camera,0,0,-0.25
-	If KeyDown(KEY_UP)=True Then MoveEntity camera,0,0,0.25
-	If KeyDown(KEY_W)=True Then TurnEntity camera,-1,0,0
-	If KeyDown(KEY_S)=True Then TurnEntity camera,1,0,0
-	If KeyDown(KEY_A)=True Then TurnEntity camera,0,1,0
-	If KeyDown(KEY_D)=True Then TurnEntity camera,0,-1,0
+	If KeyDown(KEY_D)=True Then MoveEntity camera,0.25,0,0
+	If KeyDown(KEY_A)=True Then MoveEntity camera,-0.25,0,0
+	If KeyDown(KEY_S)=True Then MoveEntity camera,0,0,-0.25
+	If KeyDown(KEY_W)=True Then MoveEntity camera,0,0,0.25
+	If KeyDown(KEY_UP)=True Then TurnEntity camera,-1,0,0
+	If KeyDown(KEY_DOWN)=True Then TurnEntity camera,1,0,0
+	If KeyDown(KEY_LEFT)=True Then TurnEntity camera,0,1,0
+	If KeyDown(KEY_RIGHT)=True Then TurnEntity camera,0,-1,0
 	
 	PositionEntity postfx_cam,EntityX(camera),EntityY(camera),EntityZ(camera)
 	RotateEntity postfx_cam,EntityPitch(camera),EntityYaw(camera),EntityRoll(camera)
@@ -135,7 +135,7 @@ While Not KeyHit(KEY_ESCAPE)
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
 	Text 0,40,"B/V: exposure bias = "+bias+", M/N: Max white = "+maxwhite
-	Text 0,60,"Arrows: move camera, Space: postprocess = "+postprocess
+	Text 0,60,"WSAD/Arrows: move camera, Space: postprocess = "+postprocess
 	Text 0,80,"anim_time="+anim_time
 	
 	Flip
