@@ -31,6 +31,7 @@ Local vertshader:TShaderObject=CreateVertShader(shader,"../glsl/default.vert.gls
 Local fragshader:TShaderObject=CreateFragShader(shader,"../glsl/greyscale.frag.glsl")
 AttachVertShader(shader,vertshader) ' vert before frag or older compilers will crash
 AttachFragShader(shader,fragshader)
+LinkShader(shader)
 
 ShaderTexture(shader,LoadTexture("../media/colorkey.jpg"),"texture0",0)
 ShadeEntity(cube,shader)
@@ -41,6 +42,7 @@ Local vertshader2:TShaderObject=CreateVertShader(shader2,"../glsl/default.vert.g
 Local fragshader2:TShaderObject=CreateFragShader(shader2,"../glsl/default.frag.glsl")
 AttachVertShader(shader2,vertshader2)
 AttachFragShader(shader2,fragshader2)
+LinkShader(shader2)
 
 ShaderTexture(shader2,LoadTexture("../media/colorkey.jpg"),"texture0",0)
 ShadeEntity(cube2,shader2)
@@ -71,6 +73,7 @@ While Not KeyDown(KEY_ESCAPE)
 			fragshader=CreateFragShader(shader,"../glsl/greyscale.frag.glsl")
 			AttachVertShader(shader,vertshader2)
 			AttachFragShader(shader,fragshader2)
+			LinkShader(shader)
 		Else
 			DeleteVertShader(vertshader2)
 			DeleteFragShader(fragshader2)
@@ -78,6 +81,7 @@ While Not KeyDown(KEY_ESCAPE)
 			fragshader2=CreateFragShader(shader,"../glsl/default.frag.glsl")
 			AttachVertShader(shader,vertshader)
 			AttachFragShader(shader,fragshader)
+			LinkShader(shader)
 		EndIf
 	EndIf
 	
