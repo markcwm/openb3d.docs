@@ -1,5 +1,5 @@
 ' load_3ds.bmx
-' multiple meshes (single surfaces), pre-transforms vertices (repositions mesh), no animation yet
+' note that there are two Blitzmax 3DS loaders, to enable the alternative one use MeshLoader "3ds2"
 
 Strict
 
@@ -20,68 +20,82 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-TGlobal.Log_3DS=1 ' debug
-'LoaderMatrix "3ds", 1,0,0, 0,1,0, 0,0,-1
+VerboseDebug 1 ' full debug info
 
-Local loader:Int=1 ' set 0 to 6
+MeshLoader "3ds2" ' alternative 3DS loader
+'MeshLoader "notrans" ' mesh vertex transforms, default for 3ds2
+
+'MeshLoader "cpp" ' swap loaders, bmx or cpp
+'TextureLoader "cpp"
+
+Local loader:Int=2 ' set 0 to 7
 Select loader
 	Case 1 ' load rallycar1 mesh
 		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/rallycar1.3ds")
+		mesh=LoadMesh("../media/rallycar1.3ds")
+		mesh.RotateMesh(-90,180,0)
+		mesh.ScaleMesh(0.2,0.2,0.2)
 		
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
-	Case 2 ' load mak_robotic mesh
+	Case 2 ' load rallycar1 anim mesh
+		oldtime=MilliSecs()
+		mesh=LoadAnimMesh("../media/rallycar1.3ds")
+		mesh.RotateAnimMesh(-90,180,0)
+		mesh.ScaleAnimMesh(0.2,0.2,0.2)
+		debug="3ds time="+(MilliSecs()-oldtime)
+		
+	Case 3 ' load mak_robotic mesh
+		oldtime=MilliSecs()
+		mesh=LoadMesh("../media/mak_robotic.3ds")
+		mesh.RotateMesh(-90,0,0)
+		mesh.ScaleMesh(0.5,0.5,0.5)
+		
+		debug="3ds time="+(MilliSecs()-oldtime)
+		
+	Case 4 ' load mak_robotic anim mesh
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/mak_robotic.3ds")
-		
-		mesh.RotateAnimMesh(0,-90,0)
+		mesh.RotateAnimMesh(90,0,0)
 		mesh.ScaleAnimMesh(0.5,0.5,0.5)
 		
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
-	Case 3 ' load phineas4 mesh
+	Case 5 ' load phineas4 anim mesh
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/phineas4.3ds")
-		
-		mesh.RotateAnimMesh(0,-90,-45)
+		mesh.RotateAnimMesh(45,90,-90)
 		mesh.PositionAnimMesh(0,44,-6)
 		mesh.ScaleAnimMesh(0.5,0.5,0.5)
 		
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
-	Case 4 ' load incbin mesh
+	Case 6 ' load incbin mesh
 		oldtime=MilliSecs()
 		Local file:String = "incbin::../media/rallycar1.3ds"
-		mesh=LoadAnimMesh(file)
+		mesh=LoadMesh(file)
+		mesh.RotateMesh(-90,180,0)
+		mesh.ScaleMesh(0.2,0.2,0.2)
 		
 		debug="incbin time="+(MilliSecs()-oldtime)
 		
-	Case 5 ' load zip mesh
+	Case 7 ' load zip anim mesh
 		oldtime=MilliSecs()
 		Local zipfile:String = "../media/rallycar.zip"
 		Local file:String = "zip::"+zipfile+"//rallycar1.3ds"
 		mesh=LoadAnimMesh(file)
+		mesh.RotateAnimMesh(-90,180,0)
+		mesh.ScaleAnimMesh(0.2,0.2,0.2)
 		
 		debug="zip time="+(MilliSecs()-oldtime)
-		
-	Case 6 ' load single mesh
-		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/wcrate1.3ds")
-		
-		mesh.ScaleAnimMesh(0.5,0.5,0.5)
-		
-		debug="3ds time="+(MilliSecs()-oldtime)
 		
 	Default ' load library mesh
 		TextureLoader "cpp"
 		MeshLoader "cpp"
 		
 		oldtime=MilliSecs()
-		mesh=LoadMesh("../media/rallycar1.3ds")
-		
-		mesh.RotateMesh(-90,0,0)
-		mesh.ScaleMesh(0.05, 0.05, 0.05)
+		mesh=LoadMesh("../media/wcrate1.3ds")
+		mesh.ScaleMesh(0.5,0.5,0.5)
 		
 		debug="lib time="+(MilliSecs()-oldtime)
 EndSelect
