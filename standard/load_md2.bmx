@@ -17,8 +17,10 @@ Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-TGlobal.Log_MD2=1 ' debug
+MeshDebug 1 ' full mesh debug info
+
 'LoaderMatrix "md2",1,0,0, 0,1,0, 0,0,1
+'LoaderMatrix "md2", -1,0,0, 0,0,-1, 0,-1,0 
 
 Local loader:Int=1 ' set 0 to 1
 Select loader
