@@ -107,7 +107,7 @@ EntityTexture cylinder,tex
 
 Local oildrum:TMesh=LoadMesh("../media/oildrum.3ds",pivot)
 TurnEntity oildrum,0,300,0
-MoveEntity oildrum,0,-6,30
+MoveEntity oildrum,0,-4,30
 ScaleMesh oildrum,0.4,0.4,0.4
 EntityTexture oildrum,tex,0,1
 oildrum.UpdateVerticesNormals(GetSurface(oildrum,1))
@@ -187,12 +187,12 @@ While Not KeyDown(KEY_ESCAPE)
 	Cls
 	RenderWorld
 	
-	BeginMax2DEx()
+	BeginMax2D(1)
 	SetColor 0,0,0
 	GLDrawText "FPS: "+fps+" cubemap_time: "+cubemap_time,0,20
 	GLDrawText "WASD/Arrows: Move camera, J/L: Turn pivot, I/K: Rotate meshes",0,40
 	GLDrawText "B: blendmode = "+blendmode+", C; cubemode="+cubemode+", G: show ground="+showground,0,60
-	EndMax2DEx()
+	EndMax2D(1)
 	
 	Flip
 Wend

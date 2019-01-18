@@ -19,15 +19,14 @@ Local mesh:TMesh, debug:String, oldtime:Int
 
 MeshDebug 1 ' full mesh debug info
 
-'LoaderMatrix "md2",1,0,0, 0,1,0, 0,0,1
-'LoaderMatrix "md2", -1,0,0, 0,0,-1, 0,-1,0 
+'LoaderMatrix "md2", 1,0,0, 0,0,1, 0,-1,0 ' swap z/y and invert y
 
 Local loader:Int=1 ' set 0 to 1
 Select loader
 	Case 1 ' load mesh
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/tris.md2")
-		'RotateEntity ent,-90,180,0
+		RotateEntity mesh,0,180,0
 		
 		Local tex:TTexture=LoadTexture("../media/skin4.jpg")
 		EntityTexture mesh,tex

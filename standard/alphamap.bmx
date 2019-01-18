@@ -146,7 +146,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	RenderWorld
 	
-	BeginMax2DEx()
+	BeginMax2D(1)
 	SetColor 0,0,0
 	SetBlend ALPHABLEND
 	GLDrawText "Left/Right: turn meshes"+", B: alpha blending = "+efx,20,20
@@ -154,7 +154,7 @@ While Not KeyDown(KEY_ESCAPE)
 	GLDrawText "0/1/2/3: tex[0] blending, LShift + 0/1/2/3: tex[1] blending",20,60
 	GLDrawText "cube.brush.tex[0].blend="+cube.brush.tex[0].blend[0]+" mesh.surf.brush.tex[0].blend="+brush2.tex[0].blend[0],20,80
 	GLDrawText "cube.brush.tex[1].blend="+cube.brush.tex[1].blend[0]+" mesh.surf.brush.tex[1].blend="+brush2.tex[1].blend[0],20,100
-	EndMax2DEx()
+	EndMax2D(1)
 	
 	Flip
 	
