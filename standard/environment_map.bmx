@@ -187,12 +187,12 @@ While Not KeyDown(KEY_ESCAPE)
 	Cls
 	RenderWorld
 	
-	BeginMax2D(1)
+	BeginMax2D()
 	SetColor 0,0,0
 	GLDrawText "FPS: "+fps+" cubemap_time: "+cubemap_time,0,20
 	GLDrawText "WASD/Arrows: Move camera, J/L: Turn pivot, I/K: Rotate meshes",0,40
 	GLDrawText "B: blendmode = "+blendmode+", C; cubemode="+cubemode+", G: show ground="+showground,0,60
-	EndMax2D(1)
+	EndMax2D()
 	
 	Flip
 Wend

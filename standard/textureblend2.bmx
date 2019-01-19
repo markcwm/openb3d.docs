@@ -215,12 +215,12 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	RenderWorld
 	
-	BeginMax2D(1)
+	BeginMax2D()
 	GLDrawText "Arrows: turn camera, F: EntityFX blend = "+efx+", B: Brush blend = "+eblend+", A: EntityAlpha alpha="+ealpha,0,20
 	GLDrawText "LShift and/or 0-8 key: Texture blend="+etexenv+", 8 key: Interpolate multitexfactor="+multitexfactor,0,40
 	GLDrawText "5 key: Multiply2 scalefactor="+scalefactor+", Brush blend: 0=alpha, 1=alpha (default), 2=multiply, 3=add",0,60
 	GLDrawText "Texture blend: 0=none, 1=blend, 2=multiply, 3=add, 4=dot3, 5=multiply2, 6=invert, 7=subtract, 8=interpolate",0,80
-	EndMax2D(1)
+	EndMax2D()
 	
 	Flip
 	

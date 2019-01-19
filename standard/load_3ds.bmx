@@ -20,9 +20,8 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshDebug 1 ' full mesh debug info
-
-MeshLoader "3ds2" ' alternative 3DS loader
+MeshLoader "debug" ' mesh loader debug info
+'MeshLoader "3ds2" ' alternative 3DS loader
 'MeshLoader "cpp" ' swap loaders, bmx or cpp
 'TextureLoader "cpp"
 
@@ -31,9 +30,9 @@ Select loader
 	Case 1 ' load rallycar1 anim mesh
 		oldtime=MilliSecs()
 		MeshLoader "trans" ' mesh transforms, default is "notrans"
-		mesh=LoadAnimMesh("../media/rallycar1.3ds")
-		mesh.RotateAnimMesh(90,0,0)
-		mesh.ScaleAnimMesh(0.2,0.2,0.2)
+		mesh=LoadMesh("../media/rallycar1.3ds")
+		mesh.RotateMesh(90,0,0)
+		mesh.ScaleMesh(0.2,0.2,0.2)
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
 	Case 2 ' load mak_robotic anim mesh

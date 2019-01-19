@@ -17,7 +17,7 @@ Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshDebug 1 ' full mesh debug info
+MeshLoader "debug" ' mesh loader debug info
 
 'LoaderMatrix "md2", 1,0,0, 0,0,1, 0,-1,0 ' swap z/y and invert y
 
