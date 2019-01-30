@@ -21,12 +21,12 @@ Local treeb3d$="../media/lo_perpix.b3d" ' note: media not provided
 Local leaves$="../media/qqqq.png"
 Local bark$="../media/tmp27.jpg"
 
-Local tree:TMesh=LoadMesh(treeb3d$)
+Local tree:TMesh=LoadAnimMesh(treeb3d$)
 PositionEntity tree,0,-1,3
 ScaleEntity tree,0.03,0.03,0.03
 If lighttype=2 Then LightRange(light,EntityDistance(light,tree)*1.25)
 
-Local tree2:TMesh=LoadMesh(treeb3d$)
+Local tree2:TMesh=LoadAnimMesh(treeb3d$)
 PositionEntity tree2,0,-1,3
 HideEntity tree2
 ScaleEntity tree2,0.03,0.03,0.03
@@ -41,7 +41,7 @@ ScaleTexture grass,0.25,0.25
 'Local shadow:TShadowObject=CreateShadow(tree)
 
 Local brush:TBrush=LoadBrush(bark$)
-PaintSurface tree.GetSurface(1),brush ' trunk
+PaintSurface tree.GetSurface(1),brush ' trunk is first surface of root mesh
 
 Local shader:TShader=LoadShader("","../glsl/alphamap.vert.glsl","../glsl/alphamap2.frag.glsl")
 ShaderTexture(shader,LoadTexture(leaves$),"tex",0)
@@ -50,12 +50,14 @@ Local shader2:TShader=LoadShader("","../glsl/pixellight2.vert.glsl","../glsl/pix
 SetInteger(shader2,"lighttype",lighttype)
 ShaderTexture(shader2,LoadTexture(leaves$),"tex",0)
 
-BrushFX tree.GetSurface(1).brush,0 ' trunk - no alpha
-BrushFX tree.GetSurface(2).brush,32 ' branches
-ShadeSurface(tree.GetSurface(2),shader2)
+Local rootsurf:TSurface=tree.GetSurface(1) ' trunk is first surface of root mesh
+BrushFX rootsurf.brush,0 ' trunk - no alpha
+Local childent:TEntity=GetChild(tree,1)
+Local childsurf:TSurface=TMesh(childent).GetSurface(1) ' leaf is first surface of first child
+BrushFX childsurf.brush,32 ' leaf
+ShadeSurface(childsurf,shader2)
 
 Local pixellight%=2
-
 
 While Not KeyDown(KEY_ESCAPE)
 
@@ -65,10 +67,10 @@ While Not KeyDown(KEY_ESCAPE)
 		If pixellight=0
 			HideEntity tree ; ShowEntity tree2
 		ElseIf pixellight=1
-			ShadeSurface(tree.GetSurface(2),shader)
+			ShadeSurface(childsurf,shader)
 			HideEntity tree2 ; ShowEntity tree
 		ElseIf pixellight=2
-			ShadeSurface(tree.GetSurface(2),shader2)
+			ShadeSurface(childsurf,shader2)
 			HideEntity tree2 ; ShowEntity tree
 		EndIf
 	EndIf
