@@ -247,20 +247,19 @@ Function RenderScene(canvas:TGadget, window:TGadget)
 	
 End Function
 
-' Simplifies using Max2d with a resizable canvas - by Hezkore
+' Simplifies using Max2D with a resizable canvas (by Hezkore)
 Function UpdateCanvas(can:TGadget, cam:TCamera)
 
 	SetGraphics(CanvasGraphics(can))
 	
-	If TGlobal.width[0] <> ClientWidth(can) Or TGlobal.height[0] <> ClientHeight(can)
+	If GlobalWidth()<>ClientWidth(can) Or GlobalHeight()<>ClientHeight(can)
 		BeginMax2D()
 		SetGraphics(CanvasGraphics(can))
-		SetViewport(0, 0, ClientWidth(can), ClientHeight(can))
+		GlobalResolution(ClientWidth(can), ClientHeight(can))' update global width and height for CameraViewport
+		SetViewport(0, 0, GlobalWidth(), GlobalHeight())
 		EndMax2D()
 		
-		CameraViewport(cam, 0, 0, ClientWidth(can), ClientHeight(can))
-		TGlobal.width[0] = ClientWidth(can) ' values used in texture rendering
-		TGlobal.height[0] = ClientHeight(can)
+		CameraViewport(cam, 0, 0, GlobalWidth(), GlobalHeight())
 	EndIf
 	
 EndFunction

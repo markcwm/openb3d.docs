@@ -22,10 +22,9 @@ Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-TGlobal.Log_B3D=1
-TGlobal.Log_Texture=1
-'TextureLoader "cpp"
+MeshLoader "debug"
 'MeshLoader "cpp"
+'TextureLoader "cpp"
 
 ' load anim mesh
 Local loader%=1
@@ -107,6 +106,7 @@ While Not KeyDown(KEY_ESCAPE)
 		renders=0
 	EndIf
 	
+	BeginMax2D()
 	Text 0,20,"FPS: "+fps+", Debug: "+debug
 	Text 0,40,"[] to select different child entity (bone)"
 	If child_ent<>Null
@@ -116,6 +116,7 @@ While Not KeyDown(KEY_ESCAPE)
 		If test<>Null Then Text 0,80,"FindChild: "+EntityName(test)
 	EndIf
 	Text 0,100,"Children: "+count_children
+	EndMax2D()
 	
 	Flip
 	

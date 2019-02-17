@@ -13,7 +13,7 @@ AmbientLight 0,0,0
 
 Local cube:TMesh=CreateSphere( 32 )
 
-Local tex:TTexture=LoadTexture( "../media/brick.bmp" )
+Local tex:TTexture=LoadTexture( "../../media/brick.bmp" )
 EntityTexture cube,tex
 
 Local range#=5
@@ -29,7 +29,11 @@ For Local k%=1 To 6
 	LightMesh cube,lr,lg,lb,range,lx,ly,lz
 Next
 
-Local fake%=0
+Local fake%=2
+EntityFX cube,fake
+
+BeginMax2D() ' this is a hack needed to set color from AmbientLight
+EndMax2D()
 
 While Not KeyHit(KEY_ESCAPE)
 
@@ -40,10 +44,12 @@ While Not KeyHit(KEY_ESCAPE)
 		If fake>3 Then fake=0
 		EntityFX cube,fake
 	EndIf
-
-	UpdateWorld
+	
+	'UpdateWorld
 	RenderWorld
+	
 	Text 0,0,"Fake FX:"+fake
+	
 	Flip
 Wend
 End
