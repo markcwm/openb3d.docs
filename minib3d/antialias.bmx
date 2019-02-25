@@ -82,9 +82,9 @@ While Not KeyDown(KEY_ESCAPE)
 		renders=0
 	EndIf
 	
-	Text 0,0,"FPS: "+fps
-	Text 0,20,"+/- to change AA value"
-	Text 0,40,"AntiAlias "+aa
+	Text 0,20,"FPS: "+fps
+	Text 0,40,"+/- to change AA value"
+	Text 0,60,"AntiAlias "+aa
 
 	Flip
 
