@@ -45,6 +45,8 @@ ScaleEntity sky,500,500,500
 EntityFX sky,1
 FlipMesh sky
 
+'TextureLoader "cpp"
+
 'spark=LoadSprite("media/bluspark.bmp")
 Local batch_controller:TBatchSpriteMesh = LoadBatchTexture("../media/bluspark.bmp") ' loads into batch 0
 
