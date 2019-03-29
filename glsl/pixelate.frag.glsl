@@ -11,7 +11,7 @@ void main()
 {
 	vec2 uv = gl_TexCoord[0].xy;
 	vec3 tc = vec3(1.0, 0.0, 0.0);
-	float vx_offset = 1.0; // disable line
+	float vx_offset = 1.05; // disable line
 	
 	if (uv.x < (vx_offset - 0.005))
 	{

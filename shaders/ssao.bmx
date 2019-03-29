@@ -1,5 +1,6 @@
 ' ssao.bmx
 ' postprocess effect - render framebuffer and depthbuffer to textures for Screen Space Ambient Occlusion
+' by RonTek
 
 Strict
 
@@ -11,25 +12,17 @@ Import Brl.Timer
 Import Brl.TimerDefault
 ?
 
-'Local width%=DesktopWidth(),height%=DesktopHeight()
-Local width%=800,height%=600
+Local width%=DesktopWidth(),height%=DesktopHeight()
+'Local width%=800,height%=600
 
 Graphics3D width,height,0,2
 
 SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
 
-Global camera:TCamera=CreateCamera()
-CameraRange camera,0.5,1000.0 ' near must be closer than screen sprite to prevent clipping
-CameraClsColor camera,150,200,250
-
-Global postfx_cam:TCamera=CreateCamera() ' copy main camera
-CameraRange postfx_cam,0.5,1000.0
-CameraClsColor postfx_cam,150,200,250
-HideEntity postfx_cam
-
-Local light:TLight=CreateLight()
-TurnEntity light,45,45,0
+Local PostFx:TRenderPass=New TRenderPass
+PostFx.Init(0) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
+PostFx.Activate()
 
 Local size:Int=256, vsize:Float=30, maxheight:Float=10
 Local terrain:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
@@ -66,63 +59,13 @@ PositionEntity c3,5,0,-5
 Local c4:TEntity = CopyEntity(cube)
 PositionEntity c4,-5,0,5
 
-Global colortex:TTexture=CreateTexture(width,height,1+256)
-ScaleTexture colortex,1.0,-1.0
-
-Global depthtex:TTexture=CreateTexture(width,height,1+256)
-ScaleTexture depthtex,1.0,-1.0
-
-' in GL 2.0 render textures need attached before other textures (EntityTexture)
-CameraToTex colortex,camera
-DepthBufferToTex depthtex,camera
-TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
-
-' screen sprite - by BlitzSupport
-Global screensprite:TSprite=CreateSprite()
-EntityOrder screensprite,-1
-ScaleSprite screensprite,1.0,Float( GraphicsHeight() ) / GraphicsWidth() ' 0.75
-MoveEntity screensprite,0,0,1.0 ' set z to 0.99 - instead of clamping uvs
-EntityParent screensprite,camera
-
-Global screensprite2:TSprite=CreateSprite()
-ScaleSprite screensprite2,1.0,Float( GraphicsHeight() ) / GraphicsWidth() ' 0.75
-EntityOrder screensprite2,-1
-EntityParent screensprite2,camera
-MoveEntity screensprite2,0,0,1.0 ' set z to 1.0
-EntityTexture screensprite2,depthtex
-
-PositionEntity camera,0,7,0 ' move camera now sprite is parented to it
-MoveEntity camera,0,0,-25
-
-Local shader:TShader=LoadShader("","../glsl/default.vert.glsl", "../glsl/ssao.frag.glsl")
-
-Local toggle:Int = 0
-
-ShaderTexture(shader,colortex,"colortex",0) ' Our render texture
-ShaderTexture(shader,depthtex,"depthtex",1) ' 1 is depth texture
-SetFloat(shader,"width", width)
-SetFloat(shader,"height", height)
-SetFloat(shader,"near", 1.0)
-SetFloat(shader,"far", 1000.0)
-SetInteger(shader,"samples", 5)
-SetInteger(shader,"rings", 3)
-UseInteger(shader,"onlyAO", toggle)
-ShadeEntity(screensprite, shader)
-
-Global postprocess%=1
-
 ' fps code
 Local old_ms%=MilliSecs()
 Local renders%, fps%
 
-Local update% = 1
-
+' main loop
 While Not KeyHit(KEY_ESCAPE)
 
-	If KeyHit(KEY_TAB) Then toggle = Not toggle
-	
-	'time=Float((TimerTicks(timer) / framerate) * animspeed)
-	
 	If KeyDown(KEY_MINUS) Then anim_time#=anim_time#-0.1
 	If KeyDown(KEY_EQUALS) Then anim_time#=anim_time#+0.1
 	
@@ -131,32 +74,9 @@ While Not KeyHit(KEY_ESCAPE)
 	SetAnimTime(anim_ent,anim_time)
 	TurnEntity pivot,0,1,0
 	
-	If KeyHit(KEY_SPACE) Then postprocess=Not postprocess
-	
-	' control camera
-	If KeyDown(KEY_D)=True Then MoveEntity camera,0.25,0,0
-	If KeyDown(KEY_A)=True Then MoveEntity camera,-0.25,0,0
-	If KeyDown(KEY_S)=True Then MoveEntity camera,0,0,-0.25
-	If KeyDown(KEY_W)=True Then MoveEntity camera,0,0,0.25
-	If KeyDown(KEY_UP)=True Then TurnEntity camera,-1,0,0
-	If KeyDown(KEY_DOWN)=True Then TurnEntity camera,1,0,0
-	If KeyDown(KEY_LEFT)=True Then TurnEntity camera,0,1,0
-	If KeyDown(KEY_RIGHT)=True Then TurnEntity camera,0,-1,0
-	
-	PositionEntity postfx_cam,EntityX(camera),EntityY(camera),EntityZ(camera)
-	RotateEntity postfx_cam,EntityPitch(camera),EntityYaw(camera),EntityRoll(camera)
-	
-	If KeyHit(KEY_Q) Then update=Not update
-	
 	UpdateWorld
-	
-	While update = 0
-		If KeyHit(KEY_TAB) Then toggle = Not toggle
-		If KeyHit(KEY_SPACE) Then postprocess=Not postprocess
-		If KeyHit(KEY_Q) Then update=Not update
-	Wend
-	
-	Update1Pass()
+	PostFx.Render()
+	RenderWorld
 	
 	' calculate fps
 	renders=renders+1
@@ -167,42 +87,227 @@ While Not KeyHit(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"WSAD/Arrows: move camera, Space: postprocess = "+postprocess
-	Text 0,60,"Tab: Toggle SSAO only = "+toggle
-	Text 0,80,"Q: Pause"
-	Text 0,100,"anim_time="+anim_time
+	Text 0,40,"WSAD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active
+	Text 0,60,"Tab: Toggle SSAO only = "+PostFx.Toggle
+	Text 0,80,"anim_time="+anim_time
 	
 	Flip
 	GCCollect
+	
 Wend
+
+Delay 100 ' try to avoid app hangs
+PostFx.DeActivate()
+PostFx.Render()
+
+Delay 100
+
 End
 
+Type TRenderPass
 
-Function Update1Pass()
-
-	If postprocess=0
-		HideEntity postfx_cam
-		ShowEntity camera
-		HideEntity screensprite2
-		HideEntity screensprite
-		
-		RenderWorld
-	ElseIf postprocess=1
-		HideEntity camera
-		ShowEntity postfx_cam
-		HideEntity screensprite2
-		HideEntity screensprite
-		
-		CameraToTex colortex,postfx_cam
-		
-		HideEntity postfx_cam
-		ShowEntity camera
-		
-		DepthBufferToTex depthtex,camera
-		
-		ShowEntity screensprite
-		
-		RenderWorld
-	EndIf
+	Field Active:Byte=False
+	Field Camera:TCamera
+	Field PostFx:TPostFX=Null
+	Field PostFxCam:TCamera
+	Field CameraTex:TTexture, DepthTex:TTexture
+	Field Light:TLight
+	Field Sprite:TSprite, Sprite2:TSprite	
+	Field Shader:TShader
+	Field Toggle%=0
 	
-End Function
+	Function Create:TRenderPass()
+		Return New TRenderPass
+	End Function
+	
+	Method Activate()
+		Active=True
+	End Method
+	
+	Method DeActivate()
+		Active=False
+	End Method
+	
+	' Set usepostfx% to True to use PostFx processor, False to use screen sprite method
+	Method Init(usepostfx%=0)
+	
+		If usepostfx
+			InitPostFx()
+		Else
+			InitSprite()
+		EndIf
+		
+	End Method
+	
+	Method InitPostFx()
+	
+		Camera=CreateCamera()
+		CameraRange Camera,0.5,1000.0 ' near must be closer than screen sprite to prevent clipping
+		CameraClsColor Camera,150,200,250
+		
+		Light=CreateLight()
+		TurnEntity Light,45,45,0
+		
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/ssao.frag.glsl")
+		SetInteger(Shader,"colortex",0) ' Our render texture
+		SetInteger(Shader,"depthtex",1) ' 1 is depth texture
+		SetFloat(Shader,"width", TGlobal.width[0])
+		SetFloat(Shader,"height",TGlobal.height[0])
+		SetFloat(Shader,"near",1.0)
+		SetFloat(Shader,"far",1000.0)
+		SetInteger(Shader,"samples",5)
+		SetInteger(Shader,"rings",3)
+		UseInteger(Shader,"onlyAO",Toggle)
+		
+		PostFx=CreatePostFX(Camera,1)
+		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
+		
+		PositionEntity Camera,0,7,0 ' move camera
+		MoveEntity Camera,0,0,-25
+		
+		Local pass_no%=0, numColBufs%=1, depth%=1 ' note: depth buffer rendering isn't solved yet...
+		Local source_pass%=0, index%=1, slot%=0
+		AddRenderTarget PostFx,pass_no,numColBufs,depth
+		PostFXBuffer PostFx,pass_no,source_pass,index,slot
+		PostFXShader PostFx,pass_no,Shader
+		
+		'pass_no=1 ; numColBufs=0 ; depth=0
+		'source_pass%=1 ; index%=1 ; slot%=1
+		'AddRenderTarget PostFx,pass_no,numColBufs,depth
+		'PostFXBuffer PostFx,pass_no,source_pass,index,slot
+		'PostFXTexture PostFx,pass_no,DepthTex,slot,frame
+		'PostFXShader PostFx,pass_no,Shader
+		
+	End Method
+	
+	Method InitSprite() 
+	
+		Camera=CreateCamera()
+		CameraRange Camera,0.5,1000.0 ' near must be closer than screen sprite to prevent clipping
+		CameraClsColor Camera,150,200,250
+		
+		PostFxCam=CreateCamera()
+		CameraRange PostFxCam,0.5,1000.0
+		CameraClsColor PostFxCam,150,200,250
+		HideEntity PostFxCam
+		
+		Light=CreateLight()
+		TurnEntity Light,45,45,0
+		
+		CameraTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		ScaleTexture CameraTex,1.0,-1.0
+		PositionTexture CameraTex,0.0,-1.0
+		
+		DepthTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		ScaleTexture DepthTex,1.0,-1.0
+		PositionTexture DepthTex,0.0,-1.0
+		
+		' in GL 2.0 render textures need attached before other textures (EntityTexture)
+		CameraToTex CameraTex,Camera
+		DepthBufferToTex DepthTex,Camera
+		
+		TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
+		
+		Sprite:TSprite=CreateSprite()
+		EntityOrder Sprite,-1
+		ScaleSprite Sprite,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		MoveEntity Sprite,0,0,1.0 
+		EntityParent Sprite,Camera
+		
+		Sprite2:TSprite=CreateSprite()
+		EntityOrder Sprite2,-1
+		ScaleSprite Sprite2,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		MoveEntity Sprite2,0,0,1.0 
+		EntityParent Sprite2,Camera
+		EntityTexture Sprite2,DepthTex
+		
+		PositionEntity Camera,0,7,0 ' move camera now sprite is parented to it
+		MoveEntity Camera,0,0,-25
+		
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/ssao.frag.glsl")
+		ShaderTexture(Shader,CameraTex,"colortex",0) ' Our render texture
+		ShaderTexture(Shader,DepthTex,"depthtex",1) ' 1 is depth texture
+		SetFloat(Shader,"width", TGlobal.width[0])
+		SetFloat(Shader,"height",TGlobal.height[0])
+		SetFloat(Shader,"near",1.0)
+		SetFloat(Shader,"far",1000.0)
+		SetInteger(Shader,"samples",5)
+		SetInteger(Shader,"rings",3)
+		UseInteger(Shader,"onlyAO",Toggle)
+		ShadeEntity(Sprite,Shader)
+		
+	End Method
+	
+	Method PollInput()
+	
+		If PostFx
+			PollInputPostFx()
+		Else
+			PollInputSprite()
+		EndIf
+		
+		If KeyHit(KEY_TAB) Then Toggle=Not Toggle
+		
+		' control camera
+		If KeyDown(KEY_D)=True Then MoveEntity Camera,0.25,0,0
+		If KeyDown(KEY_A)=True Then MoveEntity Camera,-0.25,0,0
+		If KeyDown(KEY_S)=True Then MoveEntity Camera,0,0,-0.25
+		If KeyDown(KEY_W)=True Then MoveEntity Camera,0,0,0.25
+		If KeyDown(KEY_UP)=True Then TurnEntity Camera,-1,0,0
+		If KeyDown(KEY_DOWN)=True Then TurnEntity Camera,1,0,0
+		If KeyDown(KEY_LEFT)=True Then TurnEntity Camera,0,1,0
+		If KeyDown(KEY_RIGHT)=True Then TurnEntity Camera,0,-1,0
+		
+	End Method
+	
+	Method PollInputPostFx()
+	
+		If KeyHit(KEY_SPACE)
+			Active=Not Active
+			Local pass_no%=0
+			If Active Then PostFXShader PostFx,pass_no,Shader
+			If Not Active Then PostFXShader PostFx,pass_no,Null
+		EndIf
+		
+	End Method
+	
+	Method PollInputSprite()
+	
+		If KeyHit(KEY_SPACE) Then Active=Not Active
+		
+	End Method
+	
+	Method Render()
+	
+		If Not PostFx Then RenderSprite()
+		
+	End Method
+	
+	Method RenderSprite()
+	
+		PositionEntity PostFxCam,EntityX(Camera),EntityY(Camera),EntityZ(Camera)
+		RotateEntity PostFxCam,EntityPitch(Camera),EntityYaw(Camera),EntityRoll(Camera)
+		
+		If Active=False
+			HideEntity PostFxCam
+			ShowEntity Camera
+			HideEntity Sprite
+		Else
+			HideEntity Camera
+			ShowEntity PostFxCam
+			HideEntity Sprite2
+			HideEntity Sprite
+			
+			CameraToTex CameraTex,PostFxCam
+			
+			HideEntity PostFxCam
+			ShowEntity Camera
+			
+			DepthBufferToTex DepthTex,Camera
+			
+			ShowEntity Sprite
+		EndIf
+		
+	End Method
+
+End Type

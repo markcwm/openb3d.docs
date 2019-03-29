@@ -1,11 +1,11 @@
-' bloom.bmx
-' postprocess effect - render framebuffer to texture for bloom (fake HDR)
-' by RonTek
+' colorgrading.bmx
+' postprocess effect - render framebuffer to texture for colorgrading (may require GL 3)
+' This shows how you can colorgrade a scene in a post process. No need to use special shaders on the objects.
+' by GaborD
 
 Strict
 
 Framework Openb3dmax.B3dglgraphics
-
 Import Brl.Random
 ?Not bmxng
 Import Brl.Timer
@@ -13,102 +13,66 @@ Import Brl.Timer
 Import Brl.TimerDefault
 ?
 
+Local lut_array$[]=["Added contrast", "Warm and crispy", "Filmic", "Bleak future", "Blockbuster", "Thermal vision", "Black and white", "Vintage", ""]
+
 Local width%=DesktopWidth(),height%=DesktopHeight()
 
 Graphics3D width,height
 
 SeedRnd MilliSecs()
-ClearTextureFilters ' remove mipmap flag for postfx texture
+ClearTextureFilters
 
 Local PostFx:TRenderPass=New TRenderPass
 PostFx.Init(1) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
 PostFx.Activate()
 
-Local pivot:TPivot=CreatePivot()
-PositionEntity pivot,0,2,0
-Local t_sphere:TMesh=CreateSphere( 8 )
-EntityShininess t_sphere,0.2
-For Local t%=0 To 359 Step 36
-	Local sphere:TEntity=CopyMesh(t_sphere,pivot)
-	EntityColor sphere,Float(Rnd(256)),Float(Rnd(256)),Float(Rnd(256))
-	TurnEntity sphere,0,t,0
-	MoveEntity sphere,0,0,15
-Next
-FreeEntity t_sphere
+' loading some simple test objects
+Local tx1:TTexture = LoadTexture("../media/level/floor.jpg")
+Local ground:TMesh = LoadMesh( "../media/level/floor.b3d" )
+EntityTexture ground, tx1, 0, 0
 
-Local cube:TMesh=LoadMesh("../media/wcrate1.3ds")
-ScaleMesh cube,0.15,0.15,0.15
-PositionEntity cube,0,8,0
-Local cube_tex:TTexture=LoadTexture("../media/crate.bmp",1)
-EntityTexture cube,cube_tex
+Local tx2:TTexture = LoadTexture("../media/level/hw.jpg")
+Local obj:TMesh = LoadMesh( "../media/level/head.b3d" )
+PositionEntity obj, -1, 0, 0
+RotateEntity obj, 0, -59, 0
+EntityTexture obj, tx2, 0, 0
 
-Local cube2:TMesh=CreateCube()
-PositionEntity cube2,0,18,0
-ScaleEntity cube2,2,2,2
-EntityColor cube2,Float(Rnd(256)),Float(Rnd(256)),Float(Rnd(256))
-
-Local t_cylinder:TMesh=CreateCylinder()
-ScaleEntity t_cylinder,0.5,6,0.5
-MoveEntity t_cylinder,5,0,-25
-For Local t%=0 To 10
-	MoveEntity t_cylinder,2,0,9
-	Local cylinder:TEntity=CopyMesh(t_cylinder)
-	EntityColor cylinder,Float(Rnd(256)),Float(Rnd(256)),Float(Rnd(256))
-Next
-FreeEntity t_cylinder
-
-Local ground:TMesh=CreatePlane(128)
-Local ground_tex:TTexture=LoadTexture("../media/Envwall.bmp",1+8)
-ScaleTexture ground_tex,2,2
-EntityTexture ground,ground_tex
-
-Local framerate#=60.0, animspeed#=10
-Local timer:TTimer=CreateTimer(framerate)
+Local tx4:TTexture = LoadTexture("../media/level/pic.jpg")
+Local pic:TMesh = LoadMesh( "../media/level/pic.b3d" )
+EntityTexture pic, tx4, 0, 0
+PositionEntity pic, 2.5, 0, -1
+RotateEntity pic, 0, -5, 0
 
 ' fps code
-Local old_ms%=MilliSecs()
+Local old_ms% = MilliSecs()
 Local renders%, fps%
 
 ' main loop
 While Not KeyHit(KEY_ESCAPE)
-	
-	PostFx.Time=Float((TimerTicks(timer) / framerate) * animspeed)
+
 	PostFx.PollInput()
-	
-	TurnEntity cube,0.1,0.2,0.3
-	TurnEntity cube2,0.1,0.2,0.3
-	TurnEntity pivot,0,1,0
-	
 	UpdateWorld
 	PostFx.Render()
 	RenderWorld
 	
 	' calculate fps
-	renders=renders+1
-	If Abs(MilliSecs() - old_ms) >= 1000
-		old_ms=MilliSecs()
-		fps=renders
-		renders=0
+	renders = renders+1
+	If MilliSecs()-old_ms>=1000
+		old_ms = MilliSecs()
+		fps = renders
+		renders = 0
 	EndIf
 	
-	BeginMax2D()
-	SetBlend ALPHABLEND
-	SetColor 0,0,0
-	GLDrawText "FPS: "+fps+", Memory: "+GCMemAlloced(),0,20
-	GLDrawText "WASD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active,0,40
-	GLDrawText "E/R: Exposure="+PostFx.Exposure+", G/H: GlareSize="+PostFx.GlareSize+", O/P: Power="+PostFx.Power,0,60
-	EndMax2D()
+	Local post$ = "Off"
+	If PostFx.Active Then post$ = "On"
+	Text 0, 20, "FPS: "+fps+", Memory: "+GCMemAlloced()
+	Text 0, 40, "Use Space to toggle the post process: "+post$
+	Text 0, 60, "Use the arrow keys to switch the used LUT: "+lut_array$[PostFx.Luter]
 	
 	Flip
 	GCCollect
 	
 Wend
-
-Delay 100 ' try to avoid app hangs
-PostFx.DeActivate()
-PostFx.Render()
-
-Delay 100
 
 End
 
@@ -122,7 +86,8 @@ Type TRenderPass
 	Field Light:TLight
 	Field Sprite:TSprite	
 	Field Shader:TShader
-	Field Time#=0, Exposure#=30.0, GlareSize#=0.002, Power#=0.15
+	Field Luter# = 0.0  ' Stores which LUT is in use
+	Field Tex3:TTexture
 	
 	Function Create:TRenderPass()
 		Return New TRenderPass
@@ -156,12 +121,14 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/bloom.frag.glsl")
-		SetInteger(Shader,"texture0",0) ' render texture ' 
-		UseFloat(Shader,"time",Time) ' Time used to scroll the distortion map
-		UseFloat(Shader,"exposure",Exposure) ' default 20.0
-		UseFloat(Shader,"GlareSize",GlareSize) ' 0.002 is good
-		UseFloat(Shader,"Power",Power) ' 0.25 is good
+		' the LUT texture we are using, with 8 LUTs
+		Tex3=LoadTexture("../media/level/lut.jpg")
+		
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/colorgrade.frag.glsl")
+		SetInteger(Shader,"texture0",0)
+		SetInteger(Shader,"lutMap",1)
+	'	ShaderTexture(Shader, Tex3, "lutMap", 1)
+		UseFloat(Shader, "luter", Luter)
 		
 		PostFx=CreatePostFX(Camera,1)
 		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
@@ -174,6 +141,7 @@ Type TRenderPass
 		AddRenderTarget PostFx,pass_no,numColBufs,depth
 		PostFXBuffer PostFx,pass_no,source_pass,index,slot
 		PostFXShader PostFx,pass_no,Shader
+		PostFXTexture PostFx,pass_no,Tex3,slot,frame
 		
 	End Method
 	
@@ -188,6 +156,7 @@ Type TRenderPass
 		CameraClsColor PostFxCam,150,200,250
 		HideEntity PostFxCam
 		
+		' we are not using shaders on objects, so a default light will do
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
@@ -206,16 +175,18 @@ Type TRenderPass
 		MoveEntity Sprite,0,0,1.0 
 		EntityParent Sprite,Camera
 		
-		PositionEntity Camera,0,7,0 ' move camera now sprite is parented to it
-		MoveEntity Camera,0,0,-25
+		PositionEntity PostFxCam,0,1.2,0 ' move camera now sprite is parented to it
+		MoveEntity PostFxCam,0,0,-3.6
 		
-		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/bloom.frag.glsl")
-		ShaderTexture(Shader,CameraTex,"texture0",0) ' render texture ' 
-		UseFloat(Shader,"time",Time) ' Time used to scroll the distortion map
-		UseFloat(Shader,"exposure",Exposure) ' default 20.0
-		UseFloat(Shader,"GlareSize",GlareSize) ' 0.002 is good
-		UseFloat(Shader,"Power",Power) ' 0.25 is good
-		ShadeEntity(Sprite,Shader)
+		' the LUT texture we are using, with 8 LUTs
+		Tex3=LoadTexture("../media/level/lut.jpg")
+		
+		' load the post shader and apply it to the screen quad
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/colorgrade.frag.glsl")
+		ShaderTexture(Shader, CameraTex, "texture0", 0)
+		ShaderTexture(Shader, Tex3, "lutMap", 1)
+		UseFloat(Shader, "luter", Luter)
+		ShadeEntity(Sprite, Shader)
 		
 	End Method
 	
@@ -227,16 +198,18 @@ Type TRenderPass
 			PollInputSprite()
 		EndIf
 		
-		If KeyDown(KEY_E) Then Exposure:+1.0
-		If KeyDown(KEY_R) And Exposure>2.0 Then Exposure:-1.0
-		If KeyDown(KEY_G) Then GlareSize:+0.0001
-		If KeyDown(KEY_H) And GlareSize>0.0002 Then GlareSize:-0.0001
-		If KeyDown(KEY_O) Then Power:+0.01
-		If KeyDown(KEY_P) And Power>0.02 Then Power:-0.01
+		' switch LUTs
+		If KeyHit(KEY_RIGHT) 
+			Luter = Luter+1.0
+			If Luter>7 Then Luter = 0.0
+		EndIf
+		If KeyHit(KEY_LEFT) 
+			Luter = Luter-1.0
+			If Luter<0 Then Luter = 7
+		EndIf
 		
-		' control camera
-		MoveEntity Camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)
-		TurnEntity Camera,KeyDown(KEY_DOWN)-KeyDown(KEY_UP),KeyDown(KEY_LEFT)-KeyDown(KEY_RIGHT),0
+		PositionEntity Camera, EntityX(PostFxCam), EntityY(PostFxCam), EntityZ(PostFxCam)
+		RotateEntity Camera, EntityPitch(PostFxCam), EntityYaw(PostFxCam), EntityRoll(PostFxCam)
 		
 	End Method
 	

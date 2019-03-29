@@ -1,5 +1,6 @@
 ' tonemap.bmx
 ' postprocess effect - render framebuffer to texture for Uncharted 2-style tonemapping
+' by RonTek
 
 Strict
 
@@ -18,17 +19,9 @@ Graphics3D width,height
 SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
 
-Global camera:TCamera=CreateCamera()
-CameraRange camera,0.5,1000.0 ' near must be closer than screen sprite to prevent clipping
-CameraClsColor camera,150,200,250
-
-Global postfx_cam:TCamera=CreateCamera() ' copy main camera
-CameraRange postfx_cam,0.5,1000.0
-CameraClsColor postfx_cam,150,200,250
-HideEntity postfx_cam
-
-Local light:TLight=CreateLight()
-TurnEntity light,45,45,0
+Local PostFx:TRenderPass=New TRenderPass
+PostFx.Init(1) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
+PostFx.Activate()
 
 Local size:Int=256, vsize:Float=30, maxheight:Float=10
 Local terrain:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
@@ -55,75 +48,30 @@ Local cube_tex:TTexture=LoadTexture("../media/crate.bmp",1)
 EntityTexture cube,cube_tex
 TurnEntity cube,0,45,0
 
-Global colortex:TTexture=CreateTexture(width,height,1+256)
-ScaleTexture colortex,1.0,-1.0
-
-' in GL 2.0 render textures need attached before other textures (EntityTexture)
-CameraToTex colortex,camera
-TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
-
-' screen sprite - by BlitzSupport
-Global screensprite:TSprite=CreateSprite()
-EntityOrder screensprite,-1
-ScaleSprite screensprite,1.0,Float( GraphicsHeight() ) / GraphicsWidth() ' 0.75
-MoveEntity screensprite,0,0,1.0 ' set z to 0.99 - instead of clamping uvs
-EntityParent screensprite,camera
-
-PositionEntity camera,0,7,0 ' move camera now sprite is parented to it
-MoveEntity camera,0,0,-25
-
-Local shader:TShader=LoadShader("","../glsl/default.vert.glsl", "../glsl/tonemap.frag.glsl")
-ShaderTexture(shader,colortex,"texture0",0) ' Our render texture
-Local bias#=1.0, maxwhite#=1.0
-UseFloat(shader,"ExposureBias", bias)
-UseFloat(shader,"MaxWhite", maxwhite)
-ShadeEntity(screensprite, shader)
-
-Global postprocess%=1
-Local time#=0, framerate#=60.0, animspeed#=10
+Local framerate#=60.0, animspeed#=10
 Local timer:TTimer=CreateTimer(framerate)
-UseFloat(shader,"time",time) ' Time used to scroll the distortion map
 
 ' fps code
 Local old_ms%=MilliSecs()
 Local renders%, fps%
 
-
+' main loop
 While Not KeyHit(KEY_ESCAPE)
 	
-	time=Float((TimerTicks(timer) / framerate) * animspeed)
+	PostFx.Time=Float((TimerTicks(timer) / framerate) * animspeed)
+	PostFx.PollInput()
 	
 	If KeyDown(KEY_MINUS) Then anim_time#=anim_time#-0.1
 	If KeyDown(KEY_EQUALS) Then anim_time#=anim_time#+0.1
-	
-	If KeyHit(KEY_B) Then bias#=bias#+0.1
-	If KeyHit(KEY_V) Then bias#=bias#-0.1
-	
-	If KeyHit(KEY_M) Then maxwhite#=maxwhite#+0.1
-	If KeyHit(KEY_N) Then maxwhite#=maxwhite#-0.1
 	
 	anim_time:+0.5
 	If anim_time>20 Then anim_time=2
 	SetAnimTime(anim_ent,anim_time)
 	TurnEntity pivot,0,1,0
 	
-	If KeyHit(KEY_SPACE) Then postprocess=Not postprocess
-	
-	' control camera
-	If KeyDown(KEY_D)=True Then MoveEntity camera,0.25,0,0
-	If KeyDown(KEY_A)=True Then MoveEntity camera,-0.25,0,0
-	If KeyDown(KEY_S)=True Then MoveEntity camera,0,0,-0.25
-	If KeyDown(KEY_W)=True Then MoveEntity camera,0,0,0.25
-	If KeyDown(KEY_UP)=True Then TurnEntity camera,-1,0,0
-	If KeyDown(KEY_DOWN)=True Then TurnEntity camera,1,0,0
-	If KeyDown(KEY_LEFT)=True Then TurnEntity camera,0,1,0
-	If KeyDown(KEY_RIGHT)=True Then TurnEntity camera,0,-1,0
-	
-	PositionEntity postfx_cam,EntityX(camera),EntityY(camera),EntityZ(camera)
-	RotateEntity postfx_cam,EntityPitch(camera),EntityYaw(camera),EntityRoll(camera)
-		
 	UpdateWorld
-	Update1Pass()
+	PostFx.Render()
+	RenderWorld
 	
 	' calculate fps
 	renders=renders+1
@@ -134,36 +82,192 @@ While Not KeyHit(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"B/V: exposure bias = "+bias+", M/N: Max white = "+maxwhite
-	Text 0,60,"WSAD/Arrows: move camera, Space: postprocess = "+postprocess
+	Text 0,40,"B/V: exposure bias = "+PostFx.Bias+", M/N: Max white = "+PostFx.Maxwhite
+	Text 0,60,"WSAD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active
 	Text 0,80,"anim_time="+anim_time
 	
 	Flip
 	GCCollect
+	
 Wend
+
 End
 
+Type TRenderPass
 
-Function Update1Pass()
-
-	If postprocess=0
-		HideEntity postfx_cam
-		ShowEntity camera
-		HideEntity screensprite
-		
-		RenderWorld
-	ElseIf postprocess=1
-		ShowEntity postfx_cam
-		HideEntity camera
-		HideEntity screensprite
-		
-		CameraToTex colortex,postfx_cam
-		
-		HideEntity postfx_cam
-		ShowEntity camera
-		ShowEntity screensprite
-		
-		RenderWorld
-	EndIf
+	Field Active:Byte=False
+	Field Camera:TCamera
+	Field PostFx:TPostFX=Null
+	Field PostFxCam:TCamera
+	Field CameraTex:TTexture
+	Field Light:TLight
+	Field Sprite:TSprite	
+	Field Shader:TShader
+	Field Bias#=1.0, Maxwhite#=1.0, Time#=0
 	
-End Function
+	Function Create:TRenderPass()
+		Return New TRenderPass
+	End Function
+	
+	Method Activate()
+		Active=True
+	End Method
+	
+	Method DeActivate()
+		Active=False
+	End Method
+	
+	' Set usepostfx% to True to use PostFx processor, False to use screen sprite method
+	Method Init(usepostfx%=0)
+	
+		If usepostfx
+			InitPostFx()
+		Else
+			InitSprite()
+		EndIf
+		
+	End Method
+	
+	Method InitPostFx()
+	
+		Camera=CreateCamera()
+		CameraRange Camera,0.5,1000.0 ' near must be closer than screen sprite to prevent clipping
+		CameraClsColor Camera,150,200,250
+		
+		Light=CreateLight()
+		TurnEntity Light,45,45,0
+		
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/tonemap.frag.glsl")
+		SetInteger(Shader,"texture0",0)
+		UseFloat(Shader,"ExposureBias", Bias)
+		UseFloat(Shader,"MaxWhite", Maxwhite)
+		UseFloat(Shader,"time",Time) ' Time used to scroll the distortion map
+		
+		PostFx=CreatePostFX(Camera,1)
+		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
+		
+		PositionEntity Camera,0,7,0 ' move camera
+		MoveEntity Camera,0,0,-25
+		
+		Local pass_no%=0, numColBufs%=1, depth%=0
+		Local source_pass%=0, index%=1, slot%=0, frame%=0, value%=1
+		AddRenderTarget PostFx,pass_no,numColBufs,depth
+		PostFXBuffer PostFx,pass_no,source_pass,index,slot
+		PostFXShader PostFx,pass_no,Shader
+		
+	End Method
+	
+	Method InitSprite() 
+	
+		Camera=CreateCamera()
+		CameraRange Camera,0.5,1000.0 ' near must be closer than screen sprite to prevent clipping
+		CameraClsColor Camera,150,200,250
+		
+		PostFxCam=CreateCamera()
+		CameraRange PostFxCam,0.5,1000.0
+		CameraClsColor PostFxCam,150,200,250
+		HideEntity PostFxCam
+		
+		Light=CreateLight()
+		TurnEntity Light,45,45,0
+		
+		CameraTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		ScaleTexture CameraTex,1.0,-1.0
+		PositionTexture CameraTex,0.0,-1.0
+		
+		' in GL 2.0 render textures need attached before other textures (EntityTexture)
+		CameraToTex CameraTex,Camera
+		
+		TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
+		
+		Sprite:TSprite=CreateSprite()
+		EntityOrder Sprite,-1
+		ScaleSprite Sprite,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		MoveEntity Sprite,0,0,1.0 
+		EntityParent Sprite,Camera
+		
+		PositionEntity Camera,0,7,0 ' move camera now sprite is parented to it
+		MoveEntity Camera,0,0,-25
+		
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/tonemap.frag.glsl")
+		ShaderTexture(Shader,CameraTex,"texture0",0) ' Our render texture
+		UseFloat(Shader,"ExposureBias", Bias)
+		UseFloat(Shader,"MaxWhite", Maxwhite)
+		UseFloat(Shader,"time",Time) ' Time used to scroll the distortion map
+		ShadeEntity(Sprite,Shader)
+		
+	End Method
+	
+	Method PollInput()
+	
+		If PostFx
+			PollInputPostFx()
+		Else
+			PollInputSprite()
+		EndIf
+		
+		If KeyHit(KEY_B) Then Bias:+0.1
+		If KeyHit(KEY_V) Then Bias:-0.1
+		
+		If KeyHit(KEY_M) Then Maxwhite:+0.1
+		If KeyHit(KEY_N) Then Maxwhite:-0.1
+		
+		' control camera
+		If KeyDown(KEY_D)=True Then MoveEntity Camera,0.25,0,0
+		If KeyDown(KEY_A)=True Then MoveEntity Camera,-0.25,0,0
+		If KeyDown(KEY_S)=True Then MoveEntity Camera,0,0,-0.25
+		If KeyDown(KEY_W)=True Then MoveEntity Camera,0,0,0.25
+		If KeyDown(KEY_UP)=True Then TurnEntity Camera,-1,0,0
+		If KeyDown(KEY_DOWN)=True Then TurnEntity Camera,1,0,0
+		If KeyDown(KEY_LEFT)=True Then TurnEntity Camera,0,1,0
+		If KeyDown(KEY_RIGHT)=True Then TurnEntity Camera,0,-1,0
+		
+	End Method
+	
+	Method PollInputPostFx()
+	
+		If KeyHit(KEY_SPACE)
+			Active=Not Active
+			Local pass_no%=0
+			If Active Then PostFXShader PostFx,pass_no,Shader
+			If Not Active Then PostFXShader PostFx,pass_no,Null
+		EndIf
+		
+	End Method
+	
+	Method PollInputSprite()
+	
+		If KeyHit(KEY_SPACE) Then Active=Not Active
+		
+	End Method
+	
+	Method Render()
+	
+		If Not PostFx Then RenderSprite()
+		
+	End Method
+	
+	Method RenderSprite()
+	
+		PositionEntity PostFxCam,EntityX(Camera),EntityY(Camera),EntityZ(Camera)
+		RotateEntity PostFxCam,EntityPitch(Camera),EntityYaw(Camera),EntityRoll(Camera)
+		
+		If Active=False
+			HideEntity PostFxCam
+			ShowEntity Camera
+			HideEntity Sprite
+		Else
+			ShowEntity PostFxCam
+			HideEntity Camera
+			HideEntity Sprite
+			
+			CameraToTex CameraTex,PostFxCam
+			
+			HideEntity PostFxCam
+			ShowEntity Camera
+			ShowEntity Sprite
+		EndIf
+		
+	End Method
+
+End Type

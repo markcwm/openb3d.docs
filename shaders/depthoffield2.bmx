@@ -1,14 +1,15 @@
-' depthoffield.bmx
+' depthoffield2.bmx
 ' postprocess effect - render framebuffer and depthbuffer to textures for depth of field
+' configurable min/max blur range (by RonTek)
 
 Strict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3dMax.B3dglgraphics
 Import Brl.Random
 
 Local width%=DesktopWidth(),height%=DesktopHeight()
 
-Graphics3D width,height
+Graphics3D width,height,0,2
 
 SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
@@ -25,7 +26,7 @@ Local framesize%=PixmapHeight(pix)/2 ' 3 * 2 cubemap layout
 Local skybox:TMesh=LoadCubicSkyBox( skymap,1+16+32,framesize,framesize,0,5,2,1,3,4 ) ' lf-x, fr+z, rt+x, bk-z, dn-y, up+y
 
 ScaleMesh skybox,500,500,500
-PositionEntity skybox,0,0,0
+PositionEntity skybox,0,50,0
 EntityFX skybox,1
 
 Local sphere:TMesh
@@ -61,6 +62,8 @@ While Not KeyDown(KEY_ESCAPE)
 
 	PostFx.PollInput()
 	
+	PositionEntity skybox,EntityX(PostFx.Camera),EntityY(PostFx.Camera),EntityZ(PostFx.Camera)
+	
 	TurnEntity cube,0.1,0.2,0.3
 	'TurnEntity pivot,0,1,0
 	
@@ -70,15 +73,15 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	' calculate fps
 	renders=renders+1
-	If Abs(MilliSecs() - old_ms) >= 1000
+	If MilliSecs()-old_ms>=1000
 		old_ms=MilliSecs()
 		fps=renders
 		renders=0
 	EndIf
 	
-	TextColor 0,0,0
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"WASD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active+", +/-: blursize = "+PostFx.Blursize
+	Text 0,40,"Space: PostFx.Active = "+PostFx.Active
+	Text 0,60,"+/-: blursize = "+PostFx.Blursize +", [/]: maxblur = "+PostFx.Maxblur+", (/): minblur = "+PostFx.Minblur
 	
 	Flip
 	GCCollect
@@ -102,7 +105,7 @@ Type TRenderPass
 	Field Light:TLight
 	Field Sprite:TSprite, Sprite2:TSprite
 	Field Shader:TShader
-	Field Blursize#=0.002
+	Field Blursize#=0.002, Minblur#=10.0, Maxblur#=90.00
 	
 	Function Create:TRenderPass()
 		Return New TRenderPass
@@ -136,12 +139,16 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		' note the depth/z buffer is non-linear/proportional in eye/view space but linear in screen space
-		' you can linearize it to visualize it but this will produce incorrect results if used instead of depth
-		Shader=LoadShader("","../glsl/depthoffield.vert.glsl","../glsl/depthoffield.frag.glsl")
+		Shader=LoadShader("","../glsl/depthoffield2.vert.glsl","../glsl/depthoffield2.frag.glsl")
 		SetInteger(Shader,"colortex",0) ' 0 is render texture
 		SetInteger(Shader,"depthtex",1) ' 1 is depth texture
+		SetFloat(Shader,"rt_w", TGlobal.width[0])
+		SetFloat(Shader,"rt_h", TGlobal.height[0])
+		SetFloat(Shader,"bb_zNear", 0.5)
+		SetFloat(Shader,"bb_zFar", 1000.0)
 		UseFloat(Shader,"blursize",Blursize)
+		UseFloat(Shader,"minblur",Minblur) ' set blur min/max range
+		UseFloat(Shader,"maxblur",Maxblur)
 		
 		PostFx=CreatePostFX(Camera,1)
 		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
@@ -207,12 +214,16 @@ Type TRenderPass
 		PositionEntity Camera,0,3,0 ' move camera now sprite is parented to it
 		MoveEntity Camera,0,0,-25
 		
-		' note the depth/z buffer is non-linear/proportional in eye/view space but linear in screen space
-		' you can linearize it to visualize it but this will produce incorrect results if used instead of depth
-		Shader=LoadShader("","../glsl/depthoffield.vert.glsl","../glsl/depthoffield.frag.glsl")
+		Shader=LoadShader("","../glsl/depthoffield2.vert.glsl","../glsl/depthoffield2.frag.glsl")
 		ShaderTexture(Shader,CameraTex,"colortex",0) ' 0 is render texture
 		ShaderTexture(Shader,DepthTex,"depthtex",1) ' 1 is depth texture
+		SetFloat(Shader,"rt_w", TGlobal.width[0])
+		SetFloat(Shader,"rt_h", TGlobal.height[0])
+		SetFloat(Shader,"bb_zNear", 0.5)
+		SetFloat(Shader,"bb_zFar", 1000.0)
 		UseFloat(Shader,"blursize",Blursize)
+		UseFloat(Shader,"minblur",Minblur) ' set blur min/max range
+		UseFloat(Shader,"maxblur",Maxblur)
 		ShadeEntity(Sprite,Shader)
 		
 	End Method
@@ -225,8 +236,14 @@ Type TRenderPass
 			PollInputSprite()
 		EndIf
 		
-		If KeyDown(KEY_EQUALS) And Blursize<0.004 Then Blursize:+0.0001
-		If KeyDown(KEY_MINUS) And Blursize>0.0004 Then Blursize:-0.0001
+		If KeyDown(KEY_EQUALS) Then Blursize:+0.0001
+		If KeyDown(KEY_MINUS) Then Blursize:-0.0001
+		
+		If KeyDown(KEY_CLOSEBRACKET) Then Maxblur:+1
+		If KeyDown(KEY_OPENBRACKET) Then Maxblur:-1
+		
+		If KeyDown(KEY_0) Then Minblur:+1
+		If KeyDown(KEY_9) Then Minblur:-1
 		
 		' control camera
 		MoveEntity Camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)

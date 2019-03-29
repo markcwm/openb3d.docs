@@ -1,5 +1,6 @@
 // Vignette Effect by RonTek
 // https://www.blitzcoder.org/forum/topic.php?id=132
+//#version 120
 
 uniform sampler2D texture0;
 
@@ -9,7 +10,7 @@ uniform float Softness;
 void main() {   
 
     vec4 Color = texture2D(texture0, gl_TexCoord[0].xy);
-    vec2 screenpos = gl_TexCoord[0].xy * vec2(1.0, -1.0);
+    vec2 screenpos = gl_TexCoord[0].xy;// * vec2(1.0, -1.0);
 
     float dist = length(screenpos - 0.5);
     float vignette = smoothstep(Radius, Radius - Softness, dist);

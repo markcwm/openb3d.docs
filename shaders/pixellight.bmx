@@ -41,7 +41,7 @@ While Not KeyDown(KEY_ESCAPE)
 			HideEntity teapot ; ShowEntity teapot2
 		EndIf
 	EndIf
-
+	
 	TurnEntity teapot,0,0.5,-0.1
 	TurnEntity teapot2,0,0.5,-0.1
 	
