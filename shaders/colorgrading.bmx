@@ -127,21 +127,20 @@ Type TRenderPass
 		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/colorgrade.frag.glsl")
 		SetInteger(Shader,"texture0",0)
 		SetInteger(Shader,"lutMap",1)
-	'	ShaderTexture(Shader, Tex3, "lutMap", 1)
 		UseFloat(Shader, "luter", Luter)
 		
 		PostFx=CreatePostFX(Camera,1)
 		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
 		
-		PositionEntity Camera,0,7,0 ' move camera
-		MoveEntity Camera,0,0,-25
+		PositionEntity Camera,0,1.2,0 ' move camera
+		MoveEntity Camera,0,0,-3.6
 		
 		Local pass_no%=0, numColBufs%=1, depth%=0
 		Local source_pass%=0, index%=1, slot%=0, frame%=0, value%=1
 		AddRenderTarget PostFx,pass_no,numColBufs,depth
 		PostFXBuffer PostFx,pass_no,source_pass,index,slot
+		PostFXTexture PostFx,pass_no,Tex3,1,frame
 		PostFXShader PostFx,pass_no,Shader
-		PostFXTexture PostFx,pass_no,Tex3,slot,frame
 		
 	End Method
 	
@@ -208,9 +207,6 @@ Type TRenderPass
 			If Luter<0 Then Luter = 7
 		EndIf
 		
-		PositionEntity Camera, EntityX(PostFxCam), EntityY(PostFxCam), EntityZ(PostFxCam)
-		RotateEntity Camera, EntityPitch(PostFxCam), EntityYaw(PostFxCam), EntityRoll(PostFxCam)
-		
 	End Method
 	
 	Method PollInputPostFx()
@@ -227,6 +223,9 @@ Type TRenderPass
 	Method PollInputSprite()
 	
 		If KeyHit(KEY_SPACE) Then Active=Not Active
+		
+		PositionEntity Camera, EntityX(PostFxCam), EntityY(PostFxCam), EntityZ(PostFxCam)
+		RotateEntity Camera, EntityPitch(PostFxCam), EntityYaw(PostFxCam), EntityRoll(PostFxCam)
 		
 	End Method
 	

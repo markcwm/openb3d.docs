@@ -171,7 +171,7 @@ Type TRenderPass
 		Local source_pass%=0, index%=1, slot%=0, frame%=0, value%=1
 		AddRenderTarget PostFx,pass_no,numColBufs,depth
 		PostFXBuffer PostFx,pass_no,source_pass,index,slot
-		PostFXTexture PostFx,pass_no,NoiseTex,slot+1,frame
+		PostFXTexture PostFx,pass_no,NoiseTex,1,frame
 		PostFXShader PostFx,pass_no,Shader
 		
 	End Method

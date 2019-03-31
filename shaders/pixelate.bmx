@@ -19,7 +19,7 @@ SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
 
 Local PostFx:TRenderPass=New TRenderPass
-PostFx.Init(0) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
+PostFx.Init(1) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
 PostFx.Activate()
 
 Local size:Int=256, vsize:Float=30, maxheight:Float=10
