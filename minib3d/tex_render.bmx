@@ -11,11 +11,12 @@ Graphics3D DesktopWidth(),DesktopHeight()
 ClearTextureFilters
 
 Local camera:TCamera=CreateCamera()
+CameraClsColor camera,0,111,222
 
 Local plan_cam:TCamera=CreateCamera()
 TurnEntity plan_cam,90,0,0
 PositionEntity plan_cam,0,20,0
-CameraViewport plan_cam,0,0,128,128
+CameraViewport plan_cam,0,0,128,64
 CameraClsColor plan_cam,0,0,0
 
 Local light:TLight=CreateLight()
@@ -28,14 +29,14 @@ Local t_sphere:TMesh=CreateSphere( 8 )
 EntityShininess t_sphere,0.2
 
 For Local t%=0 To 359 Step 36
-	Local sphere:TEntity=CopyEntity(t_sphere,pivot)
+	Local sphere:TEntity=CopyMesh(t_sphere,pivot)
 	EntityColor sphere,Rnd(256),Rnd(256),Rnd(256)
 	TurnEntity sphere,0,t,0
 	MoveEntity sphere,0,0,10
 Next
 FreeEntity t_sphere
 
-Local texture:TTexture=CreateTexture(128,128)
+Local texture:TTexture=CreateTexture(128,64)
 
 Local cube:TMesh=CreateCube()
 EntityTexture cube,texture
@@ -67,7 +68,7 @@ While Not KeyHit(KEY_ESCAPE)
 	BackBufferToTex texture
 	
 	ShowEntity camera
-	HideEntity plan_cam
+	'HideEntity plan_cam
 	RenderWorld
 	
 	Flip

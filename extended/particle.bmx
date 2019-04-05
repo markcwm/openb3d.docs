@@ -9,7 +9,7 @@ Import Brl.Random
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
 ClearTextureFilters
-
+TextureFilter("", 1 + 2)
 Local camera:TCamera=CreateCamera()
 CameraClsColor camera,100,150,200
 PositionEntity camera,0,7,-20
@@ -25,7 +25,7 @@ EntityShininess t_sphere,0.2
 
 Local lastsphere:TEntity
 For Local tr%=0 To 359 Step 60
-	Local sphere:TEntity=CopyEntity(t_sphere,pivot)
+	Local sphere:TEntity=CopyMesh(t_sphere,pivot)
 	EntityColor sphere,Rnd(255),Rnd(255),Rnd(255)
 	TurnEntity sphere,0,tr,0
 	MoveEntity sphere,0,2,10
@@ -86,8 +86,11 @@ While Not KeyHit(KEY_ESCAPE)
 	' update particles
 	UpdateWorld
 	RenderWorld
-	
+	BeginMax2D()
+'	SetBlend ALPHABLEND
+'	GLDrawText "??",0,20
 	Text 0,20,"Arrows/WASD: move camera, N/M: rotate emitter"
+	EndMax2D()
 	
 	Flip
 Wend

@@ -24,7 +24,7 @@ Local box:TEntity[], inc%, tex:TTexture
 
 For Local t%=0 To 359 Step 360/6.9
 	box=box[..inc+1]
-	box[inc]=CopyEntity(temp,pivot)
+	box[inc]=CopyMesh(temp,pivot)
 	TurnEntity box[inc],0,t,0
 	MoveEntity box[inc],0,0,10
 	If inc=0 Then tex=LoadTexture("../media/compressed.gif")

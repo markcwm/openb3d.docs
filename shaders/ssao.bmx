@@ -50,13 +50,13 @@ EntityTexture cube,cube_tex
 TurnEntity cube,0,45,0
 
 ' Add 4 more
-Local c1:TEntity = CopyEntity(cube)
+Local c1:TEntity = CopyMesh(cube)
 PositionEntity c1,5,0,5
-Local c2:TEntity = CopyEntity(cube)
+Local c2:TEntity = CopyMesh(cube)
 PositionEntity c2,-5,0,-5
-Local c3:TEntity = CopyEntity(cube)
+Local c3:TEntity = CopyMesh(cube)
 PositionEntity c3,5,0,-5
-Local c4:TEntity = CopyEntity(cube)
+Local c4:TEntity = CopyMesh(cube)
 PositionEntity c4,-5,0,5
 
 ' fps code
