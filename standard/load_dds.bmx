@@ -12,7 +12,7 @@ Incbin "../media/dds_rgba.dds"
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
 Local camera:TCamera=CreateCamera()
-PositionEntity camera,0,2,-7
+PositionEntity camera,0,1.2,-7
 CameraClsColor camera,100,150,200
 
 Local light:TLight=CreateLight()
@@ -30,10 +30,10 @@ PositionEntity rgba,0,5,0
 
 'TextureLoader "cpp"
 
-Local file2$="incbin::../media/dxt1.dds"
-Local file1$="incbin::../media/dxt3.dds"
-Local file4$="incbin::../media/dxt5.dds"
-Local file3$="incbin::../media/dds_rgba.dds"
+Local file1$="incbin::../media/dxt1.dds"
+Local file2$="incbin::../media/dxt3.dds"
+Local file3$="incbin::../media/dxt5.dds"
+Local file4$="incbin::../media/dds_rgba.dds"
 If TGlobal.Texture_Loader=2 ' cpp loader - prevents crash
 	file1="../media/dxt1.dds"
 	file2="../media/dxt3.dds"
@@ -51,6 +51,8 @@ EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
 
+Local dds_img:TImage=LoadImageDDS("../media/dxt5.dds")
+
 ' main loop
 While Not KeyHit(KEY_ESCAPE)
 
@@ -65,7 +67,11 @@ While Not KeyHit(KEY_ESCAPE)
 	UpdateWorld
 	RenderWorld
 	
+	BeginMax2D()
+	DrawImage dds_img,100,100
+	'DrawPixmap dxt1_tex.pixmap,200,200
 	Text 0,20,"WASD: move camera"
+	EndMax2D()
 	
 	Flip
 	
