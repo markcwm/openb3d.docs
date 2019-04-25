@@ -15,7 +15,7 @@ SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
 
 Local PostFx:TRenderPass=New TRenderPass
-PostFx.Init(0) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
+PostFx.Init(1) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
 PostFx.Activate()
 
 AmbientLight 128,128,128
@@ -205,17 +205,13 @@ Type TRenderPass
 		PositionEntity Camera,0,20,-15 ' move camera now sprite is parented to it
 		RotateEntity Camera,-5,0,0
 		
-		Local pass_no%=0, numColBufs%=1, depth%=1 ' note: depth buffer rendering isn't solved yet...
+		Local pass_no%=0, numColBufs%=1, depth%=1
 		Local source_pass%=0, index%=1, slot%=0
 		AddRenderTarget PostFx,pass_no,numColBufs,depth
 		PostFXBuffer PostFx,pass_no,source_pass,index,slot
+		index=0 ; slot=1
+		PostFXBuffer PostFx,pass_no,source_pass,index,slot
 		PostFXShader PostFx,pass_no,Shader
-		
-		'pass_no=1 ; numColBufs=0 ; depth=1
-		'source_pass%=1 ; index%=1 ; slot%=1
-		'AddRenderTarget PostFx,pass_no,numColBufs,depth
-		'PostFXBuffer PostFx,pass_no,source_pass,index,slot
-		'PostFXShader PostFx,pass_no,Shader
 		
 	End Method
 	

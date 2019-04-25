@@ -34,7 +34,7 @@ Local file1$="incbin::../media/dxt1.dds"
 Local file2$="incbin::../media/dxt3.dds"
 Local file3$="incbin::../media/dxt5.dds"
 Local file4$="incbin::../media/dds_rgba.dds"
-If TGlobal.Texture_Loader=2 ' cpp loader - prevents crash
+If TGlobal.Texture_Loader=2 ' cpp loader (prevents crash)
 	file1="../media/dxt1.dds"
 	file2="../media/dxt3.dds"
 	file3="../media/dxt5.dds"
@@ -51,7 +51,7 @@ EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
 
-Local dds_img:TImage=LoadImageDDS("../media/dxt5.dds")
+Local dds_img:TImage=LoadImageDDS("../media/dxt1.dds")
 
 ' main loop
 While Not KeyHit(KEY_ESCAPE)

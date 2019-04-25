@@ -4,7 +4,7 @@ Strict
 
 Framework Openb3dmax.B3dglgraphics
 
-Incbin "../media/boomstrip.bmp"
+Incbin "../media/boomstrip3.dds"
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
@@ -28,21 +28,26 @@ TextureLoader "bmx"
 
 ' Load anim texture
 Local oldtime%=MilliSecs()
-Local anim_tex:TTexture=LoadAnimTexture( "incbin::../media/boomstrip.bmp",49,64,64,0,39 )
-Local debug$="incbin time="+(MilliSecs()-oldtime)
+Local anim_tex:TTexture=LoadAnimTexture( "incbin::../media/boomstrip3.dds",49,64,64,0,39 )
 
-Local frame%,frame2%
+Local frame%,frame2%,frame3%
 Local pitch#,yaw#,roll#
 
+Local dds_img:TImage=LoadAnimImageDDS("../media/boomstrip1.dds",64,64,0,39)
+
+' main loop
 While Not KeyDown(KEY_ESCAPE)
+
+	MoveEntity camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)
 
 	' Cycle through anim frame values. 100 represents Delay, 39 represents no. of  anim frames
 	frame=MilliSecs()/100 Mod 39
 	frame2=MilliSecs()/75 Mod 39
+	frame3=MilliSecs()/125 Mod 39
 	
 	' Texture cube with anim texture frame
 	EntityTexture cube,anim_tex,frame
-	EntityTexture cube2,anim_tex,frame2
+	EntityTexture cube2,tex,frame2
 	
 	pitch#=0
 	yaw#=0
@@ -60,8 +65,12 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	RenderWorld
 	
-	Text 0,20,"Arrows: turn cubes, anim texture frame="+frame+", Debug: "+debug
-	
+	BeginMax2D()
+	DrawImage dds_img,100,100,frame3
+	'DrawPixmap dxt1_tex.pixmap,200,200
+	Text 0,20,"Arrows: turn cubes, anim texture frame="+frame
+	EndMax2D()
+		
 	Flip
 Wend
 End
