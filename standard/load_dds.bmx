@@ -51,7 +51,12 @@ EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
 
-Local dds_img:TImage=LoadImageDDS("../media/dxt1.dds")
+Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds")
+Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds")
+Local dds_img5:TImage=LoadImageDDS("../media/dxt5.dds")
+Local dds_img_rgba:TImage=LoadImageDDS("../media/dds_rgba.dds")
+Local dds_alpha:TImage=LoadImageDDS("../media/smoke_dxt5.dds")
+Local non_dds_alpha:TImage=LoadImage("../media/smoke.png")
 
 ' main loop
 While Not KeyHit(KEY_ESCAPE)
@@ -68,12 +73,21 @@ While Not KeyHit(KEY_ESCAPE)
 	RenderWorld
 	
 	BeginMax2D()
-	DrawImage dds_img,100,100
-	'DrawPixmap dxt1_tex.pixmap,200,200
+	SetScale 0.5,0.5
+	SetBlend ALPHABLEND
+	DrawImage dds_img1,100,50
+	DrawImage dds_img3,300,50
+	DrawImage dds_img5,100,250
+	DrawImage dds_img_rgba,300,250
+	SetScale 1,1
+	DrawImage dds_alpha,100,500
+	DrawImage non_dds_alpha,400,500
+	SetBlend SOLIDBLEND
 	Text 0,20,"WASD: move camera"
 	EndMax2D()
 	
 	Flip
+	Cls
 	
 Wend
 

@@ -30,7 +30,8 @@ ScaleMesh skybox,250,250,250
 PositionEntity skybox,0,50,0
 EntityFX skybox,1
 
-skymap="../media/envmap_cube.jpg"
+'skymap="../media/envmap_cube.jpg"
+skymap="../media/envmap_cube1.dds"
 pix=LoadPixmap(skymap)
 framesize=PixmapHeight(pix)/2 ' 3 * 2 cubemap layout
 
@@ -57,7 +58,7 @@ TextureLoader "faces",0,1,2,3,4,5 ' set cubemap faces, lf-x, fr+z, rt+x, bk-z, d
 Local tex:TTexture=LoadAnimTexture(skymap,1+128,framesize,framesize,0,1)
 
 'skymap="../media/envmap_cube.jpg"
-skymap="../media/envmap_cube3.dds" ' note: cubemap images get auto-inverted but DDS can't be inverted, so flip in image editor
+skymap="../media/envmap_cube1.dds"
 pix=LoadPixmap(skymap)
 framesize=PixmapHeight(pix)/2 ' 3 * 2 cubemap layout
 

@@ -19,7 +19,7 @@ PositionEntity cube,-2,0,5
 Local cube2:TMesh=CreateCube()
 PositionEntity cube2,2,0,5
 
-TextureLoader "cpp"
+TextureLoader "cpp" ' note: no dds anim texture support in cpp mode
 
 Local tex:TTexture=LoadAnimTexture("../media/boomstrip.bmp",49,64,64,0,39 )
 EntityTexture cube2,tex
@@ -33,7 +33,10 @@ Local anim_tex:TTexture=LoadAnimTexture( "incbin::../media/boomstrip3.dds",49,64
 Local frame%,frame2%,frame3%
 Local pitch#,yaw#,roll#
 
-Local dds_img:TImage=LoadAnimImageDDS("../media/boomstrip1.dds",64,64,0,39)
+Local dds_img1:TImage=LoadAnimImageDDS("../media/boomstrip1.dds",64,64,0,39)
+Local dds_img3:TImage=LoadAnimImageDDS("../media/boomstrip3.dds",64,64,0,39)
+Local dds_img5:TImage=LoadAnimImageDDS("../media/boomstrip5.dds",64,64,0,39)
+Local dds_img_bgra:TImage=LoadAnimImageDDS("../media/boomstrip_bgra.dds",64,64,0,39) ' bgra is preferred to rgba
 
 ' main loop
 While Not KeyDown(KEY_ESCAPE)
@@ -66,8 +69,10 @@ While Not KeyDown(KEY_ESCAPE)
 	RenderWorld
 	
 	BeginMax2D()
-	DrawImage dds_img,100,100,frame3
-	'DrawPixmap dxt1_tex.pixmap,200,200
+	DrawImage dds_img1,200,100,frame3
+	DrawImage dds_img3,300,100,frame3
+	DrawImage dds_img5,400,100,frame3
+	DrawImage dds_img_bgra,500,100,frame3
 	Text 0,20,"Arrows: turn cubes, anim texture frame="+frame
 	EndMax2D()
 		
