@@ -56,7 +56,8 @@ Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds")
 Local dds_img5:TImage=LoadImageDDS("../media/dxt5.dds")
 Local dds_img_rgba:TImage=LoadImageDDS("../media/dds_rgba.dds")
 Local dds_alpha:TImage=LoadImageDDS("../media/smoke_dxt5.dds")
-Local non_dds_alpha:TImage=LoadImage("../media/smoke.png")
+
+Local non_dds_alpha:TImage=LoadImage("../media/smoke.png") ' note: load compressed dds before non-dds to avoid crash in GL 2.0
 
 ' main loop
 While Not KeyHit(KEY_ESCAPE)
