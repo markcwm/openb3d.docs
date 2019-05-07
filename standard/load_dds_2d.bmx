@@ -22,9 +22,9 @@ Local dds_img_rgba:TImage=LoadImageDDS("../media/dds_rgba.dds")
 Local dds_alpha:TImage=LoadImageDDS("../media/smoke_dxt5.dds")
 
 Local dds_ani_img_bgra:TImage=LoadAnimImageDDS("../media/boomstrip_bgra.dds",64,64,0,39) ' bgra is preferred to rgba
-Local dds_ani_img3:TImage=LoadAnimImageDDS("../media/boomstrip3.dds",64,64,0,39)
-Local dds_ani_img1:TImage=LoadAnimImageDDS("../media/boomstrip1.dds",64,64,0,39)
-Local dds_ani_img5:TImage=LoadAnimImageDDS("../media/boomstrip5.dds",64,64,0,39)
+Local dds_ani_img3:TImage=LoadAnimImageDDS("../media/boomstrip_dxt3.dds",64,64,0,39)
+Local dds_ani_img1:TImage=LoadAnimImageDDS("../media/boomstrip_dxt1.dds",64,64,0,39)
+Local dds_ani_img5:TImage=LoadAnimImageDDS("../media/boomstrip_dxt5.dds",64,64,0,39)
 
 Local non_dds_alpha:TImage=LoadImage("../media/smoke.png") ' note: load compressed dds before non-dds to avoid crash in GL 2.0
 

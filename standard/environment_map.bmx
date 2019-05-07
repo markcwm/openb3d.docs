@@ -65,8 +65,9 @@ framesize=PixmapHeight(pix)/2 ' 3 * 2 cubemap layout
 TextureLoader "frames",0,1,2,3,4,5 ' set cubemap frames in sequence and reorder faces instead
 TextureLoader "faces",0,5,2,1,3,4 ' set cubemap faces, lf-x, fr+z, rt+x, bk-z, dn-y, up+y
 
-'TextureLoader "noflipcubemap" ' note: cubemap textures get auto-flipped, this flag disables flipping
-' flipping in an image editor should optimize loading but I found it is the same speed
+'TextureLoader "noflipcubemap"
+' note: cubemap textures are auto-flipped (vertically inverted), this flag disables it
+' flipping in an image editor should optimize loading - but my tests were the same speed
 
 Local tex2:TTexture=LoadAnimTexture(skymap,1+128,framesize,framesize,0,1)
 

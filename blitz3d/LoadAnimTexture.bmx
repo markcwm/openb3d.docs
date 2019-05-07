@@ -4,7 +4,7 @@ Strict
 
 Framework Openb3dmax.B3dglgraphics
 
-Incbin "../media/boomstrip3.dds"
+Incbin "../media/boomstrip_dxt5.dds"
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
@@ -19,7 +19,7 @@ PositionEntity cube,-2,0,5
 Local cube2:TMesh=CreateCube()
 PositionEntity cube2,2,0,5
 
-TextureLoader "cpp" ' note: no dds anim texture support in cpp mode
+TextureLoader "cpp"
 
 Local tex:TTexture=LoadAnimTexture("../media/boomstrip.bmp",49,64,64,0,39 )
 EntityTexture cube2,tex
@@ -28,14 +28,14 @@ TextureLoader "bmx"
 
 ' Load anim texture
 Local oldtime%=MilliSecs()
-Local anim_tex:TTexture=LoadAnimTexture( "incbin::../media/boomstrip3.dds",49,64,64,0,39 )
+Local anim_tex:TTexture=LoadAnimTexture( "incbin::../media/boomstrip_dxt5.dds",49,64,64,0,39 )
 
 Local frame%,frame2%,frame3%
 Local pitch#,yaw#,roll#
 
-Local dds_img1:TImage=LoadAnimImageDDS("../media/boomstrip1.dds",64,64,0,39)
-Local dds_img3:TImage=LoadAnimImageDDS("../media/boomstrip3.dds",64,64,0,39)
-Local dds_img5:TImage=LoadAnimImageDDS("../media/boomstrip5.dds",64,64,0,39)
+Local dds_img1:TImage=LoadAnimImageDDS("../media/boomstrip_dxt1.dds",64,64,0,39)
+Local dds_img3:TImage=LoadAnimImageDDS("../media/boomstrip_dxt3.dds",64,64,0,39)
+Local dds_img5:TImage=LoadAnimImageDDS("../media/boomstrip_dxt5.dds",64,64,0,39)
 Local dds_img_bgra:TImage=LoadAnimImageDDS("../media/boomstrip_bgra.dds",64,64,0,39) ' bgra is preferred to rgba
 
 ' main loop

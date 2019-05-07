@@ -9,22 +9,22 @@ Framework Openb3dmax.B3dglgraphics
 Local width%=DesktopWidth()/1.0, height%=DesktopHeight()/1.0, depth%=0, Mode%=2, hertz%=60
 Local flags%=GRAPHICS_BACKBUFFER|GRAPHICS_ALPHABUFFER|GRAPHICS_DEPTHBUFFER|GRAPHICS_STENCILBUFFER|GRAPHICS_ACCUMBUFFER
 
-?win32
-	THardwareInfo.GetInfo() ' needed for initial check
-	If THardwareInfo.MultisampleSupport Then flags:|GRAPHICS_MULTISAMPLE2X Else DebugLog " No multisample antialiasing"
-?macos
-	DebugLog " No multisample antialiasing"
-?linux
-	DebugLog " No multisample antialiasing"
-?
-
 GLShareContexts() ' multiple contexts for 2 windows - the hidden window is needed to initialize multisample mode
 
 SetGraphicsDriver GLMax2DDriver()
 Local gfx_hidden:TGraphics=CreateGraphics( 300,200,0,60,GRAPHICS_BACKBUFFER|GRAPHICS_HIDDEN )
-SetGraphics gfx_hidden
+SetGraphics gfx_hidden ' need to call this before GetInfo() in windows
+THardwareInfo.GetInfo() ' multisample flag has to be passed to graphics window
 
-Graphics3D width,height,depth,mode,60,flags ' this function should only be called at init
+?win32
+	If THardwareInfo.MultisampleSupport Then flags:|GRAPHICS_MULTISAMPLE2X Else DebugLog " Multisample antialiasing not found"
+?macos
+	DebugLog " Multisample antialiasing not supported"
+?linux
+	DebugLog " Multisample antialiasing not supported"
+?
+
+Graphics3D width,height,depth,mode,60,flags ' note: this function should only be called once
 
 Local cam:TCamera=CreateCamera()
 PositionEntity cam,0,0,-5
