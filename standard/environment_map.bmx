@@ -20,7 +20,7 @@ LightRange light,10
 Local old_ms%=MilliSecs()
 Local renders%, fps%
 
-Local skymap$="incbin::../media/cubemap_skybox.png"
+Local skymap$="../media/cubemap_skybox.png"
 Local pix:TPixmap=LoadPixmap(skymap)
 Local framesize%=PixmapHeight(pix)/3 ' 4 * 3 cross cubemap layout
 
@@ -48,9 +48,11 @@ PositionEntity ground,0,-10,0
 Local ground_tex:TTexture=LoadAnimTexture( skymap,1+8,framesize,framesize,3,1 )
 EntityTexture ground,ground_tex
 
-skymap="incbin::../media/cubemap_skybox.png"
+skymap="../media/cubemap_skybox.png"
 pix=LoadPixmap(skymap)
 framesize=PixmapHeight(pix)/3 ' 4 * 3 cross cubemap layout
+
+'TextureLoader "cpp" ' cubemaps have same support in cpp
 
 TextureLoader "frames",4,5,6,7,9,1 ' set first cubemap frame (up) as last, skipping blank frames 0, 2, 3, 8, 10, 11
 TextureLoader "faces",0,1,2,3,4,5 ' set cubemap faces, lf-x, fr+z, rt+x, bk-z, dn-y, up+y
@@ -70,6 +72,8 @@ TextureLoader "faces",0,5,2,1,3,4 ' set cubemap faces, lf-x, fr+z, rt+x, bk-z, d
 ' flipping in an image editor should optimize loading - but my tests were the same speed
 
 Local tex2:TTexture=LoadAnimTexture(skymap,1+128,framesize,framesize,0,1)
+
+TextureLoader "bmx"
 
 Local cubemap_time%=Abs(MilliSecs() - old_ms)
 
