@@ -28,7 +28,7 @@ PositionEntity dxt3,5,0,0
 PositionEntity dxt5,0,0,0
 PositionEntity rgba,0,5,0
 
-'TextureLoader "cpp"
+TextureLoader "cpp"
 
 Local file1$="incbin::../media/dxt1.dds"
 Local file2$="incbin::../media/dxt3.dds"
@@ -50,6 +50,9 @@ EntityTexture dxt1,dxt1_tex
 EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
+
+ImageLoader "ddsimage" ' using DDS tweaked glmax2d
+'ImageLoader "noddsimage" ' using vanilla glmax2d
 
 Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds")
 Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds")
