@@ -33,9 +33,6 @@ Local anim_tex:TTexture=LoadAnimTexture( "../media/boomstrip_dxt5.dds",49,64,64,
 Local frame%,frame2%,frame3%
 Local pitch#,yaw#,roll#
 
-ImageLoader "ddsimage" ' using DDS tweaked glmax2d
-'ImageLoader "noddsimage" ' using vanilla glmax2d
-
 Local dds_img1:TImage=LoadAnimImageDDS("../media/boomstrip_dxt1.dds",64,64,0,39)
 Local dds_img3:TImage=LoadAnimImageDDS("../media/boomstrip_dxt3.dds",64,64,0,39)
 Local dds_img5:TImage=LoadAnimImageDDS("../media/boomstrip_dxt5.dds",64,64,0,39)

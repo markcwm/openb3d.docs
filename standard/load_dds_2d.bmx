@@ -13,9 +13,6 @@ SetGraphicsDriver( GLMax2DDriver(),flags ) ' mixed 2d/3d
 Local gfx_obj:TGraphics=Graphics( width,height,depth,rate,flags ) ' gfx object
 glewInit() ' required for ARB funcs
 
-ImageLoader "ddsimage" ' using DDS tweaked glmax2d
-'ImageLoader "noddsimage" ' using vanilla glmax2d
-
 Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds")
 Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds")
 Local dds_img5:TImage=LoadImageDDS("../media/dxt5.dds")
