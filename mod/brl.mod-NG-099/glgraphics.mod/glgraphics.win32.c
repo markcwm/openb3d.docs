@@ -1,7 +1,9 @@
+
 #include <windows.h>
+
 #include <gl/gl.h>
 
-#include <brl.mod/system.mod/system.h>
+#include <brl.mod/systemdefault.mod/system.h>
 
 enum{
 	_BACKBUFFER=	0x2,
@@ -14,7 +16,7 @@ enum{
 	_MULTISAMPLE4X=	0x80,
 	_MULTISAMPLE8X=	0x100,
 	_MULTISAMPLE16X=0x200,
-	_HIDDEN=		0x400
+	_HIDDEN=0x400,
 };
 
 enum{
@@ -24,12 +26,9 @@ enum{
 	MODE_DISPLAY
 };
 
-
-//--------------------------------------------------------------
-// EDITED SECTION
-//--------------------------------------------------------------
-
-
+//------------
+// NEW SECTION
+//------------
 
 #define WGL_NUMBER_PIXEL_FORMATS_ARB        0x2000
 #define WGL_DRAW_TO_WINDOW_ARB              0x2001
@@ -83,25 +82,20 @@ enum{
 #define WGL_SAMPLE_BUFFERS_ARB              0x2041
 #define WGL_SAMPLES_ARB                     0x2042
 
-static BOOL _wglChoosePixelFormatARB( int hDC, const int *intAttribs, const FLOAT *floatAttribs, unsigned int maxFormats, int *lPixelFormat, unsigned int *numFormats)
-{
+static BOOL _wglChoosePixelFormatARB( int hDC, const int *intAttribs, const FLOAT *floatAttribs, unsigned int maxFormats, int *lPixelFormat, unsigned int *numFormats){
 	//Define function pointer datatype
 	typedef BOOL (APIENTRY * WGLCHOOSEPIXELFORMATARB) (int hDC, const int *intAttribs, const FLOAT *floatAttribs, unsigned int maxFormats, int *lPixelFormat, unsigned int *numFormats);
 
 	//Get the "wglChoosePixelFormatARB" function
 	WGLCHOOSEPIXELFORMATARB wglChoosePixelFormatARB = (WGLCHOOSEPIXELFORMATARB)wglGetProcAddress("wglChoosePixelFormatARB");
-	if (wglChoosePixelFormatARB){
+	if(wglChoosePixelFormatARB)
 		return wglChoosePixelFormatARB(hDC, intAttribs, floatAttribs, maxFormats, lPixelFormat, numFormats);
-	}else{
-		//MessageBox(0,"wglChoosePixelFormatARB() function not found!","Error",0);
-		BBString *bbstr=bbStringFromCString("wglChoosePixelFormatARB() function not found!");
-		bbOnDebugLog(bbstr);
-	}
+	else
+		MessageBox(0,"wglChoosePixelFormatARB() function not found!","Error",0);
 	return 0;
 }
 
-static int MyChoosePixelFormat( int hDC, const int flags )
-{
+static int MyChoosePixelFormat( int hDC, const int flags ){
 	//Extract multisample mode from flags 
 	int multisample = 0;
 	if (_MULTISAMPLE2X & flags) multisample = 2;
@@ -130,21 +124,19 @@ static int MyChoosePixelFormat( int hDC, const int flags )
 	if (result > 0){
 		return lPixelFormat;
 	}else{
-		//MessageBox(0,"wglChoosePixelFormatARB() failed.","Error",MB_OK);
-		BBString *bbstr=bbStringFromCString("wglChoosePixelFormatARB() failed.");
-		bbOnDebugLog(bbstr);
+		MessageBox(0,"wglChoosePixelFormatARB() failed.","Error",MB_OK);
 		return 0;
 	}
 }
 
-
-
-//--------------------------------------------------------------
+//------------
 //
-//--------------------------------------------------------------
+//------------
 
+extern int _bbusew;
 
 static const char *CLASS_NAME="BlitzMax GLGraphics";
+static const wchar_t *CLASS_NAMEW=L"BlitzMax GLGraphics";
 
 typedef struct BBGLContext BBGLContext;
 
@@ -167,8 +159,12 @@ void bbGLGraphicsClose( BBGLContext *context );
 void bbGLGraphicsGetSettings( BBGLContext *context,int *width,int *height,int *depth,int *hertz,int *flags );
 void bbGLGraphicsSetGraphics( BBGLContext *context );
 
-static const char *_appTitle(){
-	return bbStringToCString( bbAppTitle );
+static const char *appTitle(){
+	return bbTmpCString( bbAppTitle );
+}
+
+static const wchar_t *appTitleW(){
+	return bbTmpWString( bbAppTitle );
 }
 
 static void _initPfd( PIXELFORMATDESCRIPTOR *pfd,int flags ){
@@ -187,7 +183,6 @@ static void _initPfd( PIXELFORMATDESCRIPTOR *pfd,int flags ){
 	pfd->cDepthBits=(flags & _DEPTHBUFFER) ? 1 : 0;
 	pfd->cStencilBits=(flags & _STENCILBUFFER) ? 1 : 0;
 	pfd->cAccumBits=(flags & _ACCUMBUFFER) ? 1 : 0;
-
 }
 
 static int _setSwapInterval( int n ){
@@ -198,14 +193,15 @@ static int _setSwapInterval( int n ){
 static _stdcall long _wndProc( HWND hwnd,UINT msg,WPARAM wp,LPARAM lp ){
 
 	static HWND _fullScreen;
-	
+
 	BBGLContext *c;
-	
 	for( c=_contexts;c && c->hwnd!=hwnd;c=c->succ ){}
-	if( !c ) return DefWindowProc( hwnd,msg,wp,lp );
+	if( !c ){
+		return _bbusew ? DefWindowProcW( hwnd,msg,wp,lp ) : DefWindowProc( hwnd,msg,wp,lp );
+	}
 
 	bbSystemEmitOSEvent( hwnd,msg,wp,lp,&bbNullObject );
-	
+
 	switch( msg ){
 	case WM_CLOSE:
 		return 0;
@@ -259,28 +255,50 @@ static _stdcall long _wndProc( HWND hwnd,UINT msg,WPARAM wp,LPARAM lp ){
 	case WM_PAINT:
 		ValidateRect( hwnd,0 );
 		return 0;
-	case WM_LBUTTONDOWN:case WM_RBUTTONDOWN:case WM_MBUTTONDOWN:
+	case WM_LBUTTONDOWN: case WM_RBUTTONDOWN: case WM_MBUTTONDOWN:
 		if( !_fullScreen ) SetCapture( hwnd );
 		return 0;
-	case WM_LBUTTONUP:case WM_RBUTTONUP:case WM_MBUTTONUP:
+	case WM_LBUTTONUP: case WM_RBUTTONUP: case WM_MBUTTONUP:
 		if( !_fullScreen ) ReleaseCapture();
 		return 0;
 	}
-	return DefWindowProc( hwnd,msg,wp,lp );
+	return _bbusew ? DefWindowProcW( hwnd,msg,wp,lp ) : DefWindowProc( hwnd,msg,wp,lp );
 }
 
 static void _initWndClass(){
 	static int _done;
 	if( _done ) return;
-    WNDCLASS wc={0};
-	wc.style=CS_HREDRAW|CS_VREDRAW|CS_OWNDC;
-	wc.lpfnWndProc=(WNDPROC)_wndProc;
-	wc.hInstance=GetModuleHandle(0);
-	wc.lpszClassName=CLASS_NAME;
-	wc.hCursor=(HCURSOR)LoadCursor( 0,IDC_ARROW );
-	wc.hbrBackground=0;//(HBRUSH)GetStockObject(BLACK_BRUSH);
-	if( !RegisterClass( &wc ) ) exit(-1);
+
+	if( _bbusew ){
+		WNDCLASSEXW wc={sizeof(wc)};
+		wc.style=CS_HREDRAW|CS_VREDRAW|CS_OWNDC;
+		wc.lpfnWndProc=(WNDPROC)_wndProc;
+		wc.hInstance=GetModuleHandle(0);
+		wc.lpszClassName=CLASS_NAMEW;
+		wc.hCursor=(HCURSOR)LoadCursor( 0,IDC_ARROW );
+		wc.hbrBackground=0;
+		if( !RegisterClassExW( &wc ) ) exit( -1 );
+	}else{
+		WNDCLASSEX wc={sizeof(wc)};
+		wc.style=CS_HREDRAW|CS_VREDRAW|CS_OWNDC;
+		wc.lpfnWndProc=(WNDPROC)_wndProc;
+		wc.hInstance=GetModuleHandle(0);
+		wc.lpszClassName=CLASS_NAME;
+		wc.hCursor=(HCURSOR)LoadCursor( 0,IDC_ARROW );
+		wc.hbrBackground=0;
+		if( !RegisterClassEx( &wc ) ) exit( -1 );
+	}
+
 	_done=1;
+}
+
+static void _validateSize( BBGLContext *context ){
+	if( context->mode==MODE_WIDGET ){
+		RECT rect;
+		GetClientRect( context->hwnd,&rect );
+		context->width=rect.right-rect.left;
+		context->height=rect.bottom-rect.top;
+	}
 }
 
 void bbGLGraphicsShareContexts(){
@@ -295,22 +313,21 @@ void bbGLGraphicsShareContexts(){
 	
 	_initWndClass();
 	
-	hwnd=CreateWindowEx( 
-		0,CLASS_NAME,0,
-		WS_POPUP,0,0,1,1,0,0,GetModuleHandle(0),0 );
+	if( _bbusew ){
+		hwnd=CreateWindowExW( 0,CLASS_NAMEW,0,WS_POPUP,0,0,1,1,0,0,GetModuleHandle(0),0 );
+	}else{
+		hwnd=CreateWindowEx( 0,CLASS_NAME,0,WS_POPUP,0,0,1,1,0,0,GetModuleHandle(0),0 );
+	}
 		
 	_initPfd( &pfd,0 );
 	
 	hdc=GetDC( hwnd );
-	
 	pf=ChoosePixelFormat( hdc,&pfd );
-	
 	if( !pf ){
 		exit(0);
 		DestroyWindow( hwnd );
 		return;
 	}
-
 	SetPixelFormat( hdc,pf,&pfd );
 	hglrc=wglCreateContext( hdc );
 	if( !hglrc ) exit(0);
@@ -325,15 +342,6 @@ void bbGLGraphicsShareContexts(){
 	_sharedContext->hdc=hdc;
 	_sharedContext->hwnd=hwnd;
 	_sharedContext->hglrc=hglrc;
-}
-
-static void _validateSize( BBGLContext *context ){
-	if( context->mode==MODE_WIDGET ){
-		RECT rect;
-		GetClientRect( context->hwnd,&rect );
-		context->width=rect.right-rect.left;
-		context->height=rect.bottom-rect.top;
-	}
 }
 
 int bbGLGraphicsGraphicsModes( int *modes,int count ){
@@ -366,13 +374,12 @@ BBGLContext *bbGLGraphicsAttachGraphics( HWND hwnd,int flags ){
 	PIXELFORMATDESCRIPTOR pfd;
 	RECT rect;
 	
-	bbGLGraphicsShareContexts();
+	_initWndClass();
 	
 	hdc=GetDC( hwnd );
 	if( !hdc ) return 0;
 	
 	_initPfd( &pfd,flags );
-	
 
 	int multisample = 0;
 	if (_MULTISAMPLE2X & flags) multisample = 2;
@@ -384,11 +391,11 @@ BBGLContext *bbGLGraphicsAttachGraphics( HWND hwnd,int flags ){
 	}else{
 		pf=ChoosePixelFormat( hdc,&pfd );
 	}
-
 	if( !pf ) return 0;
 	SetPixelFormat( hdc,pf,&pfd );
 	hglrc=wglCreateContext( hdc );
-	wglShareLists( _sharedContext->hglrc,hglrc );
+	
+	if( _sharedContext ) wglShareLists( _sharedContext->hglrc,hglrc );
 	
 	GetClientRect( hwnd,&rect );
 	
@@ -423,37 +430,46 @@ BBGLContext *bbGLGraphicsCreateGraphics( int width,int height,int depth,int hert
 	int hwnd_style;
 	RECT rect={0,0,width,height};
 	
-	bbGLGraphicsShareContexts();
+	_initWndClass();
 	
 	if( depth ){
 		mode=MODE_DISPLAY;
 		hwnd_style=WS_POPUP;
 	}else{
+		HWND desktop = GetDesktopWindow();
+		RECT desktopRect;
+		GetWindowRect(desktop, &desktopRect);
+
+		rect.left=desktopRect.right/2-width/2;		
+		rect.top=desktopRect.bottom/2-height/2;		
+		rect.right=rect.left+width;
+		rect.bottom=rect.top+height;
+		
 		mode=MODE_WINDOW;
-		hwnd_style=WS_CAPTION|WS_SYSMENU;
-		rect.left+=32;
-		rect.top+=32;
-		rect.right+=32;
-		rect.bottom+=32;
+		hwnd_style=WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX;
 	}
 		
 	AdjustWindowRectEx( &rect,hwnd_style,0,0 );
-
-	hwnd=CreateWindowEx( 
-		0,CLASS_NAME,_appTitle(),
-		hwnd_style,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top,0,0,GetModuleHandle(0),0 );
+	
+	if( _bbusew ){
+		hwnd=CreateWindowExW( 
+			0,CLASS_NAMEW,appTitleW(),
+			hwnd_style,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top,0,0,GetModuleHandle(0),0 );
+	}else{
+		hwnd=CreateWindowEx( 
+			0,CLASS_NAME,appTitle(),
+			hwnd_style,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top,0,0,GetModuleHandle(0),0 );
+	}
 		
 	if( !hwnd ) return 0;
-	
+
 	GetClientRect( hwnd,&rect );
 	width=rect.right-rect.left;
 	height=rect.bottom-rect.top;
-	
+		
 	_initPfd( &pfd,flags );
 
 	hdc=GetDC( hwnd );
-
-
 	int multisample = 0;
 	if (_MULTISAMPLE2X & flags) multisample = 2;
 	else if (_MULTISAMPLE4X & flags) multisample = 4;
@@ -464,14 +480,14 @@ BBGLContext *bbGLGraphicsCreateGraphics( int width,int height,int depth,int hert
 	}else{
 		pf=ChoosePixelFormat( hdc,&pfd );
 	}
-
 	if( !pf ){
 		DestroyWindow( hwnd );
 		return 0;
 	}
 	SetPixelFormat( hdc,pf,&pfd );
 	hglrc=wglCreateContext( hdc );
-	wglShareLists( _sharedContext->hglrc,hglrc );
+	
+	if( _sharedContext ) wglShareLists( _sharedContext->hglrc,hglrc );
 	
 	context=(BBGLContext*)malloc( sizeof(BBGLContext) );
 	memset( context,0,sizeof(context) );
@@ -490,15 +506,12 @@ BBGLContext *bbGLGraphicsCreateGraphics( int width,int height,int depth,int hert
 	context->succ=_contexts;
 	_contexts=context;
 	
-	//if ((_HIDDEN & flags)==0) 
-
 	if (_HIDDEN & flags){
 		//MessageBox(0,"HIDDEN","",0);
 	}else{
 		//MessageBox(0,"SHOWN","",0);
 		ShowWindow( hwnd,SW_SHOW );
 	}
-
 	return context;
 }
 
@@ -530,6 +543,17 @@ void bbGLGraphicsClose( BBGLContext *context ){
 	*p=t->succ;
 }
 
+void bbGLGraphicsSwapSharedContext(){
+
+	if( wglGetCurrentContext()!=_sharedContext->hglrc ){
+		wglMakeCurrent( _sharedContext->hdc,_sharedContext->hglrc );
+	}else if( _currentContext ){
+		wglMakeCurrent( _currentContext->hdc,_currentContext->hglrc );
+	}else{
+		wglMakeCurrent( 0,0 );
+	}
+}
+
 void bbGLGraphicsSetGraphics( BBGLContext *context ){
 
 	if( context==_currentContext ) return;
@@ -544,27 +568,19 @@ void bbGLGraphicsSetGraphics( BBGLContext *context ){
 }
 
 void bbGLGraphicsFlip( int sync ){
-
-	static int _sync=-1;
-
 	if( !_currentContext ) return;
 	
+	_setSwapInterval( sync ? 1 : 0 );
+	
+	/*
+	static int _sync=-1;
+
 	sync=sync ? 1 : 0;
 	if( sync!=_sync ){
 		_sync=sync;
 		_setSwapInterval( _sync );
 	}
+	*/
 
 	SwapBuffers( _currentContext->hdc );
-}
-
-void bbGLGraphicsSwapSharedContext(){
-
-	if( wglGetCurrentContext()!=_sharedContext->hglrc ){
-		wglMakeCurrent( _sharedContext->hdc,_sharedContext->hglrc );
-	}else if( _currentContext ){
-		wglMakeCurrent( _currentContext->hdc,_currentContext->hglrc );
-	}else{
-		wglMakeCurrent( 0,0 );
-	}
 }
