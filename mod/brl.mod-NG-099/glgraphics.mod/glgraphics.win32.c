@@ -506,12 +506,8 @@ BBGLContext *bbGLGraphicsCreateGraphics( int width,int height,int depth,int hert
 	context->succ=_contexts;
 	_contexts=context;
 	
-	if (_HIDDEN & flags){
-		//MessageBox(0,"HIDDEN","",0);
-	}else{
-		//MessageBox(0,"SHOWN","",0);
-		ShowWindow( hwnd,SW_SHOW );
-	}
+	ShowWindow( hwnd,SW_SHOW );
+	
 	return context;
 }
 
