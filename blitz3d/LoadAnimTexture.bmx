@@ -4,7 +4,7 @@ Strict
 
 Framework Openb3dmax.B3dglgraphics
 
-Incbin "../media/boomstrip_dxt5.dds"
+'Incbin "../media/boomstrip_dxt5_nomip.dds"
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
@@ -19,24 +19,30 @@ PositionEntity cube,-2,0,5
 Local cube2:TMesh=CreateCube()
 PositionEntity cube2,2,0,5
 
-TextureLoader "cpp"
+'TextureLoader "cpp" ' default loader is "bmx"
 
-Local tex:TTexture=LoadAnimTexture("../media/boomstrip.bmp",49,64,64,0,39 )
+ClearTextureFilters ' remove 1+8 default flags
+
+Local tex_flags%=1+16+32
+'tex_flags=1+8 ' test mipmaps - boomstrip_dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
+
+Local tex:TTexture=LoadAnimTexture("../media/boomstrip.bmp",tex_flags,64,64,0,39)
 EntityTexture cube2,tex
-
-'TextureLoader "bmx"
 
 ' Load anim texture
 Local oldtime%=MilliSecs()
-Local anim_tex:TTexture=LoadAnimTexture( "../media/boomstrip_dxt5.dds",49,64,64,0,39 )
+Local anim_tex:TTexture=LoadAnimTexture("../media/boomstrip_dxt5_nomip.dds",tex_flags,64,64,0,39)
+
+Local img_flags%=FILTEREDIMAGE
+'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - boomstrip_dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
 
 Local frame%,frame2%,frame3%
 Local pitch#,yaw#,roll#
 
-Local dds_img1:TImage=LoadAnimImageDDS("../media/boomstrip_dxt1.dds",64,64,0,39)
-Local dds_img3:TImage=LoadAnimImageDDS("../media/boomstrip_dxt3.dds",64,64,0,39)
-Local dds_img5:TImage=LoadAnimImageDDS("../media/boomstrip_dxt5.dds",64,64,0,39)
-Local dds_img_bgra:TImage=LoadAnimImageDDS("../media/boomstrip_bgra.dds",64,64,0,39) ' bgra is preferred to rgba
+Local dds_img1:TImage=LoadAnimImageDDS("../media/boomstrip_dxt1.dds",64,64,0,39,img_flags)
+Local dds_img3:TImage=LoadAnimImageDDS("../media/boomstrip_dxt3.dds",64,64,0,39,img_flags)
+Local dds_img5:TImage=LoadAnimImageDDS("../media/boomstrip_dxt5_nomip.dds",64,64,0,39,img_flags)
+Local dds_img_bgra:TImage=LoadAnimImageDDS("../media/boomstrip_bgra.dds",64,64,0,39,img_flags) ' bgra is preferred to rgba
 
 ' main loop
 While Not KeyDown(KEY_ESCAPE)
@@ -69,10 +75,13 @@ While Not KeyDown(KEY_ESCAPE)
 	RenderWorld
 	
 	BeginMax2D()
+	SetBlend ALPHABLEND
 	DrawImage dds_img1,200,100,frame3
 	DrawImage dds_img3,300,100,frame3
 	DrawImage dds_img5,400,100,frame3
 	DrawImage dds_img_bgra,500,100,frame3
+	
+	SetBlend SOLIDBLEND
 	Text 0,20,"Arrows: turn cubes, anim texture frame="+frame
 	EndMax2D()
 		
