@@ -9,12 +9,12 @@ Import Openb3dmax.stbimageloader
 Local width%=800, height%=600, depth%=0, rate%=60
 Local flags%=GRAPHICS_BACKBUFFER|GRAPHICS_ALPHABUFFER|GRAPHICS_DEPTHBUFFER|GRAPHICS_STENCILBUFFER|GRAPHICS_ACCUMBUFFER
 
-SetGraphicsDriver( GLMax2DDriver(),flags ) ' mixed 2d/3d
-Local gfx_obj:TGraphics=Graphics( width,height,depth,rate,flags ) ' gfx object
+SetGraphicsDriver( GLMax2DDriver(),flags )
+Local gfx_obj:TGraphics=Graphics( width,height,depth,rate,flags )
 glewInit() ' required for ARB funcs
 
-Local img_flags%=FILTEREDIMAGE ' warning: mipmapped images don't work properly in GL 2.0
-'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - try loading dxt5_nomip.dds files as they have no mipmaps
+Local img_flags%=FILTEREDIMAGE ' warning: mipmapped images don't load correctly in GL 2.0 but non-mipmapped works
+'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - dxt5_nomip.dds has no mipmaps
 
 Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds",img_flags)
 Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds",img_flags)

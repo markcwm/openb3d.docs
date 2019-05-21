@@ -5,9 +5,6 @@ Strict
 Framework Openb3dmax.B3dglgraphics
 
 'Incbin "../media/dxt1.dds"
-'Incbin "../media/dxt3.dds"
-'Incbin "../media/dxt5_nomip.dds"
-'Incbin "../media/dds_rgba.dds"
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
@@ -17,6 +14,9 @@ CameraClsColor camera,100,150,200
 
 Local light:TLight=CreateLight()
 TurnEntity light,45,45,0
+
+ClearTextureFilters ' remove default 1+8 flags to load non-mipmapped textures
+TextureFilter "",1 ' always have at least one filter loaded or can randomly crash in GL 2.0
 
 Local dxt1:TMesh=CreateCube()
 Local dxt3:TMesh=CreateCube()
@@ -30,11 +30,8 @@ PositionEntity rgba,0,5,0
 
 'TextureLoader "cpp" ' default loader is "bmx"
 
-ClearTextureFilters ' remove 1+8 default flags
-TextureFilter "",1 ' always have at least one filter
-
 Local tex_flags%=1
-tex_flags=1+8 ' test mipmaps - try loading dxt5_nomip.dds as it has no mipmaps
+tex_flags:+8 ' test mipmaps - dxt5_nomip.dds has no mipmaps
 
 Local dxt1_tex:TTexture=LoadTexture("../media/dxt1.dds",tex_flags)
 Local dxt3_tex:TTexture=LoadTexture("../media/dxt3.dds",tex_flags)
@@ -46,8 +43,8 @@ EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
 
-Local img_flags%=FILTEREDIMAGE ' warning: mipmapped images don't work properly in GL 2.0
-'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - try loading dxt5_nomip.dds as it has no mipmaps
+Local img_flags%=FILTEREDIMAGE ' warning: mipmapped images don't load correctly in GL 2.0 but non-mipmapped works
+'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - dxt5_nomip.dds has no mipmaps
 
 Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds",img_flags)
 Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds",img_flags)
