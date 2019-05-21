@@ -50,7 +50,7 @@ EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
 
-Local img_flags%=FILTEREDIMAGE ' note: mipmapping images don't work properly in GL 2.0
+Local img_flags%=FILTEREDIMAGE ' note: mipmapped images don't work properly in GL 2.0
 'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
 
 Local non_dds_alpha:TImage=LoadImage("../media/smoke.png",img_flags)
