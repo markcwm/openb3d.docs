@@ -4,7 +4,7 @@ Strict
 
 Framework Openb3dmax.B3dglgraphics
 
-'Incbin "../media/boomstrip_dxt5_nomip.dds"
+'Incbin "../media/boomstrip_dxt5.dds"
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
@@ -22,19 +22,20 @@ PositionEntity cube2,2,0,5
 'TextureLoader "cpp" ' default loader is "bmx"
 
 ClearTextureFilters ' remove 1+8 default flags
+TextureFilter "",1 ' always have at least one filter
 
 Local tex_flags%=1+16+32
-'tex_flags=1+8 ' test mipmaps - boomstrip_dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
+tex_flags:+8 ' test mipmaps - try loading boomstrip_dxt5_nomip.dds as it has no mipmaps
 
 Local tex:TTexture=LoadAnimTexture("../media/boomstrip.bmp",tex_flags,64,64,0,39)
 EntityTexture cube2,tex
 
 ' Load anim texture
 Local oldtime%=MilliSecs()
-Local anim_tex:TTexture=LoadAnimTexture("../media/boomstrip_dxt5_nomip.dds",tex_flags,64,64,0,39)
+Local anim_tex:TTexture=LoadAnimTexture("../media/boomstrip_dxt5.dds",tex_flags,64,64,0,39)
 
-Local img_flags%=FILTEREDIMAGE ' note: mipmapped images don't work properly in GL 2.0
-'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - boomstrip_dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
+Local img_flags%=FILTEREDIMAGE ' warning: mipmapped images don't work properly in GL 2.0
+'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - try loading boomstrip_dxt5_nomip.dds as it has no mipmaps
 
 Local frame%,frame2%,frame3%
 Local pitch#,yaw#,roll#

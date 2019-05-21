@@ -28,42 +28,49 @@ PositionEntity dxt3,5,0,0
 PositionEntity dxt5,0,0,0
 PositionEntity rgba,0,5,0
 
-Local file1$="../media/dxt1.dds"
-Local file2$="../media/dxt3.dds"
-Local file3$="../media/dxt5_nomip.dds"
-Local file4$="../media/dds_rgba.dds"
-
 'TextureLoader "cpp" ' default loader is "bmx"
 
 ClearTextureFilters ' remove 1+8 default flags
+TextureFilter "",1 ' always have at least one filter
 
 Local tex_flags%=1
-'tex_flags=1+8 ' test mipmaps - dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
+tex_flags=1+8 ' test mipmaps - try loading dxt5_nomip.dds as it has no mipmaps
 
-Local dxt1_tex:TTexture=LoadTexture(file1,tex_flags)
-Local dxt3_tex:TTexture=LoadTexture(file2,tex_flags)
-Local dxt5_tex:TTexture=LoadTexture(file3,tex_flags)
-Local rgba_tex:TTexture=LoadTexture(file4,tex_flags) ' uncompressed DDS
+Local dxt1_tex:TTexture=LoadTexture("../media/dxt1.dds",tex_flags)
+Local dxt3_tex:TTexture=LoadTexture("../media/dxt3.dds",tex_flags)
+Local dxt5_tex:TTexture=LoadTexture("../media/dxt5.dds",tex_flags)
+Local rgba_tex:TTexture=LoadTexture("../media/dds_rgba.dds",tex_flags) ' uncompressed DDS
 
 EntityTexture dxt1,dxt1_tex
 EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
 
-Local img_flags%=FILTEREDIMAGE ' note: mipmapped images don't work properly in GL 2.0
-'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
-
-Local non_dds_alpha:TImage=LoadImage("../media/smoke.png",img_flags)
-Local dds_alpha:TImage=LoadImageDDS("../media/smoke_dxt5.dds",img_flags)
+Local img_flags%=FILTEREDIMAGE ' warning: mipmapped images don't work properly in GL 2.0
+'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - try loading dxt5_nomip.dds as it has no mipmaps
 
 Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds",img_flags)
 Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds",img_flags)
 Local dds_img5:TImage=LoadImageDDS("../media/dxt5_nomip.dds",img_flags)
 Local dds_img_rgba:TImage=LoadImageDDS("../media/dds_rgba.dds",img_flags)
 
+'Local non_dds_alpha:TImage=LoadImage("../media/smoke.png",img_flags)
+Local dds_alpha:TImage=LoadImageDDS("../media/smoke_dxt5.dds",img_flags)
+
+Local dds_ani_img1:TImage=LoadAnimImageDDS("../media/boomstrip_dxt1.dds",64,64,0,39,img_flags)
+Local dds_ani_img3:TImage=LoadAnimImageDDS("../media/boomstrip_dxt3.dds",64,64,0,39,img_flags)
+Local dds_ani_img5:TImage=LoadAnimImageDDS("../media/boomstrip_dxt5_nomip.dds",64,64,0,39,img_flags)
+Local dds_ani_img_bgra:TImage=LoadAnimImageDDS("../media/boomstrip_bgra.dds",64,64,0,39,img_flags) ' bgra is preferred to rgba
+
+Local frame%,frame2%,frame3%
+
 ' main loop
 While Not KeyHit(KEY_ESCAPE)
 
+	frame=MilliSecs()/100 Mod 39
+	frame2=MilliSecs()/75 Mod 39
+	frame3=MilliSecs()/125 Mod 39
+	
 	' control camera
 	MoveEntity camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)
 	
@@ -85,7 +92,13 @@ While Not KeyHit(KEY_ESCAPE)
 	
 	SetScale 1,1
 	DrawImage dds_alpha,100,500
-	DrawImage non_dds_alpha,400,500
+	'DrawImage non_dds_alpha,400,500
+	
+	SetScale 0.5,0.5
+	DrawImage dds_ani_img1,100,450,frame3
+	DrawImage dds_ani_img3,200,450,frame3
+	DrawImage dds_ani_img5,300,450,frame3
+	DrawImage dds_ani_img_bgra,400,450,frame3
 	
 	SetBlend SOLIDBLEND
 	Text 0,20,"WASD: move camera"
