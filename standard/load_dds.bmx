@@ -50,15 +50,15 @@ EntityTexture dxt3,dxt3_tex
 EntityTexture dxt5,dxt5_tex
 EntityTexture rgba,rgba_tex
 
-Local img_flags%=FILTEREDIMAGE
+Local img_flags%=FILTEREDIMAGE ' note: mipmapping images don't work properly in GL 2.0
 'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
 
 Local non_dds_alpha:TImage=LoadImage("../media/smoke.png",img_flags)
 Local dds_alpha:TImage=LoadImageDDS("../media/smoke_dxt5.dds",img_flags)
 
 Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds",img_flags)
-Local dds_img3:TImage=LoadImageDDS("../media/dxt5_nomip.dds",img_flags)
-Local dds_img5:TImage=LoadImageDDS("../media/dxt3.dds",img_flags)
+Local dds_img3:TImage=LoadImageDDS("../media/dxt3.dds",img_flags)
+Local dds_img5:TImage=LoadImageDDS("../media/dxt5_nomip.dds",img_flags)
 Local dds_img_rgba:TImage=LoadImageDDS("../media/dds_rgba.dds",img_flags)
 
 ' main loop

@@ -13,7 +13,7 @@ SetGraphicsDriver( GLMax2DDriver(),flags ) ' mixed 2d/3d
 Local gfx_obj:TGraphics=Graphics( width,height,depth,rate,flags ) ' gfx object
 glewInit() ' required for ARB funcs
 
-Local img_flags%=FILTEREDIMAGE
+Local img_flags%=FILTEREDIMAGE ' note: mipmapping images don't work properly in GL 2.0
 'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - dxt5_nomip.dds files *shouldn't* load here as they have no mipmaps
 
 Local dds_img1:TImage=LoadImageDDS("../media/dxt1.dds",img_flags)

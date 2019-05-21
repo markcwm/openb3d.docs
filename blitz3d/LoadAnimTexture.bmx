@@ -33,7 +33,7 @@ EntityTexture cube2,tex
 Local oldtime%=MilliSecs()
 Local anim_tex:TTexture=LoadAnimTexture("../media/boomstrip_dxt5_nomip.dds",tex_flags,64,64,0,39)
 
-Local img_flags%=FILTEREDIMAGE
+Local img_flags%=FILTEREDIMAGE ' note: mipmapping images don't work properly in GL 2.0
 'img_flags=FILTEREDIMAGE|MIPMAPPEDIMAGE ' test mipmaps - boomstrip_dxt5_nomip.dds *shouldn't* load here as it has no mipmaps
 
 Local frame%,frame2%,frame3%
