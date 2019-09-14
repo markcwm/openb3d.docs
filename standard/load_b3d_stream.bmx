@@ -1,4 +1,4 @@
-' load_b3d.bmx
+' load_b3d_stream.bmx
 ' multiple meshes (single surfaces), boned/skeletal animation
 
 Strict

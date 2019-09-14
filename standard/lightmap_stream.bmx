@@ -1,4 +1,4 @@
-' lightmap.bmx
+' lightmap_stream.bmx
 ' lightmapped B3D
 
 Strict
@@ -23,8 +23,6 @@ Local light:TLight=CreateLight()
 Local mesh:TMesh, debug:String, oldtime:Int
 
 MeshLoader "debug"
-'MeshLoader "cpp"
-'TextureLoader "cpp"
 
 ' load anim mesh
 Local loader:Int=2 ' 0 to 2

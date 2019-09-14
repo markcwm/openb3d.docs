@@ -1,5 +1,5 @@
 ' load_3ds.bmx
-' note that there are two Blitzmax 3DS loaders, to enable the alternative one use MeshLoader "3ds2"
+' note: there are two BMX 3DS loaders, to enable the alternative use MeshLoader "3ds2" (but you shouldn't need it)
 
 Strict
 
@@ -18,6 +18,7 @@ Local mesh:TMesh, debug:String, oldtime:Int
 
 MeshLoader "debug" ' mesh loader debug info
 'MeshLoader "3ds2" ' alternative 3DS loader
+
 'MeshLoader "cpp" ' swap loaders, bmx or cpp
 'TextureLoader "cpp"
 
@@ -49,7 +50,7 @@ Select loader
 		
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
-	Default ' load crate mesh from library
+	Default ' load wcrate mesh from library
 		TextureLoader "cpp"
 		MeshLoader "cpp"
 		
