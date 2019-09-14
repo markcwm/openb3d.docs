@@ -1,9 +1,9 @@
 ' stencil.bmx
 ' stencil reflections
 
-Framework Openb3dmax.B3dglgraphics
-
 Strict
+
+Framework Openb3dmax.B3dglgraphics
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 

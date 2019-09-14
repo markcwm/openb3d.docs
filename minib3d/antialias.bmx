@@ -1,9 +1,9 @@
 ' antialias.bmx
 ' Software anti-aliasing with the accumulation buffer
 
-Framework Openb3dmax.B3dglgraphics
-
 Strict
+
+Framework Openb3dmax.B3dglgraphics
 
 Local width%=DesktopWidth(),height%=DesktopHeight(),depth%=0,Mode%=2
 
