@@ -4,6 +4,10 @@
 Strict
 
 Framework Openb3dmax.B3dglgraphics
+Import Koriolis.Zipstream
+
+Incbin "../media/zombie.b3d"
+Incbin "../media/Zombie.jpg"
 
 Graphics3D DesktopWidth(),DesktopHeight()
 
@@ -18,34 +22,29 @@ Local mesh:TMesh, debug:String, oldtime:Int
 
 MeshLoader "debug" ' mesh loader debug info
 
-Local loader:Int=1 ' 0 to 3
+Local loader:Int=2 ' 0 to 2
 Select loader
-	Case 1 ' load zombie mesh
+	Case 1 ' load incbin mesh
+		oldtime=MilliSecs()
+		Local file:String = "incbin::../media/zombie.b3d"
+		mesh=LoadAnimMesh(file)
+		
+		debug="incbin time="+(MilliSecs()-oldtime)
+		
+	Case 2 ' load zip mesh
+		oldtime=MilliSecs()
+		Local zipfile:String = "../media/zombie.zip"
+		Local file:String = "zip::"+zipfile+"//zombie.b3d"
+		mesh=LoadAnimMesh(file)
+		
+		debug="zip time="+(MilliSecs()-oldtime)
+		
+	Default ' load non-stream mesh
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/zombie.b3d")
 		
 		debug="b3d time="+(MilliSecs()-oldtime)
 		
-	Case 2 ' load Bird mesh
-		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/Bird.b3d")
-		
-		debug="b3d time="+(MilliSecs()-oldtime)
-		
-	Case 3 ' load castle1 mesh
-		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/castle1.b3d")
-		
-		debug="b3d time="+(MilliSecs()-oldtime)
-		
-	Default ' load zombie mesh from library
-		TextureLoader "cpp"
-		MeshLoader "cpp"
-		
-		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/zombie.b3d")
-		
-		debug="lib time="+(MilliSecs()-oldtime)
 EndSelect
 
 Local marker_ent:TMesh=CreateSphere(8)

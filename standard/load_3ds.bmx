@@ -4,10 +4,6 @@
 Strict
 
 Framework Openb3dmax.B3dglgraphics
-Import Koriolis.Zipstream
-
-Incbin "../media/rallycar1.3ds"
-Incbin "../media/RALLYCAR.JPG"
 
 Graphics3D DesktopWidth(),DesktopHeight()
 
@@ -25,7 +21,7 @@ MeshLoader "debug" ' mesh loader debug info
 'MeshLoader "cpp" ' swap loaders, bmx or cpp
 'TextureLoader "cpp"
 
-Local loader:Int=1 ' set 0 to 5
+Local loader:Int=1 ' 0 to 3
 Select loader
 	Case 1 ' load rallycar1 anim mesh
 		oldtime=MilliSecs()
@@ -53,26 +49,7 @@ Select loader
 		
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
-	Case 4 ' load incbin mesh
-		oldtime=MilliSecs()
-		Local file:String = "incbin::../media/rallycar1.3ds"
-		mesh=LoadMesh(file)
-		mesh.RotateMesh(90,0,0)
-		mesh.ScaleMesh(0.2,0.2,0.2)
-		
-		debug="incbin time="+(MilliSecs()-oldtime)
-		
-	Case 5 ' load zip anim mesh
-		oldtime=MilliSecs()
-		Local zipfile:String = "../media/rallycar.zip"
-		Local file:String = "zip::"+zipfile+"//rallycar1.3ds"
-		mesh=LoadAnimMesh(file)
-		mesh.RotateAnimMesh(90,0,0)
-		mesh.ScaleAnimMesh(0.2,0.2,0.2)
-		
-		debug="zip time="+(MilliSecs()-oldtime)
-		
-	Default ' load library mesh
+	Default ' load crate mesh from library
 		TextureLoader "cpp"
 		MeshLoader "cpp"
 		

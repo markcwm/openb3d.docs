@@ -1,9 +1,13 @@
-' load_b3d.bmx
-' multiple meshes (single surfaces), boned/skeletal animation
+' load_3ds.bmx
+' note that there are two Blitzmax 3DS loaders, to enable the alternative one use MeshLoader "3ds2"
 
 Strict
 
 Framework Openb3dmax.B3dglgraphics
+Import Koriolis.Zipstream
+
+Incbin "../media/rallycar1.3ds"
+Incbin "../media/RALLYCAR.JPG"
 
 Graphics3D DesktopWidth(),DesktopHeight()
 
@@ -17,43 +21,45 @@ RotateEntity light,45,45,0
 Local mesh:TMesh, debug:String, oldtime:Int
 
 MeshLoader "debug" ' mesh loader debug info
+'MeshLoader "3ds2" ' alternative 3DS loader
+'MeshLoader "cpp" ' swap loaders, bmx or cpp
+'TextureLoader "cpp"
 
-Local loader:Int=1 ' 0 to 3
+Local loader:Int=2 ' set 0 to 2
 Select loader
-	Case 1 ' load zombie mesh
+	Case 1 ' load incbin mesh
 		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/zombie.b3d")
+		Local file:String = "incbin::../media/rallycar1.3ds"
+		mesh=LoadMesh(file)
+		mesh.RotateMesh(90,0,0)
+		mesh.ScaleMesh(0.2,0.2,0.2)
 		
-		debug="b3d time="+(MilliSecs()-oldtime)
+		debug="incbin time="+(MilliSecs()-oldtime)
 		
-	Case 2 ' load Bird mesh
+	Case 2 ' load zip mesh
 		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/Bird.b3d")
+		Local zipfile:String = "../media/rallycar.zip"
+		Local file:String = "zip::"+zipfile+"//rallycar1.3ds"
+		mesh=LoadAnimMesh(file)
+		mesh.RotateAnimMesh(90,0,0)
+		mesh.ScaleAnimMesh(0.2,0.2,0.2)
 		
-		debug="b3d time="+(MilliSecs()-oldtime)
+		debug="zip time="+(MilliSecs()-oldtime)
 		
-	Case 3 ' load castle1 mesh
+	Default ' load non-stream mesh
 		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/castle1.b3d")
-		
-		debug="b3d time="+(MilliSecs()-oldtime)
-		
-	Default ' load zombie mesh from library
-		TextureLoader "cpp"
-		MeshLoader "cpp"
-		
-		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/zombie.b3d")
-		
-		debug="lib time="+(MilliSecs()-oldtime)
+		MeshLoader "trans" ' mesh transforms, default is "notrans"
+		mesh=LoadMesh("../media/rallycar1.3ds")
+		mesh.RotateMesh(90,0,0)
+		mesh.ScaleMesh(0.2,0.2,0.2)
+		debug="3ds time="+(MilliSecs()-oldtime)
+
 EndSelect
 
 Local marker_ent:TMesh=CreateSphere(8)
 EntityColor marker_ent,255,255,0
 ScaleEntity marker_ent,0.25,0.25,0.25
 EntityOrder marker_ent,-1
-
-Local anim_time#=0.0
 
 ' used by fps code
 Local old_ms%=MilliSecs()
@@ -76,18 +82,11 @@ While Not KeyDown( KEY_ESCAPE )
 	If KeyDown(KEY_J) And mesh Then TurnEntity mesh,0,2.5,0
 	If KeyDown(KEY_L) And mesh Then TurnEntity mesh,0,-2.5,0
 	
-	' change anim time values
-	If KeyDown(KEY_MINUS) Then anim_time=anim_time-0.1
-	If KeyDown(KEY_EQUALS) Then anim_time=anim_time+0.1
-	
-	If mesh Then SetAnimTime(mesh,anim_time)
-	
 	If KeyHit(KEY_F) And mesh
 		FreeEntity mesh
 		mesh=Null
 	EndIf
 	
-	UpdateWorld
 	RenderWorld
 	
 	' calculate fps
@@ -99,12 +98,11 @@ While Not KeyDown( KEY_ESCAPE )
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()+", Debug: "+debug
-	Text 0,40,"+/-: animate, F: free entity"
-	Text 0,60,"WASD/Arrows: move camera, IJKL: turn mesh, F: free entity"
+	Text 0,40,"WASD/Arrows: move camera, IJKL: turn mesh, F: free entity"
 	If mesh
-		Text 0,80,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
-		Text 0,100,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)
-		Text 0,120,"Children: "+count_children
+		Text 0,60,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
+		Text 0,80,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)
+		Text 0,100,"Children: "+count_children
 	EndIf
 	
 	Flip

@@ -4,6 +4,11 @@
 Strict
 
 Framework Openb3dmax.B3dglgraphics
+Import Koriolis.Zipstream
+
+Incbin "../media/test/test.b3d"
+Incbin "../media/test/shingle.bmp"
+Incbin "../media/test/test_lm.bmp"
 
 Local width%=DesktopWidth(),height%=DesktopHeight(),depth%=0,Mode%=2
 
@@ -22,22 +27,26 @@ MeshLoader "debug"
 'TextureLoader "cpp"
 
 ' load anim mesh
-Local loader%=1 ' 0 to 1
+Local loader:Int=2 ' 0 to 2
 Select loader
-	Case 1 ' load bath mesh
+	Case 1 ' load incbin mesh
 		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/bath/RomanBath.b3d")
+		mesh=LoadAnimMesh("incbin::../media/test/test.b3d")
+		
+		debug="incbin time="+(MilliSecs()-oldtime)
+		
+	Case 2 ' load zip mesh
+		oldtime=MilliSecs()
+		mesh=LoadAnimMesh("zip::../media/test.zip//test.b3d")
+		
+		debug="zip time="+(MilliSecs()-oldtime)
+		
+	Default ' load non-stream mesh
+		oldtime=MilliSecs()
+		mesh=LoadAnimMesh("../media/test/test.b3d")
 		
 		debug="b3d time="+(MilliSecs()-oldtime)
 		
-	Default ' load bath mesh from library
-		TextureLoader "cpp"
-		MeshLoader "cpp"
-		
-		oldtime=MilliSecs()
-		mesh=LoadAnimMesh("../media/bath/RomanBath.b3d")
-		
-		debug="lib time="+(MilliSecs()-oldtime)
 EndSelect
 
 ' child entity variables
