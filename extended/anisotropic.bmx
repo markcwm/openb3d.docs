@@ -1,5 +1,5 @@
 ' anisotropic.bmx
-' anisotropic compared to isotropic (standard filtering), to show how it sharpens detail
+' anisotropic compared to isotropic (standard filtering), to show how it sharpens detail at angles
 
 Strict
 
@@ -14,11 +14,13 @@ Local light:TLight=CreateLight()
 ClearTextureFilters
 TextureFilter "crate",1
 
+GlobalAnIsotropic 1.0 ' global texture anisotropic (default for all), TextureAnIsotropic overrides
+
 Local cube:TMesh=CreateCubeUV(1,6)
 ScaleEntity cube,0.5,0.02,6
 PositionEntity cube,-0.6,-0.5,5
 Local tex1:TTexture=LoadTexture("../media/crate.bmp",1+8+1024) ' must init anisotropic flag (1024)
-TextureAnIsotropic tex1,4 ' set anisotropic factor for texture, usually from 2-16 (higher more detail)
+TextureAnIsotropic tex1,8.0 ' texture anisotropic factor, usually from 2-16 (higher more detail)
 EntityTexture cube,tex1
 
 Local cube2:TMesh=CreateCubeUV(1,6)
