@@ -22,6 +22,7 @@ ScaleEntity ground,1000,1,1000
 Local ground_tex:TTexture=LoadTexture("../media/sand.bmp")
 ScaleTexture ground_tex,0.01,0.01 ' scale uvs
 EntityTexture ground,ground_tex
+HideEntity ground
 
 Local sphere:TMesh=CreateSphere()
 PositionEntity sphere,1.5,2.1,10

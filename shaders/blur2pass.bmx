@@ -150,14 +150,14 @@ Type TRenderPass
 		
 		Shader=LoadShader("","../glsl/blur.vert.glsl", "../glsl/blurv.frag.glsl")
 		SetInteger(Shader,"sceneTex",0)
-		SetFloat(Shader,"rt_w", TGlobal.width[0])
-		SetFloat(Shader,"rt_h", TGlobal.height[0])
+		SetFloat(Shader,"rt_w", TGlobal3D.width[0])
+		SetFloat(Shader,"rt_h", TGlobal3D.height[0])
 		UseFloat(Shader,"vx_offset",Vx_offset)
 		
 		Shader2=LoadShader("","../glsl/blur.vert.glsl", "../glsl/blurh.frag.glsl")
 		SetInteger(Shader2,"sceneTex",0)
-		SetFloat(Shader2,"rt_w", TGlobal.width[0])
-		SetFloat(Shader2,"rt_h", TGlobal.height[0])
+		SetFloat(Shader2,"rt_w", TGlobal3D.width[0])
+		SetFloat(Shader2,"rt_h", TGlobal3D.height[0])
 		UseFloat(Shader2,"vx_offset",Vx_offset)
 		
 		PostFx=CreatePostFX(Camera,2)
@@ -194,11 +194,11 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		CameraTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex,1.0,-1.0
 		PositionTexture CameraTex,0.0,-1.0
 		
-		CameraTex2=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex2=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex2,1.0,-1.0
 		PositionTexture CameraTex2,0.0,-1.0
 		
@@ -206,17 +206,17 @@ Type TRenderPass
 		CameraToTex CameraTex,Camera
 		CameraToTex CameraTex2,camera
 		
-		TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
+		TGlobal3D.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
 		
 		Sprite:TSprite=CreateSprite()
 		EntityOrder Sprite,-1
-		ScaleSprite Sprite,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite,0,0,1.0 
 		EntityParent Sprite,Camera
 		
 		Sprite2:TSprite=CreateSprite()
 		EntityOrder Sprite2,-1
-		ScaleSprite Sprite2,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite2,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite2,0,0,1.0 
 		EntityParent Sprite2,Camera
 		EntityTexture Sprite2,CameraTex2
@@ -226,15 +226,15 @@ Type TRenderPass
 		
 		Shader=LoadShader("","../glsl/blur.vert.glsl", "../glsl/blurv.frag.glsl")
 		ShaderTexture(Shader,CameraTex,"sceneTex",0)
-		SetFloat(Shader,"rt_w", TGlobal.width[0])
-		SetFloat(Shader,"rt_h", TGlobal.height[0])
+		SetFloat(Shader,"rt_w", TGlobal3D.width[0])
+		SetFloat(Shader,"rt_h", TGlobal3D.height[0])
 		UseFloat(Shader,"vx_offset",Vx_offset)
 		ShadeEntity(Sprite,Shader)
 		
 		Shader2=LoadShader("","../glsl/blur.vert.glsl", "../glsl/blurh.frag.glsl")
 		ShaderTexture(Shader2,CameraTex2,"sceneTex",0)
-		SetFloat(Shader2,"rt_w", TGlobal.width[0])
-		SetFloat(Shader2,"rt_h", TGlobal.height[0])
+		SetFloat(Shader2,"rt_w", TGlobal3D.width[0])
+		SetFloat(Shader2,"rt_h", TGlobal3D.height[0])
 		UseFloat(Shader2,"vx_offset",Vx_offset)
 		ShadeEntity(Sprite2,Shader2)
 		
@@ -249,7 +249,7 @@ Type TRenderPass
 		EndIf
 		
 		If KeyHit(KEY_L) Then Lflag=Not Lflag
-		If Lflag Then Vx_offset=Float(MouseX())/TGlobal.width[0] Else Vx_offset=1.05
+		If Lflag Then Vx_offset=Float(MouseX())/TGlobal3D.width[0] Else Vx_offset=1.05
 		
 		' control camera
 		MoveEntity Camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)

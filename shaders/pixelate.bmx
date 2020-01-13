@@ -136,8 +136,8 @@ Type TRenderPass
 		
 		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/pixelate.frag.glsl")
 		SetInteger(Shader,"sceneTex",0) ' Our render texture
-		SetFloat(Shader,"rt_w", TGlobal.width[0])
-		SetFloat(Shader,"rt_h", TGlobal.height[0])
+		SetFloat(Shader,"rt_w", TGlobal3D.width[0])
+		SetFloat(Shader,"rt_h", TGlobal3D.height[0])
 		SetFloat(Shader,"pixel_w", 4.0)
 		SetFloat(Shader,"pixel_h", 4.0)
 		UseFloat(shader,"time",Time) ' Time used to scroll the distortion map
@@ -170,18 +170,18 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		CameraTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex,1.0,-1.0
 		PositionTexture CameraTex,0.0,-1.0
 		
 		' in GL 2.0 render textures need attached before other textures (EntityTexture)
 		CameraToTex CameraTex,Camera
 		
-		TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
+		TGlobal3D.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
 		
 		Sprite:TSprite=CreateSprite()
 		EntityOrder Sprite,-1
-		ScaleSprite Sprite,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite,0,0,1.0 
 		EntityParent Sprite,Camera
 		
@@ -190,8 +190,8 @@ Type TRenderPass
 		
 		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/pixelate.frag.glsl")
 		ShaderTexture(Shader,CameraTex,"sceneTex",0) ' Our render texture
-		SetFloat(Shader,"rt_w", TGlobal.width[0])
-		SetFloat(Shader,"rt_h", TGlobal.height[0])
+		SetFloat(Shader,"rt_w", TGlobal3D.width[0])
+		SetFloat(Shader,"rt_h", TGlobal3D.height[0])
 		SetFloat(Shader,"pixel_w", 3.0)
 		SetFloat(Shader,"pixel_h", 3.0)
 		UseFloat(shader,"time",Time) ' Time used to scroll the distortion map

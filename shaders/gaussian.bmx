@@ -115,8 +115,8 @@ Type TRenderPass
 		
 		Shader=LoadShader("gauss","../glsl/gaussian.vert.glsl","../glsl/gaussian.frag.glsl")
 		SetInteger(Shader,"RenderTex",0)
-		SetInteger(Shader,"Width",TGlobal.width[0])
-		SetInteger(Shader,"Height",TGlobal.height[0])
+		SetInteger(Shader,"Width",TGlobal3D.width[0])
+		SetInteger(Shader,"Height",TGlobal3D.height[0])
 		
 		PostFx=CreatePostFX(Camera,2)
 		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
@@ -153,11 +153,11 @@ Type TRenderPass
 		
 		Light=CreateLight()
 		
-		CameraTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex,1.0,-1.0
 		PositionTexture CameraTex,0.0,-1.0
 		
-		CameraTex2=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex2=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex2,1.0,-1.0
 		PositionTexture CameraTex2,0.0,-1.0
 		
@@ -165,17 +165,17 @@ Type TRenderPass
 		CameraToTex CameraTex,Camera
 		CameraToTex CameraTex2,camera
 		
-		TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
+		TGlobal3D.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
 		
 		Sprite:TSprite=CreateSprite()
 		EntityOrder Sprite,-1
-		ScaleSprite Sprite,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite,0,0,1.0 
 		EntityParent Sprite,Camera
 		
 		Sprite2:TSprite=CreateSprite()
 		EntityOrder Sprite2,-1
-		ScaleSprite Sprite2,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite2,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite2,0,0,1.0 
 		EntityParent Sprite2,Camera
 		
@@ -184,14 +184,14 @@ Type TRenderPass
 		
 		Shader=LoadShader("gauss","../glsl/gaussian.vert.glsl","../glsl/gaussian1.frag.glsl")
 		ShaderTexture(Shader,CameraTex,"RenderTex",0)
-		SetInteger(Shader,"Width",TGlobal.width[0])
-		SetInteger(Shader,"Height",TGlobal.height[0])
+		SetInteger(Shader,"Width",TGlobal3D.width[0])
+		SetInteger(Shader,"Height",TGlobal3D.height[0])
 		ShadeEntity(Sprite,Shader)
 		
 		Shader2=LoadShader("gauss","../glsl/gaussian.vert.glsl","../glsl/gaussian2.frag.glsl")
 		ShaderTexture(Shader2,CameraTex2,"RenderTex",0)
-		SetInteger(Shader2,"Width",TGlobal.width[0])
-		SetInteger(Shader2,"Height",TGlobal.height[0])
+		SetInteger(Shader2,"Width",TGlobal3D.width[0])
+		SetInteger(Shader2,"Height",TGlobal3D.height[0])
 		ShadeEntity(Sprite2,Shader2)
 		
 	End Method

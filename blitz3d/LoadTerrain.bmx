@@ -29,6 +29,10 @@ Local grass_tex:TTexture=LoadTexture( "../media/terrain-1.jpg" )
 EntityTexture terrain,grass_tex
 ScaleTexture grass_tex,10,10
 
+'terrain.updateterrain()
+'RenderWorld
+'terrain.debugobject()
+
 
 While Not KeyDown( KEY_ESCAPE )
 

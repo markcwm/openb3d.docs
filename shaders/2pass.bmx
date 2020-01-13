@@ -149,7 +149,7 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		Local noisew%=TGlobal.width[0]/4, noiseh%=TGlobal.height[0]/4
+		Local noisew%=TGlobal3D.width[0]/4, noiseh%=TGlobal3D.height[0]/4
 		NoiseTex=CreateTexture(noisew,noiseh)
 		Local noisemap:TPixmap=CreatePixmap(noisew,noiseh,PF_RGBA8888)
 		For Local i%=0 To PixmapWidth(noisemap)-1
@@ -205,15 +205,15 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		CameraTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex,1.0,-1.0
 		PositionTexture CameraTex,0.0,-1.0
 		
-		CameraTex2=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex2=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex2,1.0,-1.0
 		PositionTexture CameraTex2,0.0,-1.0
 		
-		Local noisew%=TGlobal.width[0]/4, noiseh%=TGlobal.height[0]/4
+		Local noisew%=TGlobal3D.width[0]/4, noiseh%=TGlobal3D.height[0]/4
 		NoiseTex=CreateTexture(noisew,noiseh)
 		Local noisemap:TPixmap=CreatePixmap(noisew,noiseh,PF_RGBA8888)
 		For Local i%=0 To PixmapWidth(noisemap)-1
@@ -228,17 +228,17 @@ Type TRenderPass
 		CameraToTex CameraTex,Camera
 		CameraToTex CameraTex2,camera
 		
-		TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
+		TGlobal3D.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
 		
 		Sprite:TSprite=CreateSprite()
 		EntityOrder Sprite,-1
-		ScaleSprite Sprite,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite,0,0,1.0 
 		EntityParent Sprite,Camera
 		
 		Sprite2:TSprite=CreateSprite()
 		EntityOrder Sprite2,-1
-		ScaleSprite Sprite2,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite2,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite2,0,0,1.0 
 		EntityParent Sprite2,Camera
 		EntityTexture Sprite2,CameraTex2

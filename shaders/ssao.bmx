@@ -151,8 +151,8 @@ Type TRenderPass
 		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/ssao.frag.glsl")
 		SetInteger(Shader,"colortex",0) ' Our render texture
 		SetInteger(Shader,"depthtex",1) ' 1 is depth texture
-		SetFloat(Shader,"width", TGlobal.width[0])
-		SetFloat(Shader,"height",TGlobal.height[0])
+		SetFloat(Shader,"width", TGlobal3D.width[0])
+		SetFloat(Shader,"height",TGlobal3D.height[0])
 		SetFloat(Shader,"near",1.0)
 		SetFloat(Shader,"far",1000.0)
 		SetInteger(Shader,"samples",5)
@@ -189,11 +189,11 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		CameraTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		CameraTex=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture CameraTex,1.0,-1.0
 		PositionTexture CameraTex,0.0,-1.0
 		
-		DepthTex=CreateTexture(TGlobal.width[0],TGlobal.height[0],1+256)
+		DepthTex=CreateTexture(TGlobal3D.width[0],TGlobal3D.height[0],1+256)
 		ScaleTexture DepthTex,1.0,-1.0
 		PositionTexture DepthTex,0.0,-1.0
 		
@@ -201,17 +201,17 @@ Type TRenderPass
 		CameraToTex CameraTex,Camera
 		DepthBufferToTex DepthTex,Camera
 		
-		TGlobal.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
+		TGlobal3D.CheckFramebufferStatus(GL_FRAMEBUFFER_EXT) ' check for framebuffer errors
 		
 		Sprite:TSprite=CreateSprite()
 		EntityOrder Sprite,-1
-		ScaleSprite Sprite,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite,0,0,1.0 
 		EntityParent Sprite,Camera
 		
 		Sprite2:TSprite=CreateSprite()
 		EntityOrder Sprite2,-1
-		ScaleSprite Sprite2,1.0,Float( TGlobal.height[0] ) / TGlobal.width[0] ' 0.75
+		ScaleSprite Sprite2,1.0,Float( TGlobal3D.height[0] ) / TGlobal3D.width[0] ' 0.75
 		MoveEntity Sprite2,0,0,1.0 
 		EntityParent Sprite2,Camera
 		EntityTexture Sprite2,DepthTex
@@ -222,8 +222,8 @@ Type TRenderPass
 		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/ssao.frag.glsl")
 		ShaderTexture(Shader,CameraTex,"colortex",0) ' Our render texture
 		ShaderTexture(Shader,DepthTex,"depthtex",1) ' 1 is depth texture
-		SetFloat(Shader,"width", TGlobal.width[0])
-		SetFloat(Shader,"height",TGlobal.height[0])
+		SetFloat(Shader,"width", TGlobal3D.width[0])
+		SetFloat(Shader,"height",TGlobal3D.height[0])
 		SetFloat(Shader,"near",1.0)
 		SetFloat(Shader,"far",1000.0)
 		SetInteger(Shader,"samples",5)

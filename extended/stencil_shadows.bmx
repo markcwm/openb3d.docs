@@ -37,7 +37,7 @@ Local alpha_tex:TTexture = LoadTexture("../media/alpha_map.png", 2) 'Change this
 EntityTexture(alpha_cube, alpha_tex)
 'Local cube_shadow3:TShadowObject=CreateShadow(alpha_cube)
 
-
+AntiAlias 2
 While Not KeyDown(KEY_ESCAPE)
 
 	TurnEntity alpha_piv,0,KeyDown(KEY_D)-KeyDown(KEY_A),0

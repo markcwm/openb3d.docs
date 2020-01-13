@@ -12,7 +12,8 @@ CameraClsColor camera,70,180,235
 
 Local light:TLight=CreateLight()
 
-Local teapot:TMesh=LoadMesh("../media/teapot.b3d")
+Local teapot:TMesh=LoadMesh("../media/dwarf.b3d")
+'Local teapot:TMesh=LoadMesh("../media/teapot.b3d")
 
 Local shader:TShader=LoadShader("","../glsl/usematrix.vert.glsl","../glsl/usematrix.frag.glsl")
 ShadeEntity(teapot,shader)

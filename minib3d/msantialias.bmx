@@ -114,14 +114,14 @@ End
 Function ReloadGraphics( wdt%,hgt%,dpt%,hrz%,flg%,hid:TGraphics Var )
 
 		CloseGraphics hid
-		CloseGraphics TGlobal.gfx_obj
+		CloseGraphics TGlobal3D.gfx_obj
 		
 		SetGraphicsDriver GLMax2DDriver()
 		hid=CreateGraphics( 300,200,0,60,GRAPHICS_BACKBUFFER|GRAPHICS_HIDDEN )
 		SetGraphics hid
 		
 		SetGraphicsDriver GLMax2DDriver(),flg ' mixed 2d/3d
-		TGlobal.gfx_obj=Graphics( wdt,hgt,dpt,hrz,flg ) ' gfx object
-		TGlobal.GraphicsInit() ' save initial settings for Max2D
+		TGlobal3D.gfx_obj=Graphics( wdt,hgt,dpt,hrz,flg ) ' gfx object
+		TGlobal3D.GraphicsInit() ' save initial settings for Max2D
 		
 End Function

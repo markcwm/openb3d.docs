@@ -15,11 +15,13 @@ PositionEntity cam,0,10,-15
 Local light:TLight=CreateLight()
 
 ' load anim mesh
-Local ent:TMesh=Null
-Local loader%=3
+Local ent:TMesh=Null, c:TMesh
+Local loader%=1
 Select loader
 	Case 1 ' load stream mesh
 		ent=LoadAnimMesh("../media/zombie.b3d")
+		c=TMesh(RepeatMesh(ent))
+		MoveEntity c,5,0,5
 		MoveEntity ent,0,0,5
 		
 	Case 2
@@ -28,10 +30,10 @@ Select loader
 		TurnEntity ent,0,180,0
 		
 	Case 3
-		ent=LoadAnimMesh("../media/dwarf.b3d")
+		ent=LoadMesh("../media/dwarf.b3d")
 		MoveEntity ent,0,-25,60
 		TurnEntity ent,0,180,0
-		
+				
 	Default ' load library mesh
 		TextureLoader "cpp"
 		MeshLoader "cpp"
@@ -73,7 +75,7 @@ While Not KeyDown(KEY_ESCAPE)
 	
 	' animte entity
 	SetAnimTime(ent,anim_time)
-
+	SetAnimTime(c,anim_time)
 	' select child entity
 	If KeyHit(KEY_OPENBRACKET) Then child_no=child_no-1
 	If KeyHit(KEY_CLOSEBRACKET) Then child_no=child_no+1

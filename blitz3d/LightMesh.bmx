@@ -20,7 +20,7 @@ Local light:TLight=CreateLight(1)
 RotateEntity light,45,45,0
 
 LightMesh ent,-255,-255,-255 ' reset vertex colors from 255,255,255 (Default) To 0,0,0
-LightMesh ent,255,255,0,20,-20,20,-20 ' apply fake lighting
+LightMesh ent,255,255,0,10,-20,20,-20 ' apply fake lighting
 
 PointEntity camera,ent
 

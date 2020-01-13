@@ -41,6 +41,10 @@ Local tex2:TTexture=LoadTexture("../media/WCRATE.JPG")
 Local shader2_tex:TTexture=ShaderTexture(shader2,tex2,"texture0",0)
 ShadeEntity(cube2,shader2)
 
+Local s1$=TextureName(tex1)
+Local s2$=TextureName(tex2)
+DebugLog s1+",,"+s2
+
 Local tflag%=0
 
 

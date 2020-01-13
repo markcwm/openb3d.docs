@@ -156,7 +156,7 @@ While Not KeyDown(KEY_ESCAPE)
 	GLDrawText "cube.brush.tex[1].blend="+cube.brush.tex[1].blend[0]+" mesh.surf.brush.tex[1].blend="+brush2.tex[1].blend[0],20,100
 	EndMax2D()
 	Text 20,120,"Tris: "+TrisRendered()+" Verts: "+VertsRendered()+" Surfs: "+SurfsRendered()
-	
+	'EndRem
 	Flip
 	
 Wend

@@ -15,6 +15,8 @@ CameraClsColor camera,80,160,240
 Local light:TLight=CreateLight()
 RotateEntity light,90,0,0
 
+Local cube2:TMesh=CreateSphere()
+PositionEntity cube2,0,2,5
 Local cube:TMesh=CreateCube()
 PositionEntity cube,0,0,3
 
@@ -36,9 +38,12 @@ EntityTexture cube,tex
 While Not KeyDown(KEY_ESCAPE)
 
 	TurnEntity cube,0.0,0.5,-0.1
+	If KeyHit(KEY_A)
+	HideEntity cube2
+	EndIf
 	
 	RenderWorld
-	
+	Text 0,0,""+TrisRendered()
 	Flip
 
 Wend
