@@ -3,18 +3,20 @@
 
 uniform sampler2D texture0;
 
+varying vec4 vertColor;
+varying vec2 screenpos;
+varying vec4 vertTexcoord;
+
 uniform float rt_w; // render target width
 uniform float rt_h; // render target height
+uniform float fxaa_span_max; // 16.0
+uniform float fxaa_reduce_mul; // 1.0/16.0
+uniform float fxaa_reduce_min; // 1.0/128.0
 
 void main( void ) {
 
     vec2 texCoords = gl_TexCoord[0].xy;
-
     vec2 resolution = vec2(rt_w, rt_h);
-
-    float FXAA_SPAN_MAX = 8.0;
-    float FXAA_REDUCE_MUL = 1.0/8.0;
-    float FXAA_REDUCE_MIN = 1.0/128.0;
 
     vec3 rgbNW=texture2D(texture0,texCoords+(vec2(-1.0,-1.0)/resolution)).xyz;
     vec3 rgbNE=texture2D(texture0,texCoords+(vec2(1.0,-1.0)/resolution)).xyz;
@@ -37,13 +39,13 @@ void main( void ) {
     dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
 
     float dirReduce = max(
-        (lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * FXAA_REDUCE_MUL),
-        FXAA_REDUCE_MIN);
+        (lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * fxaa_reduce_mul),
+        fxaa_reduce_min);
 
     float rcpDirMin = 1.0/(min(abs(dir.x), abs(dir.y)) + dirReduce);
 
-        dir = min(vec2( FXAA_SPAN_MAX,  FXAA_SPAN_MAX),
-          max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX),
+        dir = min(vec2( fxaa_span_max,  fxaa_span_max),
+          max(vec2(-fxaa_span_max, -fxaa_span_max),
           dir * rcpDirMin)) / resolution;
 
     vec3 rgbA = (1.0/2.0) * (

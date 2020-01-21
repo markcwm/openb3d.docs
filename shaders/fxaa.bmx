@@ -68,6 +68,13 @@ While Not KeyHit(KEY_ESCAPE)
 	SetAnimTime(anim_ent,anim_time)
 	'TurnEntity pivot,0,1,0
 	
+	' FX antialias mode
+	If KeyHit(KEY_F)
+		PostFx.SpanMax=PostFx.SpanMax*2
+		If PostFx.SpanMax>16.0 Then PostFx.SpanMax=1.0
+		PostFx.ReduceMul=1.0/PostFx.SpanMax
+	EndIf
+	
 	UpdateWorld
 	PostFx.Render()
 	RenderWorld
@@ -81,7 +88,7 @@ While Not KeyHit(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"WSAD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active
+	Text 0,40,"WSAD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active+", F: AntiAlias level = "+PostFx.SpanMax
 	Text 0,60,"anim_time="+anim_time
 	
 	Flip
@@ -101,6 +108,7 @@ Type TRenderPass
 	Field Light:TLight
 	Field Sprite:TSprite
 	Field Shader:TShader
+	Field SpanMax#=4.0, ReduceMul#=1.0/4.0, ReduceMin#=1.0/128.0
 	
 	Function Create:TRenderPass()
 		Return New TRenderPass
@@ -138,6 +146,9 @@ Type TRenderPass
 		SetInteger(Shader,"texture0",0)
 		SetFloat(Shader,"rt_w", TGlobal3D.width[0])
 		SetFloat(Shader,"rt_h", TGlobal3D.height[0])
+		UseFloat(Shader,"fxaa_span_max",SpanMax)
+		UseFloat(Shader,"fxaa_reduce_mul",ReduceMul)
+		SetFloat(Shader,"fxaa_reduce_min",ReduceMin)
 		
 		PostFx=CreatePostFX(Camera,1)
 		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
@@ -189,6 +200,9 @@ Type TRenderPass
 		ShaderTexture(Shader,CameraTex,"texture0",0) ' Our render texture
 		SetFloat(Shader,"rt_w", TGlobal3D.width[0])
 		SetFloat(Shader,"rt_h", TGlobal3D.height[0])
+		UseFloat(Shader,"fxaa_span_max",SpanMax)
+		UseFloat(Shader,"fxaa_reduce_mul",ReduceMul)
+		SetFloat(Shader,"fxaa_reduce_min",ReduceMin)
 		ShadeEntity(Sprite, Shader)
 		
 	End Method
