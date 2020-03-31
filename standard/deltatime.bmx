@@ -1,8 +1,9 @@
-' Deltatime.bmx
+' deltatime.bmx
 ' by Kippykip - http://www.youtube.com/user/HAP3E
-' The box should rotate at the same speed. Use mouse buttons to cap frame rate. Press Z to go slow motion
+' The box should always rotate at the same speed. Hold down 1/2 keys to cap framerate, Z to go slow motion
 
 Strict
+
 Framework Openb3dmax.B3dglgraphics
 ?Not bmxng
 Import Brl.Timer
@@ -25,9 +26,8 @@ Local light:TLight=CreateLight(1) ' Create a light
 Local tex:TTexture=LoadTexture("../media/oldbric.jpg") ' Cube texture
 EntityTexture(cube,tex) ' Apply the texture
 
-' Target FPS 
 Global DT:TDeltaTime = New TDeltaTime
-DT.FrameLimitInit(60)
+DT.FrameLimitInit(60) ' Target FPS
 
 ' Frame caps of 15, 30, and 60
 Global cap:TTimer=CreateTimer(15)
@@ -62,7 +62,7 @@ While (Not KeyDown(KEY_ESCAPE))
 		SlowMo = 1 ' Reset the slowmotion to 1
 	EndIf
 	
-	' Cap the framerate when holding these mouse buttons
+	' Cap the framerate when holding these keys
 	If(KeyDown(KEY_1))
 		WaitTimer(cap)
 		framecap = 15

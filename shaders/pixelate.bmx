@@ -19,7 +19,7 @@ SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
 
 Local PostFx:TRenderPass=New TRenderPass
-PostFx.Init(1) ' init cameras, shaders, etc. (True for postfx renderer, False for screen sprite)
+PostFx.InitSprite() ' init cameras, shaders, etc. - use InitPostFx() to render to framebuffer
 PostFx.Activate()
 
 Local size:Int=256, vsize:Float=30, maxheight:Float=10
@@ -91,6 +91,7 @@ Wend
 
 End
 
+' functions
 Type TRenderPass
 
 	Field Active:Byte=False
@@ -112,17 +113,6 @@ Type TRenderPass
 	
 	Method DeActivate()
 		Active=False
-	End Method
-	
-	' Set usepostfx% to True to use PostFx processor, False to use screen sprite method
-	Method Init(usepostfx%=0)
-	
-		If usepostfx
-			InitPostFx()
-		Else
-			InitSprite()
-		EndIf
-		
 	End Method
 	
 	Method InitPostFx()
