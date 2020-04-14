@@ -40,10 +40,12 @@ DrawText "GrabPixmap & BufferToTex",0,160
 
 EndMax2D()
 
-Local pix:TPixmap=GrabPixmap(0,0,256,256)
-If PixmapFormat(pix)<>PF_RGBA8888 Then pix=ConvertPixmap(pix,PF_RGBA8888)
+BackBufferToTex tex
 
-BufferToTex(tex,PixmapPixelPtr(pix,0,0))
+' or to use BufferToTex
+'Local pix:TPixmap=GrabPixmap(0,0,256,256)
+'If PixmapFormat(pix)<>PF_RGBA8888 Then pix=ConvertPixmap(pix,PF_RGBA8888)
+'BufferToTex(tex,PixmapPixelPtr(pix,0,0))
 
 EntityTexture cube,tex
 
