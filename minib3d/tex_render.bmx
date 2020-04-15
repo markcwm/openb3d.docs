@@ -16,7 +16,7 @@ CameraClsColor camera,0,111,222
 Local plan_cam:TCamera=CreateCamera()
 TurnEntity plan_cam,90,0,0
 PositionEntity plan_cam,0,20,0
-CameraViewport plan_cam,0,0,128,64
+CameraViewport plan_cam,0,0,128,128
 CameraClsColor plan_cam,0,0,0
 
 Local light:TLight=CreateLight()
@@ -36,7 +36,7 @@ For Local t%=0 To 359 Step 36
 Next
 FreeEntity t_sphere
 
-Local texture:TTexture=CreateTexture(128,64)
+Local texture:TTexture=CreateTexture(128,128)
 
 Local cube:TMesh=CreateCube()
 EntityTexture cube,texture

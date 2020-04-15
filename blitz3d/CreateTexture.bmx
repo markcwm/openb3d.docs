@@ -36,13 +36,13 @@ DrawText "CreateTexture",0,80
 SetColor 0,0,0
 DrawText "and drawn to using",0,120
 SetColor 0,0,255
-DrawText "GrabPixmap & BufferToTex",0,160
+DrawText "BackBufferToTex",0,160
 
 EndMax2D()
 
-BackBufferToTex tex
+BackBufferToTex tex,0,0 'tex,mipmap_no=0,frame=0,fastinvert=True(new parameter)
 
-' or to use BufferToTex
+' to use BufferToTex
 'Local pix:TPixmap=GrabPixmap(0,0,256,256)
 'If PixmapFormat(pix)<>PF_RGBA8888 Then pix=ConvertPixmap(pix,PF_RGBA8888)
 'BufferToTex(tex,PixmapPixelPtr(pix,0,0))
