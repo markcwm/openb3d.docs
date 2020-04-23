@@ -7,6 +7,7 @@ OpenB3DMax source code help with media included.
 
 * archives - from the code archives
 * blitz3d - from Blitz3D help
+* docs - commands documentation
 * extended - extra features not in Blitz3D
 * glsl - vert and frag sources used by shaders
 * ifsogui - examples using Brucey's fork of IfSoGUI
