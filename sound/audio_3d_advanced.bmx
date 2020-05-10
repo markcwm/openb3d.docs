@@ -1,10 +1,12 @@
-' advanced_3d_sound.bmx
+' audio_3d_advanced.bmx
+' advanced features - pause, resume, que, stop, volume, speaker pan, play rate, soundpoints
 
 SuperStrict
 
 Framework Openb3dmax.B3dglgraphics
-Import Openb3dmax.B3dsound
+Import Openb3dmax.Audio3d
 
+' import BRL sound modules
 ?Not Win32
 Import Brl.FreeAudioAudio
 ?Win32
