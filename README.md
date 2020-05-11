@@ -3,7 +3,7 @@ OpenB3DMax.Docs
 
 OpenB3DMax source code help with media included.
 
-## What's In Each Folder?
+## What's In The Folders?
 
 * archives - from the code archives
 * blitz3d - from Blitz3D help
