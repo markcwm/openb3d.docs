@@ -6,6 +6,7 @@ OpenB3DMax source code help with media included.
 ## What's In The Folders?
 
 * archives - from the code archives
+* audio - 3d sound examples for audio3d.mod
 * blitz3d - from Blitz3D help
 * docs - commands documentation
 * extended - extra features not in Blitz3D
@@ -16,7 +17,6 @@ OpenB3DMax source code help with media included.
 * mod - changes to BRL.mod source (MS Antialias and compressed DDS)
 * samples - from Blitz3D samples
 * shaders - shader examples from various sources
-* sound - 3d sound examples for b3dsound.mod
 * standard - standard features from Blitz3D
 
 ## License

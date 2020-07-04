@@ -4,16 +4,13 @@
 SuperStrict
 
 Framework Openb3dmax.B3dglgraphics
-Import Openb3dmax.Audio3d
 
-' import BRL sound modules
-?Not Win32
-Import Brl.FreeAudioAudio
-?Win32
-Import Brl.DirectSoundAudio
-?
-Import Brl.WavLoader
-Import Brl.OggLoader
+Local Drives:String[] = AudioDrivers()
+For Local Drive:String = EachIn Drives
+	Print Drive
+Next
+
+SetAudioDriver("OpenAL")
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
@@ -35,7 +32,7 @@ EntityTexture TheBox,BoxTex
 ' To enable doppler effect, set the ExaggerateDopplerScale value. For example, Init3DSound(Camera, 300, 25).
 ' Doppler effect is relative to movement speed so if your game moves faster than 1 unit per cycle then a
 ' lower doppler exaggerate will be needed. A higher value will make the doppler effect more pronounced.
-Init3DSound(Camera, 300, 0)
+CreateListener(Camera, 300, 0)
 
 
 While Not KeyHit(KEY_ESCAPE)
@@ -46,7 +43,7 @@ While Not KeyHit(KEY_ESCAPE)
 	
 	' Make TheBox play the loaded SampleSound
 	If KeyHit(KEY_SPACE)
-		Start3DSound(SampleSound, TheBox)
+		EmitSound(SampleSound, TheBox)
 	EndIf
 	
 	UpdateWorld
