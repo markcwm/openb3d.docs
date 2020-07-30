@@ -39,9 +39,23 @@ Local grass_tex:TTexture=LoadTexture( "../media/terrain-1.jpg" )
 EntityTexture terrain,grass_tex
 ScaleTexture grass_tex,10,10
 
+Local terra_detail:Int=50 ' Set terrain detail level, as percent
+Local wiretoggle%=-1
+
 
 While Not KeyDown( KEY_ESCAPE )
 
+	' wireframe
+	If KeyHit(KEY_W) Then wiretoggle=-wiretoggle
+	If wiretoggle=1 Then Wireframe True Else Wireframe False
+	
+	' Change terrain detail value depending on key pressed
+	If KeyHit( KEY_OPENBRACKET ) Then terra_detail=terra_detail-10
+	If KeyHit( KEY_CLOSEBRACKET ) Then terra_detail=terra_detail+10
+	
+	' Set terrain detail level
+	TerrainDetail terrain,terra_detail
+	
 	If KeyDown( KEY_RIGHT )=True Then TurnEntity camera,0,-1,0
 	If KeyDown( KEY_LEFT )=True Then TurnEntity camera,0,1,0
 	If KeyDown( KEY_DOWN )=True Then MoveEntity camera,0,0,-0.25
@@ -49,8 +63,9 @@ While Not KeyDown( KEY_ESCAPE )
 	
 	RenderWorld
 	
-	Text 0,20,"Use cursor keys to move about the terrain"
-	Text 0,40,"X="+EntityX(camera)+", Y="+EntityY(camera)+", Z="+EntityZ(camera)
+	Text 0,20,"Use cursor keys to move about the terrain "+EntityDistance(camera,sphere)
+	Text 0,40,"Use [ and ] keys to change terrain detail level = "+terrain.Roam_Detail[0]
+	Text 0,80,"X="+EntityX(camera)+", Y="+EntityY(camera)+", Z="+EntityZ(camera)
 	
 	Flip
 Wend
