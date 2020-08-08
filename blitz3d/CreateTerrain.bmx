@@ -12,6 +12,9 @@ Local camx:Float=size/2, camz:Float=-size/2
 Local camera:TCamera=CreateCamera()
 CameraClsColor camera,150,200,250
 PositionEntity camera,0,maxheight+1,0
+
+'Local spiv:TMesh=CreateSphere(8,camera)
+
 TurnEntity camera,0,215,0
 
 Local light:TLight=CreateLight()
@@ -41,7 +44,7 @@ ScaleTexture grass_tex,10,10
 
 Local terra_detail:Int=100 ' Set terrain detail level, maximum is 2000
 Local wiretoggle%=-1
-
+Local range#=0
 
 While Not KeyDown( KEY_ESCAPE )
 
@@ -52,9 +55,12 @@ While Not KeyDown( KEY_ESCAPE )
 	' Change terrain detail value depending on key pressed
 	If KeyHit( KEY_OPENBRACKET ) Then terra_detail=terra_detail-10
 	If KeyHit( KEY_CLOSEBRACKET ) Then terra_detail=terra_detail+10
-	
-	' Set terrain detail level
 	TerrainDetail terrain,terra_detail
+	
+	' Change terrain camera range
+	If KeyDown(KEY_EQUALS) Then range:+1
+	If KeyDown(KEY_MINUS) Then range:-1
+	TerrainRange terrain,range
 	
 	If KeyDown( KEY_RIGHT )=True Then TurnEntity camera,0,-1,0
 	If KeyDown( KEY_LEFT )=True Then TurnEntity camera,0,1,0
@@ -66,10 +72,9 @@ While Not KeyDown( KEY_ESCAPE )
 	RenderWorld
 	
 	Text 0,20,"Use cursor keys to move about the terrain "+EntityDistance(camera,sphere)
-	Text 0,40,"Use [ and ] keys to change terrain detail level = "+terrain.Roam_Detail[0]
+	Text 0,40,"Use [ and ] keys to change terrain detail level = "+terrain.Roam_Detail[0]+", range = "+range
 	Text 0,60,"X = "+EntityX(camera)+", Y = "+EntityY(camera)+", Z = "+EntityZ(camera)
 	Text 0,80,"size = "+terrain.size[0]+", lmax = "+Int((terrain.size[0]/100)+10)+", level2dzsize[0] = "+terrain.level2dzsize[0]
-	
 	Flip
 Wend
 End
