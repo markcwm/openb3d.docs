@@ -47,8 +47,7 @@ Select loader
 	Default ' load non-stream mesh
 		oldtime=MilliSecs()
 		MeshLoader "trans" ' mesh transforms, default is "notrans"
-		'mesh=LoadMesh("../media/rallycar1.3ds")
-		mesh=LoadAnimMesh("../media/oildrum.3ds")
+		mesh=LoadMesh("../media/rallycar1.3ds")
 		mesh.RotateMesh(90,0,0)
 		mesh.ScaleMesh(0.2,0.2,0.2)
 		debug="3ds time="+(MilliSecs()-oldtime)

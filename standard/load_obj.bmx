@@ -32,7 +32,7 @@ Select loader
 		oldtime=MilliSecs()
 		Local file:String = "../media/obj/spider.obj"
 		mesh=LoadAnimMesh(file)
-		mesh.ScaleMesh(0.2,0.2,0.2)
+		mesh.ScaleAnimMesh(0.2,0.2,0.2)
 		
 		debug="obj time="+(MilliSecs()-oldtime)
 		
