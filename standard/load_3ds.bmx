@@ -1,5 +1,5 @@
 ' load_3ds.bmx
-' note: there are two BMX 3DS loaders, to enable the alternative use MeshLoader "3ds2" (but you shouldn't need it)
+' note: there are two BMX 3DS loaders, to enable the alternative use MeshLoader "3ds2"
 
 Strict
 

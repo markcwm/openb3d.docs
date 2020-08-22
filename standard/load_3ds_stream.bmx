@@ -1,5 +1,5 @@
 ' load_3ds_stream.bmx
-' note: there are two BMX 3DS loaders, to enable the alternative use MeshLoader "3ds2" (but you shouldn't need it)
+' note: there are two BMX 3DS loaders, to enable the alternative use MeshLoader "3ds2"
 
 Strict
 
@@ -23,7 +23,7 @@ Local mesh:TMesh, debug:String, oldtime:Int
 MeshLoader "debug" ' mesh loader debug info
 'MeshLoader "3ds2" ' alternative 3DS loader
 
-Local loader:Int=2 ' set 0 to 2
+Local loader:Int=0 ' set 0 to 2
 Select loader
 	Case 1 ' load incbin mesh
 		oldtime=MilliSecs()
@@ -47,7 +47,8 @@ Select loader
 	Default ' load non-stream mesh
 		oldtime=MilliSecs()
 		MeshLoader "trans" ' mesh transforms, default is "notrans"
-		mesh=LoadMesh("../media/rallycar1.3ds")
+		'mesh=LoadMesh("../media/rallycar1.3ds")
+		mesh=LoadAnimMesh("../media/oildrum.3ds")
 		mesh.RotateMesh(90,0,0)
 		mesh.ScaleMesh(0.2,0.2,0.2)
 		debug="3ds time="+(MilliSecs()-oldtime)

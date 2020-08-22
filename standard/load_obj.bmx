@@ -1,5 +1,4 @@
 ' load_obj.bmx
-' no animation support
 
 Strict
 
@@ -33,7 +32,7 @@ Select loader
 		oldtime=MilliSecs()
 		Local file:String = "../media/obj/spider.obj"
 		mesh=LoadAnimMesh(file)
-		mesh.ScaleAnimMesh(0.2,0.2,0.2)
+		mesh.ScaleMesh(0.2,0.2,0.2)
 		
 		debug="obj time="+(MilliSecs()-oldtime)
 		
@@ -44,13 +43,14 @@ Select loader
 		mesh.ScaleAnimMesh(0.02,0.02,0.02)
 		debug="obj time="+(MilliSecs()-oldtime)
 		
-	Default ' load spider mesh
+	Default ' load box mesh with vertex colors
 		oldtime=MilliSecs()
-		Local file:String = "../media/obj/spider.obj"
-		mesh=LoadMesh(file)
-		mesh.RotateMesh(180,0,0)
-		mesh.ScaleMesh(0.2,0.2,0.2)
+		Local file:String = "../media/obj/box-vcolor.obj"
 		
+		mesh=LoadAnimMesh(file)
+		mesh.ScaleAnimMesh(10,10,10)
+		'mesh=LoadMesh(file)
+		'EntityFX mesh,2
 		debug="zip time="+(MilliSecs()-oldtime)
 		
 EndSelect
@@ -66,6 +66,14 @@ Local renders%, fps%
 
 If MeshHeight(mesh)<100 Then PointEntity camera,mesh
 Local count_children%=TEntity.CountAllChildren(mesh)
+Local child_ent:TEntity, fake%=2
+
+If count_children = 0 Then child_ent = mesh
+For Local child_no% = 1 To count_children
+	Local count% = 0
+	child_ent = mesh.GetChildFromAll(child_no, count, Null)
+	If loader=0 Then EntityFX child_ent,2
+Next
 
 
 While Not KeyDown( KEY_ESCAPE )
@@ -79,6 +87,12 @@ While Not KeyDown( KEY_ESCAPE )
 	If KeyDown(KEY_J) And mesh Then TurnEntity mesh,0,2.5,0
 	If KeyDown(KEY_L) And mesh Then TurnEntity mesh,0,-2.5,0
 	
+	If KeyHit(KEY_ENTER)
+		fake=fake+1
+		If fake>3 Then fake=0
+		EntityFX child_ent,fake
+	EndIf
+
 	If KeyHit(KEY_F) And mesh
 		FreeEntity mesh
 		mesh=Null
@@ -95,7 +109,7 @@ While Not KeyDown( KEY_ESCAPE )
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()+", Debug: "+debug
-	Text 0,40,"WASD/Arrows: move camera, IJKL: turn mesh, F: free entity"
+	Text 0,40,"WASD/Arrows: move camera, IJKL: turn mesh, F: free entity, Enter: set EntityFX: "+fake
 	If mesh
 		Text 0,60,"mesh depth="+MeshDepth(mesh)+" height="+MeshHeight(mesh)
 		Text 0,80,"mesh rot="+EntityPitch(mesh)+","+EntityYaw(mesh)+","+EntityRoll(mesh)

@@ -1,5 +1,4 @@
 ' load_obj_stream.bmx
-' no animation support
 
 Strict
 
