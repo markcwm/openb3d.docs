@@ -1,5 +1,5 @@
 ' firepaint3d.bmx
-' Original program by Mark Sibly
+' Features dynamically colored sprites, by Mark Sibly
 
 Strict
 
@@ -11,10 +11,10 @@ Graphics3D width,height,depth,mode
 
 AmbientLight 0,0,0
 
-Const grav#=-.02, intensity=3
+Const grav#=-0.02, intensity=3
 
 Type Frag
-	Field ys#, alpha#, entity:TBatchSprite
+	Field ys#, alpha#, entity:TSprite
 End Type
 
 Local fraglist:TList=CreateList()
@@ -47,16 +47,15 @@ FlipMesh sky
 
 'TextureLoader "cpp"
 
-'spark=LoadSprite("media/bluspark.bmp")
-Local batch_controller:TBatchSpriteMesh = LoadBatchTexture("../media/bluspark.bmp") ' loads into batch 0
-
-Local time=MilliSecs()
-Local num%
+Local spark:TSprite=LoadSprite("../media/bluspark.bmp")
 
 ' used by fps code
 Local old_ms=MilliSecs()
 Local renders
 Local fps
+
+Local time=MilliSecs()
+Local num%
 
 MoveMouse 0,0
 
@@ -78,17 +77,14 @@ While Not KeyDown(KEY_ESCAPE)
 	TurnEntity pivot,0,-x_speed,0	'turn player Left/Right
 	TurnEntity camera,-y_speed,0,0	'tilt camera
 	TurnEntity cursor,0,dt*5,0
-	
-	BatchSpriteEntity().PositionEntity (cursor.EntityX(1), cursor.EntityY(1),cursor.EntityZ(1))
-	
+		
 	If MouseDown(1)
 		For Local t%=1 To (intensity * 3)
 			Local f:Frag=New Frag
 			f.ys=0
 			f.alpha=Rnd(2,3)
-			'f.entity=CopyEntity( spark,cursor )
-			f.entity=CreateBatchSprite(cursor)
-			SpriteRenderMode f.entity,1
+			f.entity=spark.CopyEntity( cursor )
+			SpriteRenderMode f.entity,2
 			SpriteViewMode f.entity,1
 			
 			ShowEntity f.entity
@@ -122,7 +118,7 @@ While Not KeyDown(KEY_ESCAPE)
 		EndIf
 	Next
 	
-	'UpdateWorld
+	UpdateWorld
 	RenderWorld
 	renders=renders+1
 	
@@ -139,4 +135,3 @@ While Not KeyDown(KEY_ESCAPE)
 Wend
 
 End
-
