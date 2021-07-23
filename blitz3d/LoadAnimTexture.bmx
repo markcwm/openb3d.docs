@@ -22,7 +22,7 @@ PositionEntity cube,-2,0,5
 Local cube2:TMesh=CreateCube()
 PositionEntity cube2,2,0,5
 
-'TextureLoader "cpp" ' default loader is "bmx"
+'UseLibraryTextures 1
 
 Local tex_flags%=1+16+32
 tex_flags:+8 ' test mipmaps - boomstrip_dxt5_nomip.dds has no mipmaps

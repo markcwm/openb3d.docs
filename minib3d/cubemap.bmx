@@ -2,6 +2,7 @@
 
 Strict
 
+'Framework sidesign.minib3d
 Framework Openb3dmax.B3dglgraphics
 
 Local width%=DesktopWidth(),height%=DesktopHeight(),depth%=0,Mode%=2
@@ -136,6 +137,8 @@ Function UpdateCubemap(tex:TTexture,camera:TCamera,entity:TEntity)
 	' set the camera's viewport so it is the same size as our texture
 	' - so we can fit entire screen contents into texture
 	CameraViewport camera,0,0,tex_sz,tex_sz
+	
+	
 	
 	' update cubemap - Blitz3D uses CopyRect 0,0,tex_sz,tex_sz,0,0,BackBuffer(),TextureBuffer(tex)
 

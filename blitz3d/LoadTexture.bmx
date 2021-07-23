@@ -14,7 +14,7 @@ RotateEntity light,90,0,0
 Local cube:TMesh=CreateCube()
 PositionEntity cube,0,0,5
 
-TextureLoader "cpp"
+UseLibraryTextures 1
 
 ' Load texture
 Local tex:TTexture=LoadTexture("../media/alpha_map.jpg")

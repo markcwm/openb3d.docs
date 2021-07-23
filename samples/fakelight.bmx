@@ -13,7 +13,7 @@ AmbientLight 0,0,0
 
 Local cube:TMesh=CreateSphere( 32 )
 
-Local tex:TTexture=LoadTexture( "../../media/brick.bmp" )
+Local tex:TTexture=LoadTexture( "../media/brick.bmp" )
 EntityTexture cube,tex
 
 Local range#=5

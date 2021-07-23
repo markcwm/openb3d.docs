@@ -50,7 +50,7 @@ While Not KeyDown(KEY_ESCAPE)
 	Text 0,20,"Arrows: turn light, AD: turn alpha cube, Memory: "+GCMemAlloced()
 	
 	Flip(1)
-	GCCollect
+	'GCCollect
 	
 Wend
 End

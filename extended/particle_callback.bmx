@@ -4,7 +4,12 @@
 Strict
 
 Framework Openb3dmax.B3dglgraphics
+
+?Not bmxng
 Import Brl.Random
+?bmxng
+Import Brl.RandomDefault ' since v0.121
+?
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 

@@ -4,7 +4,11 @@ SuperStrict
 
 Framework Openb3dmax.B3dglgraphics
 
+?Not bmxng
 Import Brl.Random
+?bmxng
+Import Brl.RandomDefault ' since v0.121
+?
 Import Brl.PngLoader
 
 Global width%=DesktopWidth(),height%=DesktopHeight(),depth%=0,Mode%=2

@@ -20,7 +20,7 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshLoader "debug" ' mesh loader debug info
+UseMeshDebugLog 1
 
 Local loader:Int=2 ' 0 to 2
 Select loader

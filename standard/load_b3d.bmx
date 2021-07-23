@@ -16,7 +16,7 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshLoader "debug" ' mesh loader debug info
+UseMeshDebugLog 1
 
 Local loader:Int=1 ' 0 to 3
 Select loader
@@ -39,8 +39,8 @@ Select loader
 		debug="b3d time="+(MilliSecs()-oldtime)
 		
 	Default ' load zombie mesh from library
-		TextureLoader "cpp"
-		MeshLoader "cpp"
+		UseLibraryTextures 1
+		UseLibraryMeshes 1
 		
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/zombie.b3d")

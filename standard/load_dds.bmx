@@ -28,7 +28,7 @@ PositionEntity dxt3,5,0,0
 PositionEntity dxt5,0,0,0
 PositionEntity rgba,0,5,0
 
-'TextureLoader "cpp" ' default loader is "bmx"
+'UseLibraryTextures 1
 
 Local tex_flags%=1
 tex_flags:+8 ' test mipmaps - dxt5_nomip.dds has no mipmaps

@@ -5,6 +5,12 @@ Strict
 
 Framework Openb3dmax.B3dglgraphics
 
+?Not bmxng
+Import Brl.Random
+?bmxng
+Import Brl.RandomDefault ' since v0.121
+?
+
 Local width=640,height=480,depth=0,mode=2
 
 Graphics3D width,height,depth,mode
@@ -30,7 +36,7 @@ CameraViewport camera2,0,0,100,100
 
 'create blitzlogo 'cursor'
 Local cursor:TMesh=CreateSphere(8,camera)
-Local logotex:TTexture=LoadTexture("../media/blitzlogo.bmp")
+Local logotex:TTexture=LoadTexture("media/blitzlogo.bmp")
 EntityTexture cursor,logotex
 MoveEntity cursor,0,0,25
 EntityBlend cursor,3
@@ -38,16 +44,16 @@ EntityFX cursor,1
 
 'create sky sphere
 Local sky:TMesh=CreateSphere()
-Local tex:TTexture=LoadTexture( "../media/stars.bmp" )
+Local tex:TTexture=LoadTexture( "media/stars.bmp" )
 ScaleTexture tex,.125,.25
 EntityTexture sky,tex
 ScaleEntity sky,500,500,500
 EntityFX sky,1
 FlipMesh sky
 
-'TextureLoader "cpp"
+'UseLibraryTextures 1
 
-Local spark:TSprite=LoadSprite("../media/bluspark.bmp")
+Local spark:TSprite=LoadSprite("media/bluspark.bmp")
 
 ' used by fps code
 Local old_ms=MilliSecs()

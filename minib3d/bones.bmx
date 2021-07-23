@@ -35,8 +35,8 @@ Select loader
 		TurnEntity ent,0,180,0
 				
 	Default ' load library mesh
-		TextureLoader "cpp"
-		MeshLoader "cpp"
+		UseLibraryTextures 1
+		UseLibraryMeshes 1
 		
 		ent=LoadAnimMesh("../media/zombie.b3d")
 		MoveEntity ent,0,0,10

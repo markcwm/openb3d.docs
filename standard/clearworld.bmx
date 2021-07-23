@@ -6,8 +6,8 @@ Framework Openb3dmax.B3dglgraphics
 
 Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
-'MeshLoader "cpp" ' currently crashes with library meshes
-'TextureLoader "cpp"
+'UseLibraryMeshes 1 ' crashes with library meshes
+'UseLibraryTextures 1
 
 Local scene:TScene=New TScene
 scene.LoadScene()

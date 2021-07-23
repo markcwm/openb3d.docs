@@ -17,7 +17,7 @@ Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshLoader "debug" ' mesh loader debug info
+UseMeshDebugLog 1
 
 'LoaderMatrix "md2", 1,0,0, 0,0,1, 0,-1,0 ' swap z/y and invert y
 
@@ -34,8 +34,8 @@ Select loader
 		debug="md2 time="+(MilliSecs()-oldtime)
 		
 	Default ' load library mesh
-		TextureLoader "cpp"
-		MeshLoader "cpp"
+		UseLibraryTextures 1
+		UseLibraryMeshes 1
 		
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/tris.md2")

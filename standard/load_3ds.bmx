@@ -1,5 +1,4 @@
 ' load_3ds.bmx
-' note: there are two BMX 3DS loaders, to enable the alternative use MeshLoader "3ds2"
 
 Strict
 
@@ -16,17 +15,17 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshLoader "debug" ' mesh loader debug info
-'MeshLoader "3ds2" ' alternative 3DS loader
+UseMeshDebugLog 1
+'TGlobal.Loader_3DS2=1 ' other 3DS loader
 
-'MeshLoader "cpp" ' swap loaders, bmx or cpp
-'TextureLoader "cpp"
+'UseLibraryMeshes 1
+'UseLibraryTextures 1
 
 Local loader:Int=1 ' 0 to 3
 Select loader
 	Case 1 ' load rallycar1 anim mesh
 		oldtime=MilliSecs()
-		MeshLoader "trans" ' mesh transforms, default is "notrans"
+		UseMeshTransform 1 ' mesh transforms, default is False
 		mesh=LoadMesh("../media/rallycar1.3ds")
 		mesh.RotateMesh(90,0,0)
 		mesh.ScaleMesh(0.2,0.2,0.2)
@@ -42,7 +41,7 @@ Select loader
 		
 	Case 3 ' load phineas4 anim mesh
 		oldtime=MilliSecs()
-		MeshLoader "trans" ' mesh transforms, default is "notrans"
+		UseMeshTransform 1 ' mesh transforms, default is False
 		mesh=LoadAnimMesh("../media/phineas4.3ds")
 		mesh.RotateAnimMesh(45,90,-90)
 		mesh.PositionAnimMesh(0,44,-6)
@@ -51,8 +50,8 @@ Select loader
 		debug="3ds time="+(MilliSecs()-oldtime)
 		
 	Default ' load wcrate mesh from library
-		TextureLoader "cpp"
-		MeshLoader "cpp"
+		UseLibraryTextures 1
+		UseLibraryMeshes 1
 		
 		oldtime=MilliSecs()
 		mesh=LoadMesh("../media/wcrate1.3ds")

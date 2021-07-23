@@ -22,7 +22,7 @@ Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshLoader "debug"
+UseMeshDebugLog 1
 
 ' load anim mesh
 Local loader:Int=2 ' 0 to 2

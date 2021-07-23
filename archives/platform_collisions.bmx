@@ -6,11 +6,12 @@ Strict
 
 Framework Openb3dMax.B3dglgraphics
 
-Import Brl.Random
 ?Not bmxng
 Import Brl.Timer
+Import Brl.Random
 ?bmxng
 Import Brl.TimerDefault
+Import Brl.RandomDefault ' since v0.121
 ?
 
 Graphics3D 800, 600, 0, 2

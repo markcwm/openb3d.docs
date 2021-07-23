@@ -15,8 +15,8 @@ Local cube:TMesh=CreateCube()
 PositionEntity cube,-1.5,0,4
 'EntityAlpha cube,0.99 ' alpha<1 overrides fx flag
 
-'MeshLoader "cpp"
-'TextureLoader "cpp"
+'UseLibraryMeshes 1
+'UseLibraryTextures 1
 
 Local mesh:TMesh=LoadMesh("../media/Bird.b3d")
 ScaleMesh mesh,0.25,0.25,0.25

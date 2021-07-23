@@ -17,9 +17,9 @@ Local light:TLight=CreateLight()
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshLoader "debug"
-'MeshLoader "cpp"
-'TextureLoader "cpp"
+UseMeshDebugLog 1
+'UseLibraryMeshes 1
+'UseLibraryTextures 1
 
 ' load anim mesh
 Local loader%=1 ' 0 to 1
@@ -31,8 +31,8 @@ Select loader
 		debug="b3d time="+(MilliSecs()-oldtime)
 		
 	Default ' load bath mesh from library
-		TextureLoader "cpp"
-		MeshLoader "cpp"
+		UseLibraryTextures 1
+		UseLibraryMeshes 1
 		
 		oldtime=MilliSecs()
 		mesh=LoadAnimMesh("../media/bath/RomanBath.b3d")

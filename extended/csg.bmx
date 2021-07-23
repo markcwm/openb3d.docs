@@ -48,9 +48,11 @@ While Not KeyDown(KEY_ESCAPE)
 		FlipMesh csg3
 	EndIf
 	
-	TurnEntity csg,0,0.5,-0.1
-	TurnEntity csg2,0,0.5,-0.1
-	TurnEntity csg3,0,0.5,-0.1
+	If KeyDown(KEY_SPACE)
+		TurnEntity csg,0,0.5,-0.1
+		TurnEntity csg2,0,0.5,-0.1
+		TurnEntity csg3,0,0.5,-0.1
+	EndIf
 	
 	RenderWorld
 	

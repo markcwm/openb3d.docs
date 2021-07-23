@@ -1,5 +1,4 @@
 ' load_3ds_stream.bmx
-' note: there are two BMX 3DS loaders, to enable the alternative use MeshLoader "3ds2"
 
 Strict
 
@@ -20,8 +19,8 @@ RotateEntity light,45,45,0
 
 Local mesh:TMesh, debug:String, oldtime:Int
 
-MeshLoader "debug" ' mesh loader debug info
-'MeshLoader "3ds2" ' alternative 3DS loader
+UseMeshDebugLog 1
+'TGlobal.Loader_3DS2=1 ' other 3DS loader
 
 Local loader:Int=0 ' set 0 to 2
 Select loader
@@ -46,7 +45,7 @@ Select loader
 		
 	Default ' load non-stream mesh
 		oldtime=MilliSecs()
-		MeshLoader "trans" ' mesh transforms, default is "notrans"
+		UseMeshTransform 1 ' mesh transforms, default is False
 		mesh=LoadMesh("../media/rallycar1.3ds")
 		mesh.RotateMesh(90,0,0)
 		mesh.ScaleMesh(0.2,0.2,0.2)
