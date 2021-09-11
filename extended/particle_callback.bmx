@@ -1,5 +1,5 @@
 ' particle_callback.bmx
-' particle emitter callback function: add custom alpha, scaling and randomness to particles
+' particle emitter callback for custom code such as alpha, scaling and randomness
 
 Strict
 
@@ -40,13 +40,13 @@ EntityColor sphere2,12,127,127
 EntityAlpha sphere2,0.75
 EntityFX sphere2,32
 
-TParticle.Scale(3.0,3.0,0.5,1.5) ' set scale x/y and min/max
-TParticle.Life(40,60) ' set life min/max
+TEmitter.SetScale(2.5,2.5,0.75,1.5) ' set start scale x/y and scale min/max
+TEmitter.SetLife(40,60) ' set life min/max
 
 Local sprite:TSprite=CreateSprite()
 EntityColor sprite,225,225,200
 EntityAlpha sprite,0.75
-ScaleSprite sprite,TParticle.scalex,TParticle.scaley
+ScaleSprite sprite,TEmitter.scalex,TEmitter.scaley
 Local noisetex:TTexture=LoadTexture("../media/Smoke2.png",1+2)
 EntityTexture sprite,noisetex
 'HideEntity sprite
@@ -54,15 +54,19 @@ EntityTexture sprite,noisetex
 SpriteRenderMode sprite,2 ' 2=batch sprites
 SpriteViewMode sprite,1 ' face camera
 
-Local pe:TParticleEmitter=CreateParticleEmitter(sprite)
-MoveEntity pe,0,5,0
-TurnEntity pe,-90,0,0
+Local emit:TParticleEmitter=CreateParticleEmitter(sprite)
+MoveEntity emit,0,5,0
+TurnEntity emit,-90,0,0 ' rotate to emit particles upwards
 
-EmitterRate pe,1.0
-EmitterParticleLife pe,TParticle.life_max
-EmitterVariance pe,0.07
-EmitterParticleSpeed pe,0.1
-EmitterParticleFunction pe,TParticle.Callback ' point to callback
+EmitterParticleLife emit,0,TEmitter.lifemax,0 ' set start and end life as the same
+EmitterRate emit,1.01
+EmitterVariance emit,0.07
+EmitterParticleSpeed emit,0.1,0
+EmitterParticleFunction emit,TEmitter.Callback ' point to callback function
+
+' default functions get overridden by callback
+'EmitterParticleAlpha emit,0.5,0.05 ' start and end alpha, 0..1
+'EmitterParticleScale emit,12.0,2.0,0.5,0.5 ' start and end scale xy, default is 1
 
 PositionEntity sprite,-10,3,10
 
@@ -75,8 +79,8 @@ Local renders%, fps%
 
 While Not KeyHit(KEY_ESCAPE)
 
-	' move emitter, position particles
-	PositionEntity pe,Sin(MilliSecs() * 0.1) * 4,3,5
+	' move emitter to position particles
+	PositionEntity emit,Sin(MilliSecs() * 0.1) * 4,3,5
 	
 	' control camera
 	MoveEntity cam,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)
@@ -94,8 +98,7 @@ While Not KeyHit(KEY_ESCAPE)
 		EndIf
 	EndIf
 	
-	' update particles
-	UpdateWorld
+	UpdateWorld ' update particles, actions, animations and collisions
 	RenderWorld
 	
 	' calculate fps
@@ -115,151 +118,131 @@ While Not KeyHit(KEY_ESCAPE)
 Wend
 
 FreeEntity sprite
-TParticle.FreeParticles(pe)
+TEmitter.FreeParticles(emit)
 
 End
 
 
-Type TParticleObject
+Type TParticle Extends TSprite
 
-	?bmxng
-	Global map:TPtrMap=New TPtrMap
-	?Not bmxng
-	Global map:TMap=New TMap
-	?
-	Field instance:Byte Ptr
+	Field life% ' lifespan left
 	
-	Field inst:Byte Ptr, life%
-	Field spr:TSprite
-	Field life_minmax%, life_max%
-	Field scale_minmax#
+	Field lifeend% ' max lifespan
+	Field liferand% ' randomized lifespan
+	Field scalerand# ' randomized scale
 	
-	Function CreateObject:TParticleObject( inst:Byte Ptr )
+	' Creates a particle sprite
+	Function CreateObject:TParticle( inst:Byte Ptr )
 	
 		If inst=Null Then Return Null
-		Local obj:TParticleObject=New TParticleObject
+		Local obj:TParticle=New TParticle
 		?bmxng
-		map.Insert( inst,obj )
+		ent_map.Insert( inst,obj )
 		?Not bmxng
-		map.Insert( String(Int(inst)),obj )
+		ent_map.Insert( String(Int(inst)),obj )
 		?
 		obj.instance=inst
 		Return obj
 		
 	End Function
 	
-	Function GetObject:TParticleObject( inst:Byte Ptr )
-	
-		?bmxng
-		Return TParticleObject( map.ValueForKey( inst ) )
-		?Not bmxng
-		Return TParticleObject( map.ValueForKey( String(Int(inst)) ) )
-		?
-		
-	End Function
-	
 End Type
 
-Type TParticle
 
-	Global nparticles%
-	Global life_min%, life_max%
-	Global scalex#, scaley#, scale_min#, scale_max#
-	Global spr_list:TList=CreateList()
+Type TEmitter
+
+	Global numparticles% ' number of particles
 	
-	Function Life( lmin#,lmax# )
+	Global lifemin%, lifemax% ' min/max lifespan
+	Global scalex#, scaley# ' start scale x/y
+	Global scalemin#, scalemax# ' min/max scale
 	
-		life_min=lmin
-		life_max=lmax
+	Global part_list:TList=CreateList() ' list of particles for this emitter
+	
+	' Set min/max random lifespan of particle
+	Function SetLife( lmin#,lmax# )
+	
+		lifemin=lmin
+		lifemax=lmax
 		
 	End Function
 	
-	Function Scale( sx#,sy#,smin#,smax# )
+	' Set start scale x/y and min/max random scale of particle
+	Function SetScale( sx#,sy#,smin#,smax# )
 	
 		scalex=sx
 		scaley=sy
-		scale_min=smin
-		scale_max=smax
+		scalemin=smin
+		scalemax=smax
 		
 	End Function
 	
-	Function FreeParticles( pe:TParticleEmitter )
+	' Creates new particles if not already created
+	Function UpdateParticles:TParticle( inst:Byte Ptr,life:Int )
 	
-		TParticleObject.map.Clear() ' no ClearMap in PtrMap
-		FreeEntity pe
+		Local inlist%=0, part:TParticle
+		part=TParticle(TEntity.GetObject(inst))
+		If part<>Null
+			If inst=TSprite.GetInstance(part) Then inlist=True
+		EndIf
 		
-		For Local spr:TSprite=EachIn spr_list
-			If spr.exists '	we can't use FreeEntity on batch sprites
-				spr.FreeEntityList()
-				spr.exists=0
+		If inlist=False ' create new particle
+			part=TParticle.CreateObject(inst)
+			ListAddLast part_list,part
+			
+			' set initial data
+			part.lifeend=lifemax
+			part.liferand=Rand(lifemin,lifemax)
+			part.scalerand=Rnd(scalemin,scalemax)
+			numparticles:+1
+		EndIf
+		
+		If part<>Null
+			part.instance=inst
+			part.life=life
+		EndIf
+		Return part
+		
+	End Function
+	
+	' Callback function called in UpdateWorld (inst is instance of entity, life is lifespan left)
+	Function Callback( inst:Byte Ptr,life:Int )
+	
+		Local part:TParticle=UpdateParticles(inst,life)
+		
+		' end of particle life
+		If (lifemax - part.life) > part.liferand
+			HideEntity part
+		EndIf
+		
+		' particle alpha
+		Local partalpha#=Float(part.life) / (part.lifeend+1) ' normalized to 0..1 (+1 so never divide by 0)
+		EntityAlpha part,partalpha/3
+		
+		' particle scale
+		Local partscale#=Float(part.liferand - part.life) / (part.lifeend+1) ' normalized - 1..0
+		Local sx#=(scalex + partscale) * part.scalerand
+		Local sy#=(scaley + partscale) * part.scalerand
+		ScaleSprite part,sx,sy
+		
+		'DebugLog "partalpha="+partalpha+" life="+part.life+" max="+part.lifeend
+		'DebugLog "partscale="+partscale+" sx="+sx+" life="+part.life
+		
+	End Function
+	
+	' Frees particle emitter and all of its particles
+	Function FreeParticles( emit:TParticleEmitter )
+	
+		TParticle.ent_map.Clear() ' no ClearMap in PtrMap
+		FreeEntity emit
+		
+		For Local part:TSprite=EachIn part_list
+			If part.exists
+				part.FreeEntityList() ' can't use FreeEntity on sprites
+				part.exists=0
 			EndIf
 		Next
 		
-	End Function
-	
-	' store inst in map (for quick lookup) along with type for per instance data
-	Function UpdateMap:TParticleObject( inst:Byte Ptr,life:Int )
-	
-		Local inlist%=0, pd:TParticleObject
-		pd=TParticleObject.GetObject(inst)
-		If pd<>Null
-			If inst=TSprite.GetInstance(pd.spr) Then inlist=True
-		EndIf
-		
-		If inlist=False ' init particle data, this is where to add randomness
-			pd=TParticleObject.CreateObject(inst)
-			pd.spr=TSprite.CreateObject(inst)
-			ListAddLast spr_list,pd.spr
-			
-			pd.life_minmax=Rand(life_min,life_max)
-			pd.life_max=life_max + (life_max / 10) ' life + 10% (max is more than life so alpha will be < 1)
-			pd.scale_minmax=Rnd(scale_min,scale_max)
-			nparticles:+1
-			
-			'DebugLog "nparticles="+nparticles
-		EndIf
-		
-		If pd<>Null
-			pd.inst=inst
-			pd.life=life
-		EndIf
-		Return pd
-		
-	End Function
-	
-	Function Callback( inst:Byte Ptr,life:Int ) ' inst is sprite, life left
-	
-		Local pd:TParticleObject=UpdateMap(inst,life)
-		UpdateLife(pd)
-		UpdateAlpha(pd)
-		UpdateScale(pd)
-		
-	End Function
-	
-	Function UpdateLife( pd:TParticleObject )
-	
-		If (life_max - pd.life) > pd.life_minmax
-			HideEntity pd.spr ' randomize life
-		EndIf
-		
-	End Function
-	
-	Function UpdateAlpha( pd:TParticleObject )
-	
-		Local lifeleft#=Float(pd.life) / pd.life_max ' normalized - 0..1
-		EntityAlpha pd.spr,lifeleft ' to use wrapper function
-		
-		'DebugLog "lifeleft="+lifeleft+" life="+pd.life+" max="+pd.life_max
-	End Function
-	
-	Function UpdateScale( pd:TParticleObject )
-	
-		Local lifegone#=Float(pd.life_minmax - pd.life) / pd.life_max ' normalized - 1..0
-		Local sx#=(scalex + lifegone) * pd.scale_minmax
-		Local sy#=(scaley + lifegone) * pd.scale_minmax
-		ScaleSprite pd.spr,sx,sy
-		
-		'DebugLog "lifegone="+lifegone+" sx="+sx+" life="+pd.life
 	End Function
 	
 End Type

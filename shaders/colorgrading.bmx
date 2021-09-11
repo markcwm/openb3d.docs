@@ -6,11 +6,13 @@
 Strict
 
 Framework Openb3dmax.B3dglgraphics
-Import Brl.Random
+
 ?Not bmxng
 Import Brl.Timer
+Import Brl.Random
 ?bmxng
 Import Brl.TimerDefault
+Import Brl.RandomDefault ' since v0.121
 ?
 
 Local lut_array$[]=["Added contrast", "Warm and crispy", "Filmic", "Bleak future", "Blockbuster", "Thermal vision", "Black and white", "Vintage", ""]

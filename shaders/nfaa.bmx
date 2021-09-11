@@ -1,5 +1,5 @@
-' vignette.bmx
-' postprocess effect - render framebuffer to texture for vignette effect
+' nfaa.bmx
+' postprocess effect - render framebuffer to texture for Normal filter Anti-aliasing (NFAA)
 ' by RonTek
 
 Strict
@@ -22,20 +22,22 @@ SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
 
 Local PostFx:TRenderPass=New TRenderPass
-PostFx.InitSprite() ' init cameras, shaders, etc. - use InitPostFx() to render to framebuffer
+PostFx.InitPostFx()
+'PostFx.InitSprite() ' init cameras, shaders, etc. - use InitPostFx() to render to framebuffer
 PostFx.Activate()
 
+' terrain
 Local size:Int=256, vsize:Float=30, maxheight:Float=10
 Local terrain:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
 ScaleEntity terrain,1,(1*maxheight)/vsize,1 ' set height
 terrain.UpdateNormals() ' correct lighting
 PositionEntity terrain,-size/2,-10,size/2
 
-' Texture terrain
 Local grass_tex:TTexture=LoadTexture( "../media/terrain-1.jpg" )
 EntityTexture terrain,grass_tex
 ScaleTexture grass_tex,10,10
 
+' zombie
 Local pivot:TPivot=CreatePivot()
 PositionEntity pivot,0,0,0
 Local anim_time:Float
@@ -43,6 +45,7 @@ Local anim_ent:TMesh=LoadAnimMesh("../media/zombie.b3d",pivot)
 PositionEntity anim_ent,0,0,12
 TurnEntity anim_ent,0,-90,0
 
+' crate
 Local cube:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleMesh cube,0.15,0.15,0.15
 PositionEntity cube,0,0.5,0
@@ -66,7 +69,7 @@ While Not KeyHit(KEY_ESCAPE)
 	anim_time:+0.5
 	If anim_time>20 Then anim_time=2
 	SetAnimTime(anim_ent,anim_time)
-	TurnEntity pivot,0,1,0
+	'TurnEntity pivot,0,1,0
 	
 	UpdateWorld
 	PostFx.Render()
@@ -82,7 +85,7 @@ While Not KeyHit(KEY_ESCAPE)
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
 	Text 0,40,"WSAD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active
-	Text 0,60,"Radius: R/T = "+PostFx.Radius+" Softness: F/G = "+PostFx.Softness
+	Text 0,60,"anim_time="+anim_time
 	
 	Flip
 	GCCollect
@@ -99,9 +102,8 @@ Type TRenderPass
 	Field PostFxCam:TCamera
 	Field CameraTex:TTexture
 	Field Light:TLight
-	Field Sprite:TSprite	
+	Field Sprite:TSprite
 	Field Shader:TShader
-	Field Radius#=0.75, Softness#=0.45
 	
 	Function Create:TRenderPass()
 		Return New TRenderPass
@@ -124,10 +126,9 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/vignette.frag.glsl")
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/nfaa.frag.glsl")
 		SetInteger(Shader,"texture0",0)
-		UseFloat(Shader,"Radius",Radius)
-		UseFloat(Shader,"Softness",Softness)
+		SetFloat2(Shader,"resolution",TGlobal3D.width[0],TGlobal3D.height[0])
 		
 		PostFx=CreatePostFX(Camera,1)
 		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
@@ -175,11 +176,10 @@ Type TRenderPass
 		PositionEntity Camera,0,7,0 ' move camera now sprite is parented to it
 		MoveEntity Camera,0,0,-25
 		
-		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/vignette.frag.glsl")
+		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/nfaa.frag.glsl")
 		ShaderTexture(Shader,CameraTex,"texture0",0) ' Our render texture
-		UseFloat(Shader,"Radius",Radius)
-		UseFloat(Shader,"Softness",Softness)
-		ShadeEntity(Sprite,Shader)
+		SetFloat2(Shader,"resolution",TGlobal3D.width[0],TGlobal3D.height[0])
+		ShadeEntity(Sprite, Shader)
 		
 	End Method
 	
@@ -191,20 +191,15 @@ Type TRenderPass
 			PollInputSprite()
 		EndIf
 		
-		If KeyHit(KEY_R) Then Radius:+0.05
-		If KeyHit(KEY_T) And Radius>0.1 Then Radius:-0.05
-		If KeyHit(KEY_F) Then Softness:+0.05
-		If KeyHit(KEY_G) And Softness>0.1 Then Softness:-0.05
-		
 		' control camera
-		If KeyDown(KEY_D)=True Then MoveEntity Camera,0.25,0,0
-		If KeyDown(KEY_A)=True Then MoveEntity Camera,-0.25,0,0
-		If KeyDown(KEY_S)=True Then MoveEntity Camera,0,0,-0.25
-		If KeyDown(KEY_W)=True Then MoveEntity Camera,0,0,0.25
-		If KeyDown(KEY_UP)=True Then TurnEntity Camera,-1,0,0
-		If KeyDown(KEY_DOWN)=True Then TurnEntity Camera,1,0,0
-		If KeyDown(KEY_LEFT)=True Then TurnEntity Camera,0,1,0
-		If KeyDown(KEY_RIGHT)=True Then TurnEntity Camera,0,-1,0
+		If KeyDown(KEY_D) Then MoveEntity Camera,0.25,0,0
+		If KeyDown(KEY_A) Then MoveEntity Camera,-0.25,0,0
+		If KeyDown(KEY_S) Then MoveEntity Camera,0,0,-0.25
+		If KeyDown(KEY_W) Then MoveEntity Camera,0,0,0.25
+		If KeyDown(KEY_UP) Then TurnEntity Camera,-1,0,0
+		If KeyDown(KEY_DOWN) Then TurnEntity Camera,1,0,0
+		If KeyDown(KEY_LEFT) Then TurnEntity Camera,0,1,0
+		If KeyDown(KEY_RIGHT) Then TurnEntity Camera,0,-1,0
 		
 	End Method
 	

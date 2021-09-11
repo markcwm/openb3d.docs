@@ -5,7 +5,12 @@
 Strict
 
 Framework Openb3dMax.B3dglgraphics
+
+?Not bmxng
 Import Brl.Random
+?bmxng
+Import Brl.RandomDefault ' since v0.121
+?
 
 Local width%=DesktopWidth(),height%=DesktopHeight()
 
