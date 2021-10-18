@@ -1,7 +1,7 @@
-OpenB3DMax.Docs
+OpenB3D.Docs
 ===============
 
-OpenB3DMax source code help with media included.
+OpenB3D source code help with media included.
 
 ## What's In The Folders?
 

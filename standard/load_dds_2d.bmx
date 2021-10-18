@@ -3,8 +3,8 @@
 Strict
 
 Framework Brl.glmax2d
-Import Openb3dmax.ddsloader
-Import Openb3dmax.stbimageloader
+Import Openb3d.ddsloader
+Import Openb3d.stbimageloader
 
 Local width%=800, height%=600, depth%=0, rate%=60
 Local flags%=GRAPHICS_BACKBUFFER|GRAPHICS_ALPHABUFFER|GRAPHICS_DEPTHBUFFER|GRAPHICS_STENCILBUFFER|GRAPHICS_ACCUMBUFFER

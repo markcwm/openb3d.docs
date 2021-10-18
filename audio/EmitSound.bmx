@@ -2,7 +2,7 @@
 
 SuperStrict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 
 Local Drives:String[] = AudioDrivers()
 For Local Drive:String = EachIn Drives

@@ -2,7 +2,7 @@
 
 SuperStrict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 
 ?Not bmxng
 Import Brl.Random

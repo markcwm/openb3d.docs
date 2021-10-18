@@ -2,7 +2,7 @@
 
 Strict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 
 Graphics3D DesktopWidth(),DesktopHeight()
 

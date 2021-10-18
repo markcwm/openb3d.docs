@@ -3,7 +3,7 @@
 
 Strict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 Import Koriolis.Zipstream
 
 Incbin "../media/test/test.b3d"

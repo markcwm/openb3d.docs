@@ -4,7 +4,7 @@
 
 SuperStrict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 
 Local width%=DesktopWidth()/1.0, height%=DesktopHeight()/1.0, depth%=0, Mode%=2, hertz%=60
 Local flags%=GRAPHICS_BACKBUFFER|GRAPHICS_ALPHABUFFER|GRAPHICS_DEPTHBUFFER|GRAPHICS_STENCILBUFFER|GRAPHICS_ACCUMBUFFER

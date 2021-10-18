@@ -1,6 +1,5 @@
-' bloom.bmx
-' postprocess effect - render framebuffer to texture for bloom (fake HDR)
-' by RonTek
+' dithering.bmx
+' postprocess effect - render framebuffer to texture for color dithering
 
 Strict
 
@@ -22,46 +21,35 @@ SeedRnd MilliSecs()
 ClearTextureFilters ' remove mipmap flag for postfx texture
 
 Local PostFx:TRenderPass=New TRenderPass
+PostFx.dithering=1
+PostFx.colors=4
 PostFx.InitSprite() ' init cameras, shaders, etc. - use InitPostFx() to render to framebuffer
 PostFx.Activate()
 
+Local size:Int=256, vsize:Float=30, maxheight:Float=10
+Local terrain:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
+ScaleEntity terrain,1,(1*maxheight)/vsize,1 ' set height
+terrain.UpdateNormals() ' correct lighting
+PositionEntity terrain,-size/2,-10,size/2
+
+' Texture terrain
+Local grass_tex:TTexture=LoadTexture( "../media/terrain-1.jpg" )
+EntityTexture terrain,grass_tex
+ScaleTexture grass_tex,10,10
+
 Local pivot:TPivot=CreatePivot()
-PositionEntity pivot,0,2,0
-Local t_sphere:TMesh=CreateSphere( 8 )
-EntityShininess t_sphere,0.2
-For Local t%=0 To 359 Step 36
-	Local sphere:TEntity=CopyMesh(t_sphere,pivot)
-	EntityColor sphere,Float(Rnd(256)),Float(Rnd(256)),Float(Rnd(256))
-	TurnEntity sphere,0,t,0
-	MoveEntity sphere,0,0,15
-Next
-FreeEntity t_sphere
+PositionEntity pivot,0,0,0
+Local anim_time:Float
+Local anim_ent:TMesh=LoadAnimMesh("../media/zombie.b3d",pivot)
+PositionEntity anim_ent,0,0,12
+TurnEntity anim_ent,0,-90,0
 
 Local cube:TMesh=LoadMesh("../media/wcrate1.3ds")
 ScaleMesh cube,0.15,0.15,0.15
-PositionEntity cube,0,8,0
+PositionEntity cube,0,0.5,0
 Local cube_tex:TTexture=LoadTexture("../media/crate.bmp",1)
 EntityTexture cube,cube_tex
-
-Local cube2:TMesh=CreateCube()
-PositionEntity cube2,0,18,0
-ScaleEntity cube2,2,2,2
-EntityColor cube2,Float(Rnd(256)),Float(Rnd(256)),Float(Rnd(256))
-
-Local t_cylinder:TMesh=CreateCylinder()
-ScaleEntity t_cylinder,0.5,6,0.5
-MoveEntity t_cylinder,5,0,-25
-For Local t%=0 To 10
-	MoveEntity t_cylinder,2,0,9
-	Local cylinder:TEntity=CopyMesh(t_cylinder)
-	EntityColor cylinder,Float(Rnd(256)),Float(Rnd(256)),Float(Rnd(256))
-Next
-FreeEntity t_cylinder
-
-Local ground:TMesh=CreatePlane(128)
-Local ground_tex:TTexture=LoadTexture("../media/Envwall.bmp",1+8)
-ScaleTexture ground_tex,2,2
-EntityTexture ground,ground_tex
+TurnEntity cube,0,45,0
 
 Local framerate#=60.0, animspeed#=10
 Local timer:TTimer=CreateTimer(framerate)
@@ -76,8 +64,22 @@ While Not KeyHit(KEY_ESCAPE)
 	PostFx.Time=Float((TimerTicks(timer) / framerate) * animspeed)
 	PostFx.PollInput()
 	
-	TurnEntity cube,0.1,0.2,0.3
-	TurnEntity cube2,0.1,0.2,0.3
+	If KeyDown(KEY_MINUS) Then anim_time#=anim_time#-0.1
+	If KeyDown(KEY_EQUALS) Then anim_time#=anim_time#+0.1
+	
+	If KeyHit(KEY_H)
+		PostFx.dithering=Not PostFx.dithering
+	EndIf
+	If KeyHit(KEY_C)
+		If PostFx.colors=8 Then PostFx.colors=1
+		If PostFx.colors=4 Then PostFx.colors=8
+		If PostFx.colors=2 Then PostFx.colors=4
+		If PostFx.colors=1 Then PostFx.colors=2
+	EndIf
+	
+	anim_time:+0.5
+	If anim_time>20 Then anim_time=2
+	SetAnimTime(anim_ent,anim_time)
 	TurnEntity pivot,0,1,0
 	
 	UpdateWorld
@@ -92,38 +94,29 @@ While Not KeyHit(KEY_ESCAPE)
 		renders=0
 	EndIf
 	
-	BeginMax2D()
-	SetBlend ALPHABLEND
-	SetColor 0,0,0
-	GLDrawText "FPS: "+fps+", Memory: "+GCMemAlloced(),0,20
-	GLDrawText "WASD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active,0,40
-	GLDrawText "E/R: Exposure="+PostFx.Exposure+", G/H: GlareSize="+PostFx.GlareSize+", O/P: Power="+PostFx.Power,0,60
-	EndMax2D()
+	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
+	Text 0,40,"WSAD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active
+	Text 0,60,"anim_time="+anim_time+" dithering="+PostFx.dithering+" colors="+PostFx.colors
 	
 	Flip
 	GCCollect
 	
 Wend
 
-Delay 100 ' try to avoid app hangs
-PostFx.DeActivate()
-PostFx.Render()
-
-Delay 100
-
 End
 
+' functions
 Type TRenderPass
 
 	Field Active:Byte=False
-	Field Camera:TCamera
+	Field Camera:TCamera, PostFxCam:TCamera
 	Field PostFx:TPostFX=Null
-	Field PostFxCam:TCamera
 	Field CameraTex:TTexture
 	Field Light:TLight
 	Field Sprite:TSprite	
 	Field Shader:TShader
-	Field Time#=0, Exposure#=30.0, GlareSize#=0.002, Power#=0.15
+	Field Time#=0
+	Field dithering%=1, colors#=4
 	
 	Function Create:TRenderPass()
 		Return New TRenderPass
@@ -146,12 +139,12 @@ Type TRenderPass
 		Light=CreateLight()
 		TurnEntity Light,45,45,0
 		
-		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/bloom.frag.glsl")
-		SetInteger(Shader,"texture0",0) ' render texture ' 
-		UseFloat(Shader,"time",Time) ' Time used to scroll the distortion map
-		UseFloat(Shader,"exposure",Exposure) ' default 20.0
-		UseFloat(Shader,"GlareSize",GlareSize) ' 0.002 is good
-		UseFloat(Shader,"Power",Power) ' 0.25 is good
+		Shader=LoadShader("","../glsl/dithering.vert.glsl", "../glsl/dithering.frag.glsl")
+		
+		SetInteger(Shader,"tex0",0) ' Our render texture
+		UseInteger(Shader, "dithering", dithering)
+		UseFloat(Shader, "depth", colors)
+		SetFloat2(Shader, "screen", TGlobal3D.width[0], TGlobal3D.height[0])
 		
 		PostFx=CreatePostFX(Camera,1)
 		HideEntity Camera ' note: this boosts framerate as it prevents extra camera render
@@ -199,13 +192,13 @@ Type TRenderPass
 		PositionEntity Camera,0,7,0 ' move camera now sprite is parented to it
 		MoveEntity Camera,0,0,-25
 		
-		Shader=LoadShader("","../glsl/default.vert.glsl", "../glsl/bloom.frag.glsl")
-		ShaderTexture(Shader,CameraTex,"texture0",0) ' render texture ' 
-		UseFloat(Shader,"time",Time) ' Time used to scroll the distortion map
-		UseFloat(Shader,"exposure",Exposure) ' default 20.0
-		UseFloat(Shader,"GlareSize",GlareSize) ' 0.002 is good
-		UseFloat(Shader,"Power",Power) ' 0.25 is good
-		ShadeEntity(Sprite,Shader)
+		Shader=LoadShader("","../glsl/dithering.vert.glsl", "../glsl/dithering.frag.glsl")
+		
+		ShaderTexture(Shader,CameraTex,"tex0",0) ' Our render texture
+		UseInteger(Shader, "dithering", dithering)
+		UseFloat(Shader, "depth", colors)
+		SetFloat2(Shader, "screen", TGlobal3D.width[0], TGlobal3D.height[0])
+		ShadeEntity(Sprite, Shader)
 		
 	End Method
 	
@@ -217,16 +210,15 @@ Type TRenderPass
 			PollInputSprite()
 		EndIf
 		
-		If KeyDown(KEY_E) Then Exposure:+1.0
-		If KeyDown(KEY_R) And Exposure>2.0 Then Exposure:-1.0
-		If KeyDown(KEY_G) Then GlareSize:+0.0001
-		If KeyDown(KEY_H) And GlareSize>0.0002 Then GlareSize:-0.0001
-		If KeyDown(KEY_O) Then Power:+0.01
-		If KeyDown(KEY_P) And Power>0.02 Then Power:-0.01
-		
 		' control camera
-		MoveEntity Camera,KeyDown(KEY_D)-KeyDown(KEY_A),0,KeyDown(KEY_W)-KeyDown(KEY_S)
-		TurnEntity Camera,KeyDown(KEY_DOWN)-KeyDown(KEY_UP),KeyDown(KEY_LEFT)-KeyDown(KEY_RIGHT),0
+		If KeyDown(KEY_D)=True Then MoveEntity Camera,0.25,0,0
+		If KeyDown(KEY_A)=True Then MoveEntity Camera,-0.25,0,0
+		If KeyDown(KEY_S)=True Then MoveEntity Camera,0,0,-0.25
+		If KeyDown(KEY_W)=True Then MoveEntity Camera,0,0,0.25
+		If KeyDown(KEY_UP)=True Then TurnEntity Camera,-1,0,0
+		If KeyDown(KEY_DOWN)=True Then TurnEntity Camera,1,0,0
+		If KeyDown(KEY_LEFT)=True Then TurnEntity Camera,0,1,0
+		If KeyDown(KEY_RIGHT)=True Then TurnEntity Camera,0,-1,0
 		
 	End Method
 	

@@ -2,7 +2,7 @@
 
 Strict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 
 Graphics3D DesktopWidth(),DesktopHeight()
 
@@ -23,6 +23,8 @@ RotateEntity light,90,0,0
 Local sphere:TMesh=CreateSphere()
 PositionEntity sphere,camx,maxheight,camz
 
+
+
 ' Create terrain
 Local terrain:TTerrain=CreateTerrain(size)
 
@@ -31,7 +33,7 @@ For Local iy%=0 To PixmapWidth(map)-1
 	For Local ix%=0 To PixmapHeight(map)-1
 		Local height:Float=ReadPixel(map,ix,iy) & $FF
 		height=height/255 ' 255 to 1, 1=30M
-		ModifyTerrain terrain,ix,iy,(height*maxheight)/vsize
+		'ModifyTerrain terrain,ix,iy,(height*maxheight)/vsize
 	Next
 Next
 
@@ -41,6 +43,19 @@ terrain.UpdateNormals() ' correct lighting
 Local grass_tex:TTexture=LoadTexture( "../media/terrain-1.jpg" )
 EntityTexture terrain,grass_tex
 ScaleTexture grass_tex,10,10
+
+Local terrain2:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
+ScaleEntity terrain2,1,(1*maxheight)/vsize,1 ' set height
+terrain2.UpdateNormals() ' correct lighting
+'terrain.UpdateTerrain()
+'TTerrain.CopyArray_(TTerrain.vertices)
+'TTerrain.DebugGlobals()
+
+' Texture terrain
+Local grass_tex2:TTexture=LoadTexture( "../media/sand.bmp" )
+EntityTexture terrain2,grass_tex2
+'ScaleTexture grass_tex,10,10
+MoveEntity terrain,100,0,100
 
 Local terra_detail:Int=100 ' Set terrain detail level, maximum is 2000
 Local wiretoggle%=-1

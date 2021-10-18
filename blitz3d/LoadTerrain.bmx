@@ -2,7 +2,7 @@
 
 Strict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 
 Graphics3D DesktopWidth(),DesktopHeight()
 
@@ -23,19 +23,52 @@ PositionEntity sphere,camx,maxheight,camz
 Local terrain:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
 ScaleEntity terrain,1,(1*maxheight)/vsize,1 ' set height
 terrain.UpdateNormals() ' correct lighting
+'terrain.UpdateTerrain()
+'TTerrain.CopyArray_(TTerrain.vertices)
+'TTerrain.DebugGlobals()
 
 ' Texture terrain
 Local grass_tex:TTexture=LoadTexture( "../media/terrain-1.jpg" )
 EntityTexture terrain,grass_tex
-ScaleTexture grass_tex,10,10
+'ScaleTexture grass_tex,10,10
 
 Local terra_detail:Int=100 ' Set terrain detail level, maximum is 2000
 Local wiretoggle%=-1
 Local range#=0
 
-'terrain.updateterrain()
-'RenderWorld
-'terrain.debugobject()
+Local terrain2:TTerrain=LoadTerrain("../media/heightmap_256.BMP") ' path case-sensitive on Linux
+ScaleEntity terrain2,1,(1*maxheight)/vsize,1 ' set height
+'terrain2.UpdateNormals() ' correct lighting
+'terrain.UpdateTerrain()
+'TTerrain.CopyArray_(TTerrain.vertices)
+'TTerrain.DebugGlobals()
+
+' Texture terrain
+Local grass_tex2:TTexture=LoadTexture( "../media/sand.bmp" )
+EntityTexture terrain2,grass_tex2
+'ScaleTexture grass_tex,10,10
+MoveEntity terrain,256,0,256
+
+' texture blending from value
+Local shader:TShader=LoadShader("","../glsl/multitex3.vert.glsl","../glsl/multitex3.frag.glsl")
+
+ShaderTexture(shader,LoadTexture("../textures/dirt.JPG"),"region1ColorMap",0)
+ShaderTexture(shader,LoadTexture("../textures/grass.JPG"),"region2ColorMap",1)
+ShaderTexture(shader,LoadTexture("../textures/rock.JPG"),"region3ColorMap",2)
+ShaderTexture(shader,LoadTexture("../textures/snow.JPG"),"region4ColorMap",3)
+
+SetFloat(shader,"region1.min",1.0)
+SetFloat(shader,"region1.max",3.0)
+SetFloat(shader,"region2.min",1.0)
+SetFloat(shader,"region2.max",4.0)
+SetFloat(shader,"region3.min",1.0)
+SetFloat(shader,"region3.max",4.0)
+SetFloat(shader,"region4.min",1.0)
+SetFloat(shader,"region4.max",4.0)
+SetFloat(shader,"tilingFactor",2.0)
+
+'ShadeEntity(terrain,shader)
+
 
 
 While Not KeyDown( KEY_ESCAPE )
@@ -60,7 +93,7 @@ While Not KeyDown( KEY_ESCAPE )
 	If KeyDown( KEY_UP )=True Then MoveEntity camera,0,0,0.25
 	If KeyDown( KEY_PAGEUP )=True Then MoveEntity camera,0,0.25,0
 	If KeyDown( KEY_PAGEDOWN )=True Then MoveEntity camera,0,-0.25,0
-	
+
 	UpdateWorld
 	RenderWorld
 	
@@ -68,7 +101,9 @@ While Not KeyDown( KEY_ESCAPE )
 	Text 0,40,"Use [ and ] keys to change terrain detail level = "+terrain.Roam_Detail[0]+", range = "+range
 	Text 0,60,"X = "+EntityX(camera)+", Y = "+EntityY(camera)+", Z = "+EntityZ(camera)
 	Text 0,80,"size = "+terrain.size[0]+", lmax = "+Int((terrain.size[0]/100)+10)+", level2dzsize[0] = "+terrain.level2dzsize[0]
-	
+	'Text 0,100,"v x="+TTerrain.vertices[0]+" y="+TTerrain.vertices[1]+" z="+TTerrain.vertices[2]
+	If terrain.NormalsMap<>Null Then Text 0,120,"n x="+terrain.NormalsMap[0]+" y="+terrain.NormalsMap[1]+" z="+terrain.NormalsMap[2]
+	'If tterrain.vertices_list<>Null Then Text 0,140,"t u="+terrain.vertices[6]+" v="+terrain.vertices[7]
 	Flip
 Wend
 End

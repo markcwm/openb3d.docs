@@ -2,7 +2,7 @@
 
 Strict
 
-Framework Openb3dmax.B3dglgraphics
+Framework Openb3d.B3dglgraphics
 
 ?Not bmxng
 Import Brl.Timer
@@ -11,7 +11,8 @@ Import Brl.TimerDefault
 ?
 Import Brl.EventQueue
 ?linux
-Import Bah.Gtkmaxgui
+Import MaxGUI.gtk3maxgui
+'Import Bah.Gtkmaxgui
 ?Not linux
 Import Maxgui.Drivers
 ?
