@@ -68,7 +68,7 @@ Local startroll:Float=0 ' roll has no effect so you don't need it
 Local endpitch:Float=-50 ' set end angles to same as start, then reverse with minus speed
 Local endyaw:Float=270
 Local endroll:Float=0
-Local stfx:Float, stfy:Float, stfz:Float
+Local stf:TVector=New TVector
 
 Local pe:TParticleEmitter=CreateParticleEmitter(sprite)
 MoveEntity pe,0,5,0
@@ -119,12 +119,12 @@ While Not KeyHit(KEY_ESCAPE)
 	
 	RotateEntity pe,startpitch,startyaw,0
 	TFormVector 0,0,0.1,pe,Null ' transform a vector along the +z axis (front) in global coords
-	stfx=TFormedX() ; stfy=TFormedY() ; stfz=TFormedZ() ' store start if using end angles
+	stf.x=TFormedX() ; stf.y=TFormedY() ; stf.z=TFormedZ() ' store start if using end angles
 	
 	RotateEntity pe,endpitch,endyaw,0
 	TFormVector 0,0,0.1,pe,Null ' z doesn't have to be 0.1, it is so particle speed can be larger
 	
-	EmitterVector pe,stfx,stfy,stfz,TFormedX(),TFormedY(),TFormedZ()
+	EmitterVector pe,stf.x,stf.y,stf.z,TFormedX(),TFormedY(),TFormedZ()
 	EmitterParticleSpeed pe,startspeed,endspeed
 		
 	TurnEntity pivot,0,1,0
