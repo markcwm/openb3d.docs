@@ -6,7 +6,7 @@ OpenB3D source code help with media included.
 ## What's In The Folders?
 
 * archives - from the code archives
-* audio - 3d sound examples for audio3d.mod
+* audio3d - 3d sound with audio3d.mod
 * blitz3d - from Blitz3D help
 * docs - commands documentation
 * extended - extra features not in Blitz3D
@@ -15,6 +15,7 @@ OpenB3D source code help with media included.
 * media - all files used in examples
 * minib3d - examples from MiniB3D
 * mod - changes to BRL.mod source (MS Antialias and compressed DDS)
+* particlecandy - particlecandy.mod demo
 * samples - from Blitz3D samples
 * shaders - shader examples from various sources
 * standard - standard features from Blitz3D
