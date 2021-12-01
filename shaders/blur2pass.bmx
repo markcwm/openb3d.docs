@@ -91,7 +91,6 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0,40,"WASD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active+", L: draw line = "+PostFx.Lflag
 	
 	Flip
-	GCCollect
 	
 Wend
 

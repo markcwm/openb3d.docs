@@ -35,8 +35,8 @@ Select loader
 		
 	Case 2 ' load zip mesh
 		oldtime=MilliSecs()
-		Local zipfile:String = "../media/rallycar.zip"
-		Local file:String = "zip::"+zipfile+"//rallycar1.3ds"
+		Local ZipFile:String = "../media/rallycar.zip"
+		Local file:String = "zip::"+ZipFile+"//rallycar1.3ds"
 		mesh=LoadAnimMesh(file)
 		mesh.RotateAnimMesh(90,0,0)
 		mesh.ScaleAnimMesh(0.2,0.2,0.2)
@@ -103,7 +103,7 @@ While Not KeyDown( KEY_ESCAPE )
 	EndIf
 	
 	Flip
-	GCCollect
+	
 Wend
 
 End

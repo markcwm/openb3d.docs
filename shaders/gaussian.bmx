@@ -65,7 +65,6 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0,40,"Arrows: turn cube, Space: PostFx.Active = "+PostFx.Active
 	
 	Flip
-	GCCollect
 	
 Wend
 

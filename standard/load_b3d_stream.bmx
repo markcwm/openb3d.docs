@@ -33,8 +33,8 @@ Select loader
 		
 	Case 2 ' load zip mesh
 		oldtime=MilliSecs()
-		Local zipfile:String = "../media/zombie.zip"
-		Local file:String = "zip::"+zipfile+"//zombie.b3d"
+		Local ZipFile:String = "../media/zombie.zip"
+		Local file:String = "zip::"+ZipFile+"//zombie.b3d"
 		mesh=LoadAnimMesh(file)
 		
 		debug="zip time="+(MilliSecs()-oldtime)
@@ -107,7 +107,7 @@ While Not KeyDown( KEY_ESCAPE )
 	EndIf
 	
 	Flip
-	GCCollect
+	
 Wend
 
 End

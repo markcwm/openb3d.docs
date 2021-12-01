@@ -259,7 +259,6 @@ While Not KeyDown(KEY_ESCAPE)
 	Text 0,80,"Y/H: waveWidth = "+waveWidth+", U/J: waveHeight = "+waveHeight+", I/K: waveLength = "+waveLength
 	
 	Flip
-	GCCollect
 	
 Wend
 

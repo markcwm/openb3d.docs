@@ -85,7 +85,6 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0,60,"Radius: R/T = "+PostFx.Radius+" Softness: F/G = "+PostFx.Softness
 	
 	Flip
-	GCCollect
 	
 Wend
 

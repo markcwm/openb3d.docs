@@ -72,7 +72,6 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0, 60, "Use the arrow keys to switch the used LUT: "+lut_array$[PostFx.Luter]
 	
 	Flip
-	GCCollect
 	
 Wend
 

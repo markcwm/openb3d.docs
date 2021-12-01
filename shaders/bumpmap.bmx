@@ -224,7 +224,6 @@ While Not KeyDown(KEY_ESCAPE)
 	TLight.SetLightValues()
 	
 	Flip
-	GCCollect
 	
 Wend
 

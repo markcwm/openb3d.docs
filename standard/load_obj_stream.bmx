@@ -33,8 +33,8 @@ Select loader
 		
 	Case 2 ' load zip spider mesh
 		oldtime=MilliSecs()
-		Local zipfile:String = "../media/obj/spider.zip"
-		Local file:String = "zip::"+zipfile+"//spider.obj"
+		Local ZipFile:String = "../media/obj/spider.zip"
+		Local file:String = "zip::"+ZipFile+"//spider.obj"
 		mesh=LoadAnimMesh(file)
 		mesh.ScaleAnimMesh(0.2,0.2,0.2)
 		
@@ -106,7 +106,7 @@ While Not KeyDown( KEY_ESCAPE )
 	EndIf
 	
 	Flip
-	GCCollect
+	
 Wend
 
 End

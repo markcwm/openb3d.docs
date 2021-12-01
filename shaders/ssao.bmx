@@ -94,7 +94,6 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0,80,"anim_time="+anim_time
 	
 	Flip
-	GCCollect
 	
 Wend
 

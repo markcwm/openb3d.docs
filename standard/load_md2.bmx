@@ -94,7 +94,7 @@ While Not KeyDown(KEY_ESCAPE)
 	Text 0,60,"Arrows: turn camera, WASD: move camera"
 	
 	Flip
-	GCCollect
+	
 Wend
 
 End

@@ -89,7 +89,6 @@ While Not KeyDown(KEY_ESCAPE)
 	Text 0,60,"+/-: blursize = "+PostFx.Blursize +", [/]: maxblur = "+PostFx.Maxblur+", (/): minblur = "+PostFx.Minblur
 	
 	Flip
-	GCCollect
 	
 Wend
 

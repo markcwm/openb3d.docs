@@ -113,7 +113,6 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0,40,"Arrows/WASD: move camera, B: alpha blend spheres"
 	
 	Flip
-	GCCollect
 	
 Wend
 

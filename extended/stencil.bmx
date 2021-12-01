@@ -160,7 +160,6 @@ While Not KeyDown(KEY_ESCAPE)
 	EndIf
 
 	Flip
-	GCCollect
 	
 Wend
 

@@ -1,14 +1,14 @@
 ' maxgui2.bmx
-' using multiple canvas
+' how to use multiple canvas
 
 Strict
 
 Framework Openb3d.B3dglgraphics
 
-?linux
-Import Bah.Gtkmaxgui
 ?Not linux
 Import Maxgui.Drivers
+?linux
+Import Maxgui.Gtk3Maxgui
 ?Not bmxng
 Import Brl.Timer
 ?bmxng

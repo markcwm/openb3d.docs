@@ -99,7 +99,6 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0,60,"anim_time="+anim_time+" dithering="+PostFx.dithering+" colors="+PostFx.colors
 	
 	Flip
-	GCCollect
 	
 Wend
 

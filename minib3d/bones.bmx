@@ -20,9 +20,10 @@ Local loader%=1
 Select loader
 	Case 1 ' load stream mesh
 		ent=LoadAnimMesh("../media/zombie.b3d")
-		c=TMesh(RepeatMesh(ent))
-		MoveEntity c,5,0,5
 		MoveEntity ent,0,0,5
+		
+		c=TMesh(CopyMesh(ent)) ' RepeatMesh bug - affects smooth anim
+		MoveEntity c,5,0,5
 		
 	Case 2
 		ent=LoadAnimMesh("../media/ninja.b3d")
@@ -76,6 +77,7 @@ While Not KeyDown(KEY_ESCAPE)
 	' animte entity
 	SetAnimTime(ent,anim_time)
 	SetAnimTime(c,anim_time)
+	
 	' select child entity
 	If KeyHit(KEY_OPENBRACKET) Then child_no=child_no-1
 	If KeyHit(KEY_CLOSEBRACKET) Then child_no=child_no+1
@@ -91,6 +93,7 @@ While Not KeyDown(KEY_ESCAPE)
 		PositionEntity marker_ent,EntityX(child_ent,True),EntityY(child_ent,True),EntityZ(child_ent,True)
 	EndIf
 	
+	'UpdateWorld
 	RenderWorld
 	
 	' calculate fps

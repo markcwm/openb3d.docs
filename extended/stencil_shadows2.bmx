@@ -83,7 +83,6 @@ While Not KeyDown(KEY_ESCAPE)
 	Text 0,20,"M: multipass mode, Memory: "+GCMemAlloced()
 	
 	Flip(1)
-	GCCollect
 	
 Wend
 End

@@ -119,7 +119,6 @@ Type TScene
 			surf=Null
 			brush2=Null
 			tex3=Null
-			GCCollect()
 			
 			oldtime%=MilliSecs()
 			LoadScene()

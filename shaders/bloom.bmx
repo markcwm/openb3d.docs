@@ -101,7 +101,6 @@ While Not KeyHit(KEY_ESCAPE)
 	EndMax2D()
 	
 	Flip
-	GCCollect
 	
 Wend
 

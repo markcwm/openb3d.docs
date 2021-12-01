@@ -95,8 +95,7 @@ While Not KeyHit(KEY_ESCAPE)
 	Text 0,40,"WASD/Arrows: move camera, Space: PostFx.Active = "+PostFx.Active
 	
 	Flip
-	GCCollect
-	
+		
 Wend
 
 Delay 100 ' try to avoid app hangs
