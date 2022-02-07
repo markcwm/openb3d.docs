@@ -1,5 +1,5 @@
 ' dithering.bmx
-' postprocess effect - render framebuffer to texture for color dithering
+' postprocess effect - color dithering, from OpenB3DPlus
 
 Strict
 
