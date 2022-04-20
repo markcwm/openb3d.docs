@@ -9,29 +9,39 @@ Graphics3D DesktopWidth(),DesktopHeight(),0,2
 
 Local camera:TCamera=CreateCamera()
 CameraClsColor camera,70,180,235
-
-Local light:TLight=CreateLight()
+CameraRange camera,0.1,100
 
 Local mesh:TMesh=LoadMesh("../media/dwarf.b3d")
+UpdateNormals mesh
 TurnEntity mesh,0,180,0
+'ScaleMesh mesh,20,20,20 ' bunny.obj
+ScaleMesh mesh,0.10,0.10,0.10
 
-Local pivotvec:TPivot=CreatePivot()
-Local vecpitch:Float=0
+Local pivot:TPivot=CreatePivot()
+
+Local bulb:TMesh=CreateSphere(8,pivot)
+ScaleMesh bulb,0.1,0.1,0.1
+Local light:TLight=CreateLight(2,bulb)
+
+Local vecpitch:Float=-90 ' -90 points up
 Local vecyaw:Float=0
-Local upvec:TVector=New TVector
-
 Local usetex:Int=0
+
+Local upvec:TVector=New TVector
+upvec.x=0
+upvec.y=1.0
+upvec.z=0
 Local diffusecolor:TVector=New TVector
 diffusecolor.x=1.0
 diffusecolor.y=1.0
 diffusecolor.z=1.0
 Local uppercolor:TVector=New TVector
-uppercolor.x=0.5
-uppercolor.y=0.5
-uppercolor.z=0.5
+uppercolor.x=0.0
+uppercolor.y=0.0
+uppercolor.z=1.0
 Local lowercolor:TVector=New TVector
 lowercolor.x=0.0
-lowercolor.y=0.1
+lowercolor.y=1.0
 lowercolor.z=0.0
 
 Local shader:TShader=LoadShader("","../glsl/hemisphere.vert.glsl","../glsl/hemisphere.frag.glsl")
@@ -47,41 +57,46 @@ UseInteger(shader,"usetex",usetex)
 ShaderTexture(shader,LoadTexture("../media/dwarf.jpg"),"tex0",0)
 ShadeEntity(mesh,shader)
 
-Local camz#, tz#=55
+Local camz#=-6, bulby#=3, bulbyaw#=0, bulbz#=2
+Local wiretoggle%=-1
 
-
+' main loop
 While Not KeyDown(KEY_ESCAPE)
 
+	' wireframe
+	If KeyHit(KEY_W) Then wiretoggle=-wiretoggle
+	If wiretoggle=1 Then Wireframe True Else Wireframe False
+	
 	' texture with lighting
 	If KeyHit(KEY_T)
 		usetex:+1
 		If usetex>2 Then usetex=0
 	EndIf
 	
-	' move mesh
-	If KeyDown(KEY_UP) Then tz:+.1
-	If KeyDown(KEY_DOWN) Then tz:-.1
-	
 	' move camera
-	If KeyDown(KEY_W) Then camz:+.1
-	If KeyDown(KEY_S) Then camz:-.1
+	If KeyDown(KEY_O) Then camz:+0.1
+	If KeyDown(KEY_P) Then camz:-0.1
 	
-	vecyaw:+1
-	If vecyaw>360 Then vecyaw=0
+	' move light
+	If KeyDown(KEY_RIGHT) Then bulbyaw:+3
+	If KeyDown(KEY_LEFT) Then bulbyaw:-3
+	If KeyDown(KEY_UP) Then bulby:+0.1
+	If KeyDown(KEY_DOWN) Then bulby:-0.1
+	If KeyDown(KEY_Z) Then bulbz:+0.1
+	If KeyDown(KEY_A) And bulbz>0 Then bulbz:-0.1
 	
-	RotateEntity pivotvec,vecpitch,vecyaw,0
-	TFormVector 0,0,0.1,pivotvec,Null ' transform a vector along the +z axis (front) in global coords
+	PositionEntity camera,0,2,camz
+	RotateEntity pivot,0,bulbyaw,0
+	PositionEntity pivot,0,bulby,0
+	PositionEntity bulb,0,0,bulbz
+	
+	PointEntity light,mesh
+	TFormVector 0,0,0.1,light,Null ' transform a vector along the +z axis (front) in global coords
 	upvec.x=TFormedX() ; upvec.y=TFormedY() ; upvec.z=TFormedZ()
-	
-	'TurnEntity mesh,0,0.5,-0.1
-	
-	PositionEntity mesh,0,0,tz
-	PositionEntity camera,0,tz/2,camz
 	
 	RenderWorld
 	
-	Text 0,20,"T: change texture blending = "+usetex+", Up/Down: move mesh, W/S: move camera"
-	Text 0,40,"Distance: "+Abs(EntityZ(mesh)-EntityZ(camera))+", light x = "+vecpitch+", light y = "+vecyaw
+	Text 0,20,"T: change texture blending = "+usetex+", O/P: move camera, Arrows & A/Z: move light"
 	
 	Flip
 
