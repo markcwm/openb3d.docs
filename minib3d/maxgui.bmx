@@ -7,7 +7,8 @@ Framework Openb3d.B3dglgraphics
 ?Not linux
 Import Maxgui.Drivers
 ?linux
-Import Maxgui.Gtk3Maxgui
+Import Bah.GtkMaxgui
+'Import Maxgui.Gtk3Maxgui
 ?Not bmxng
 Import Brl.Timer
 ?bmxng
@@ -18,7 +19,12 @@ Import Brl.EventQueue
 Local flags%=GRAPHICS_BACKBUFFER|GRAPHICS_ALPHABUFFER|GRAPHICS_DEPTHBUFFER|GRAPHICS_STENCILBUFFER|GRAPHICS_ACCUMBUFFER
 SetGraphicsDriver GLMax2DDriver(),flags ' before SetGraphics
 
-Local win:TGadget=CreateWindow("OpenB3D in a GUI window",10,10,512,512)
+Local width%=640
+Local height%=480
+Local winx%=DesktopWidth()/2-width/2
+Local winy%=DesktopHeight()/2-height/2
+
+Local win:TGadget=CreateWindow("OpenB3D in a GUI window",winx,winy,width,height)
 
 Local can:TGadget=CreateCanvas(0,0,ClientWidth(win),ClientHeight(win),win,0)
 SetGadgetLayout can,1,1,1,1
