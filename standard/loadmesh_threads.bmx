@@ -5,8 +5,6 @@ Strict
 
 Framework Openb3d.B3dglgraphics
 
-Global Mutex:TMutex=CreateMutex() ' the mutex will be locked anytime a thread needs access
-
 Graphics3D DesktopWidth(),DesktopHeight()
 
 Local camera:TCamera=CreateCamera()
@@ -23,7 +21,9 @@ MoveEntity plane, 0, -2, 0
 Local tex:TTexture = LoadTexture("../media/Moss.bmp")
 EntityTexture(plane, tex)
 
-Local shared:TClone=New TClone
+Local shared:TClone=New TClone ' shared data object
+shared.mutex=CreateMutex() ' the mutex will be locked anytime a thread needs access
+shared.meshlist:TList=CreateList()
 
 shared.mesh=LoadAnimMesh("../media/Ork.b3d")
 MoveEntity shared.mesh,-10,-1.75,-10
@@ -85,20 +85,20 @@ End
 
 Type TClone ' store everything shared between threads
 	Field mesh:TMesh
-	Field meshlist:TList=CreateList()
+	Field meshlist:TList
 	Field clonecount%=0, linecount%=0, nextline%=0
-	Field thread:TThread
+	Field thread:TThread, mutex:TMutex
 EndType
 
 Function CloneOrk:Object(data:Object)
 
-	If TryLockMutex(Mutex)
+	If TryLockMutex(TClone(data).mutex)
 		Delay 10 ' tiny delay is needed to keep threads stable or they can crash
 		
 		TClone(data).clonecount:+1
 		LoadOrk(TClone(data))
 		
-		UnlockMutex(mutex)
+		UnlockMutex(TClone(data).mutex)
 	EndIf
 	
 End Function
