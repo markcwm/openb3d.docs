@@ -27,9 +27,7 @@ Local shared:TClone=New TClone ' shared data object
 shared.meshlist:TList=CreateList()
 shared.mutex=CreateMutex() ' the mutex will be locked anytime a thread needs access
 
-If use_threads=2 ' multi-threads
-	shared.thread=CreateThread(CloneOrk,Null)
-ElseIf use_threads=1 ' 1 thread
+If use_threads>0
 	shared.thread=CreateThread(CloneOrk,Null)
 	DetachThread(shared.thread)
 EndIf
