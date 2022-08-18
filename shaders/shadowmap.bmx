@@ -113,7 +113,7 @@ Function CreateShadowMap(ShadowMap:TShader, CamLight:TCamera, ShadowSampler:TTex
 	
 	glUseProgram(prog)
 	
-	glUniformMatrix4fv(glGetUniformLocation(prog,"biasMatrix"), 1, 0, biasMatrix)
+	glUniformMatrix4fv(glGetUniformLocation(prog,"biasMatrix"), 1, 0, Varptr biasMatrix[0])
 	glUniformMatrix4fv(glGetUniformLocation(prog,"projMatrix"), 1, 0, CameraProjMatrix(CamLight))
 	
 	glUseProgram(0)
