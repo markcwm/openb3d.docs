@@ -5,32 +5,37 @@ Strict
 
 Framework Openb3d.B3dglgraphics
 	
-Graphics3D 640,480,0,2
-
-Local camera:TCamera=CreateCamera()
-CameraClsColor camera,0,0,255
+Graphics3D 800,600,0,2
 
 Local light:TLight=CreateLight()
+
+Local camera:TCamera=CreateCamera(light)
+CameraClsColor camera,0,0,255
+
+Local mapsize%=128
 
 Local cube:TMesh=CreateCube()
 EntityColor cube,255,0,0
 Local cube_tex:TTexture=LoadTexture("../media/07_DIFFUSE.jpg")
 EntityTexture cube, cube_tex
 
-Local plane:TMesh=CreatePlane()
-'ScaleEntity plane, 100,0.1,100
+Local plane:TMesh=Createcube()
+ScaleEntity plane, 100,0.1,100
 MoveEntity plane,0,-1.4,15
-ScaleMesh plane, .001,1,.001
+'ScaleMesh plane, 0.0001,1,0.0001
 
-Local mapsize%=512
+Local ground_tex:TTexture=LoadTexture("../media/Envwall.bmp",1+8)
+ScaleTexture ground_tex,2,2
+EntityTexture plane,ground_tex
 
 MoveEntity light,10,10,-3
 PointEntity light,cube
 MoveEntity camera,-2,0,-5
 
-Global ShadowSampler:TTexture=CreateTexture(mapsize,mapsize,1,1)
+Global ShadowSampler:TTexture=CreateTexture(mapsize,mapsize,1+16+32,1)
 
 Global ShadowMap:TShader=LoadShader("","../glsl/shadowmap.vert.glsl","../glsl/shadowmap.frag.glsl")
+
 ShaderTexture(ShadowMap, cube_tex, "Diffuse", 0)
 ShaderTexture(ShadowMap, ShadowSampler, "depthSampler", 1)
 
