@@ -13,8 +13,9 @@ void main() {
 	float shadow = 1.0;
 	shadow = shadow2DProj(depthSampler, shadowCoordinate).r;
 	vec4 col=texture2D(Diffuse, gl_TexCoord[0].xy);
-	vec3 lightDir=vec3(lightPos-vpos);
-	float NdotL = max(dot(normalize(normal),normalize(lightDir)),0.0)*shadow;
-
-	gl_FragColor = col*NdotL;
+	vec3 lightDir=vec3(lightPos - vpos);
+	float NdotL = max(dot(normalize(normal), normalize(lightDir)), 0.0) * shadow;
+	float shadowalpha = 0.7;
+	
+	gl_FragColor = (col * (1.0-shadowalpha)) + (col * shadowalpha) * NdotL;
 }

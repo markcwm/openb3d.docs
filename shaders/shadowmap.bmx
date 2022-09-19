@@ -1,52 +1,59 @@
 ' shadowmap.bmx
 ' textured shadows, from OpenB3DPlus
+' only works in 640x480 mode and not at all on Mac, there is also a rendering bug
 
 Strict
 
 Framework Openb3d.B3dglgraphics
-	
-Graphics3D 800,600,0,2
+
+Graphics3D 640,480,0,2
+
+Local mapsize%=512 ' only works when 512x512
 
 Local light:TLight=CreateLight()
-
-Local camera:TCamera=CreateCamera(light)
-CameraClsColor camera,0,0,255
-
-Local mapsize%=128
-
-Local cube:TMesh=CreateCube()
-EntityColor cube,255,0,0
-Local cube_tex:TTexture=LoadTexture("../media/07_DIFFUSE.jpg")
-EntityTexture cube, cube_tex
-
-Local plane:TMesh=Createcube()
-ScaleEntity plane, 100,0.1,100
-MoveEntity plane,0,-1.4,15
-'ScaleMesh plane, 0.0001,1,0.0001
-
-Local ground_tex:TTexture=LoadTexture("../media/Envwall.bmp",1+8)
-ScaleTexture ground_tex,2,2
-EntityTexture plane,ground_tex
-
-MoveEntity light,10,10,-3
-PointEntity light,cube
-MoveEntity camera,-2,0,-5
-
-Global ShadowSampler:TTexture=CreateTexture(mapsize,mapsize,1+16+32,1)
-
-Global ShadowMap:TShader=LoadShader("","../glsl/shadowmap.vert.glsl","../glsl/shadowmap.frag.glsl")
-
-ShaderTexture(ShadowMap, cube_tex, "Diffuse", 0)
-ShaderTexture(ShadowMap, ShadowSampler, "depthSampler", 1)
 
 Global CamLight:TCamera=CreateCamera(light)
 CameraViewport(CamLight,0,0,mapsize,mapsize)
 HideEntity(CamLight)
 
+Local camera:TCamera=CreateCamera()
+CameraClsColor camera,0,0,255
+
+Local cube_tex:TTexture=LoadTexture("../media/07_DIFFUSE.jpg")
+
+Local cube:TMesh=CreateCube()
+EntityColor cube,255,0,0
+MoveEntity cube,0,2,0
+
+Local cone:TMesh=CreateCone()
+EntityColor cone,0,255,0
+MoveEntity cone,-3,2,0
+
+Local cylinder:TMesh=CreateCylinder()
+EntityColor cylinder,0,0,255
+MoveEntity cylinder,3,2,0
+
+Local plane:TMesh=CreatePlane(4)
+MoveEntity plane,0,-1.5,0
+'ScaleMesh plane, 10,0.1,10
+EntityTexture plane, cube_tex
+
+MoveEntity light,10,20,-3
+PointEntity light,cube
+MoveEntity camera,-2,1.5,-5
+
+Global ShadowSampler:TTexture=CreateTexture(mapsize,mapsize,1+16+32,1)
+
+Global ShadowMap:TShader=LoadShader("","../glsl/shadowmap.vert.glsl","../glsl/shadowmap.frag.glsl")
+ShaderTexture(ShadowMap, cube_tex, "Diffuse", 0)
+ShaderTexture(ShadowMap, ShadowSampler, "depthSampler", 1)
+
 CreateShadowMap(ShadowMap, CamLight, ShadowSampler)
 
 ShadeEntity plane, ShadowMap
 ShadeEntity cube, ShadowMap
+ShadeEntity cone, ShadowMap
+ShadeEntity cylinder, ShadowMap
 
 ' fps code
 Local old_ms%=MilliSecs()
@@ -60,13 +67,10 @@ While Not KeyHit(KEY_ESCAPE)
 	If KeyDown( KEY_DOWN )=True Then MoveEntity camera,0,0,-0.25
 	If KeyDown( KEY_UP )=True Then MoveEntity camera,0,0,0.25
 	
-	If KeyDown(KEY_P) Then MoveEntity cube,0,0,1
-	If KeyDown(KEY_L) Then MoveEntity cube,0,0,-1
-
-	If KeyDown(KEY_W) Then TurnEntity cube,1,0,0,0
-	If KeyDown(KEY_S) Then TurnEntity cube,-1,0,0,0
-	If KeyDown(KEY_A) Then TurnEntity cube,0,-1,0,0
-	If KeyDown(KEY_D) Then TurnEntity cube,0,1,0,0
+	If KeyDown(KEY_W) Then TurnEntity cube,1,0,0,0 ; TurnEntity cone,1,0,0,0 ; TurnEntity cylinder,1,0,0,0
+	If KeyDown(KEY_S) Then TurnEntity cube,-1,0,0,0 ; TurnEntity cone,-1,0,0,0 ; TurnEntity cylinder,-1,0,0,0
+	If KeyDown(KEY_A) Then TurnEntity cube,0,-1,0,0 ; TurnEntity cone,0,-1,0,0 ; TurnEntity cylinder,0,-1,0,0
+	If KeyDown(KEY_D) Then TurnEntity cube,0,1,0,0 ; TurnEntity cone,0,1,0,0 ; TurnEntity cylinder,0,1,0,0
 
 	UpdateWorld 1
 	UpdateShadows(ShadowSampler, CamLight)
@@ -81,7 +85,7 @@ While Not KeyHit(KEY_ESCAPE)
 	EndIf
 	
 	Text 0,20,"FPS: "+fps+", Memory: "+GCMemAlloced()
-	Text 0,40,"Arrows: move camera, WASD: turn cube, PL: move cube"
+	Text 0,40,"Arrows: move camera, WASD: turn cube, cone, cylinder"
 	
 	Flip
 	
@@ -106,12 +110,14 @@ Function CreateShadowMap(ShadowMap:TShader, CamLight:TCamera, ShadowSampler:TTex
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS)
 	glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY)
 	
-	'SetInteger(ShadowMap, "Diffuse",0)
-	'SetInteger(ShadowMap, "depthSampler",1)
+	SetInteger(ShadowMap, "Diffuse",0)
+	SetInteger(ShadowMap, "depthSampler",1)
 	
 	UseEntity(ShadowMap, "lightingInvMatrix", CamLight, 1)
 	UseMatrix(ShadowMap, "modelMat",0)
+
 	'UseMatrix(ShadowMap, "projMatrix",2)
+	'UseMatrix(ShadowMap, "biasMatrix",3)
 	
 	Local biasMatrix:Float[]=[0.5, 0.0, 0.0, 0.0,0.0, 0.5, 0.0, 0.0,0.0, 0.0, 0.5, 0.0,0.5, 0.5, 0.5, 1.0]
 	Local prog%=GetShaderProgram(ShadowMap)
