@@ -10,7 +10,7 @@ uniform mat4 projMatrix;
 
 uniform mat4 biasMatrix;
  
-// Inverse matrix copyright 2005 G-Truc Creation (www.g-truc.net)
+// Inverse matrix by G-Truc Creation (www.g-truc.net)
 mat4 inversemat4(mat4 m)
 {
    float SubFactor00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
@@ -58,7 +58,7 @@ mat4 inversemat4(mat4 m)
    return adj / det;
 }
 
-// Get inverse matrix, ported from OpenB3D
+// Get inverse matrix ported from OpenB3D
 mat4 getinversemat4(mat4 m)
 {
 	float tx=0.0;
@@ -114,3 +114,4 @@ void main() {
 	gl_TexCoord[0] = gl_MultiTexCoord0;
 	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
 }
+

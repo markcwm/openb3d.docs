@@ -7,7 +7,6 @@ varying vec4 vpos, lightPos;
 uniform sampler2DShadow depthSampler;
 
 uniform sampler2D Diffuse;
-
  
 void main() {
 	float shadow = 1.0;

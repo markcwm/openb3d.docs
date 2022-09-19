@@ -8,7 +8,7 @@ Framework Openb3d.B3dglgraphics
 
 Graphics3D 640,480,0,2
 
-Local mapsize%=512 ' only works when 512x512
+Local mapsize%=512 ' only works in 512x512
 
 Local light:TLight=CreateLight()
 

@@ -3,7 +3,7 @@ OpenB3D source code examples with media included
 
 ## What's in the folders
 * archives - from the code archives
-* blitz3d - from Blitz3D help
+* blitz3d - ported from Blitz3D help
 * docs - commands documentation
 * extended - extra features not in Blitz3D
 * glsl - vert and frag sources used by shaders
